@@ -29,3 +29,9 @@ This is no longer the case. Now, only commas are a valid query separator: e.g. `
 
 
 *Impact:* You will need to migrate your stored timelion queries to the new syntax.
+
+[float]
+=== Removed same port http to https redirect behavior
+*Details:* Kibana 5.x redirected requests from http to https on the same port if TLS was configured.  This was removed.
+
+*Impact:* You may need to add a redirect on a different port if a redirect is expected.
