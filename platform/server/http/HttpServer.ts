@@ -34,4 +34,11 @@ export class HttpServer {
   stop() {
     this.httpServer.close();
   }
+
+  /**
+   * "Proxies" request to an instance of the http server.
+   */
+  unstable_handleRequest(req: any, res: any) {
+    this.app(req, res);
+  }
 }

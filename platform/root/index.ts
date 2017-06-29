@@ -58,4 +58,10 @@ export class Root {
 
     this.onShutdown(reason);
   }
+
+  unstable_handleRequest(req: any, res: any) {
+    if (this.server !== undefined) {
+      this.server.unstable_handleRequest(req, res);
+    }
+  }
 }

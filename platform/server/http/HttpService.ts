@@ -81,4 +81,8 @@ export class HttpService implements CoreService {
     this.log.debug('closing http server');
     this.httpServer.stop();
   }
+
+  unstable_handleRequest(req: any, res: any) {
+    this.httpServer.unstable_handleRequest(req, res);
+  }
 }

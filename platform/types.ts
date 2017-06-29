@@ -70,6 +70,7 @@ import {
   ElasticsearchModule
 } from './server/elasticsearch';
 import { LoggerFactory } from './logger';
+import { Root, OnShutdown } from './root';
 
 export type ElasticsearchClusterType = 'data' | 'admin';
 
@@ -156,6 +157,13 @@ export interface KibanaPluginFeatures {
     createIfExists: <Schema extends schemaLib.Any, Config>(
       ConfigClass: ConfigWithSchema<Schema, Config>
     ) => Observable<Config | undefined>;
+  };
+
+  core: {
+    createKibanaInstance: (
+      configOverrides: {[key: string]: any},
+      onShutdown: OnShutdown
+    ) => Root;
   };
 }
 

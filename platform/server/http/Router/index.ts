@@ -113,6 +113,15 @@ export class Router<V> {
     readonly options: RouterOptions<V> = {}
   ) {}
 
+  /**
+   * Unstable api that returns the full router, if needed. Expect the
+   * version of the router to change at any time. This api is _not_ considered
+   * part of the "public api" with regards to versioning.
+   */
+  unstable_raw() {
+    return this.router;
+  }
+
   get<P extends ObjectSetting<any>, Q extends ObjectSetting<any>>(
     route: Route<P, Q>,
     handler: RequestHandler<V, P, Q>

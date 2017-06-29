@@ -1,3 +1,5 @@
+import { merge } from 'lodash';
+
 import {
   KibanaCoreModules,
   KibanaPluginFeatures,
@@ -5,6 +7,7 @@ import {
 } from '../../types';
 import * as schema from '../../lib/schema';
 import { Router, RouterOptions } from '../http';
+import { Root } from '../../root';
 
 /**
  * This is the full plugin API exposed from Kibana core, everything else is
@@ -24,6 +27,14 @@ export function createKibanaValuesForPlugin(
   core: KibanaCoreModules
 ): KibanaPluginFeatures {
   return {
+    core: {
+      createKibanaInstance: (configOverrides, onShutdown) => {
+        const config$ = core.configService.getConfig$()
+          .map(config => merge({}, config, configOverrides));
+
+        return new Root(config$, core.configService.env, onShutdown);
+      }
+    },
     logger: {
       get: (...namespace) => {
         return core.logger.get('plugins', pluginName, ...namespace);
