@@ -17,7 +17,7 @@ export class HttpService implements CoreService {
     logger: LoggerFactory
   ) {
     this.log = logger.get('http');
-    this.httpServer = new HttpServer();
+    this.httpServer = new HttpServer(logger);
   }
 
   async start() {
@@ -70,11 +70,7 @@ export class HttpService implements CoreService {
   }
 
   private async startHttpServer(config: HttpConfig) {
-    const { host, port } = config;
-
-    this.log.info(`starting http server [${host}:${port}]`);
-
-    await this.httpServer.start(port, host);
+    await this.httpServer.start(config);
   }
 
   private stopHttpServer() {

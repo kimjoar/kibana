@@ -27,9 +27,9 @@ export const plugin = class implements KibanaPlugin<void> {
     this.log.info('starting workspaces');
 
     this.kibanaInstances = new Map([
-      ['1', this.createInstanceAtPort(5602)],
-      ['2', this.createInstanceAtPort(5603)],
-      ['3', this.createInstanceAtPort(5604)]
+      ['1', this.createInstance()],
+      ['2', this.createInstance()],
+      ['3', this.createInstance()]
     ]);
 
     const router = this.kibana.http.createAndRegisterRouter('/ws', {});
@@ -54,10 +54,10 @@ export const plugin = class implements KibanaPlugin<void> {
     this.log.info('workspaces started');
   }
 
-  createInstanceAtPort(port: number) {
+  createInstance() {
     return this.kibana.core.createKibanaInstance({
       server: {
-        port
+        autoListen: false
       },
 
       // we must ensure plugins that have "global" state/effects are disabled

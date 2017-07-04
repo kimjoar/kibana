@@ -10,7 +10,7 @@ const match = (regex: RegExp, errorMsg: string) =>
   (str: string) => regex.test(str) ? undefined : errorMsg;
 
 const createHttpSchema = (schema: Schema) => {
-  const { object, string, number, byteSize, maybe } = schema;
+  const { object, string, number, boolean, byteSize, maybe } = schema;
 
   return object({
     host: string({
@@ -31,6 +31,9 @@ const createHttpSchema = (schema: Schema) => {
         )
       })
     ),
+    autoListen: boolean({
+      defaultValue: true
+    }),
     ssl: SslConfig.createSchema(schema)
   });
 }
@@ -45,6 +48,7 @@ export class HttpConfig {
   port: number;
   maxPayload: ByteSizeValue;
   basePath?: string;
+  autoListen: boolean;
   publicDir: string;
   ssl: SslConfig;
 
@@ -53,6 +57,7 @@ export class HttpConfig {
     this.port = config.port;
     this.maxPayload = config.maxPayload;
     this.basePath = config.basePath;
+    this.autoListen = config.autoListen;
     this.publicDir = env.staticFilesDir;
     this.ssl = new SslConfig(config.ssl);
   }
