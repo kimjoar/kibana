@@ -72,4 +72,8 @@ export class Server {
     await this.plugins.stop();
     await this.elasticsearch.service.stop();
   }
+
+  unstable_handleRequest(req: any, res: any) {
+    this.http.service.unstable_handleRequest(req, res);
+  }
 }
