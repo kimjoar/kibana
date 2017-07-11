@@ -1,8 +1,11 @@
 import {
-  KibanaCoreModules,
-  KibanaPluginFeatures,
-  ConfigWithSchema
+  KibanaCoreModules
 } from '../../types';
+import {
+  KibanaPluginFeatures,
+  ConfigWithSchema,
+  Schema
+} from 'kbn-types';
 import * as schema from '../../lib/schema';
 import { Router, RouterOptions } from '../http';
 
@@ -47,16 +50,16 @@ export function createKibanaValuesForPlugin(
       }
     },
     config: {
-      create: <Schema extends schema.Any, Config>(
-        ConfigClass: ConfigWithSchema<Schema, Config>
+      create: <S extends Schema.Any, Config>(
+        ConfigClass: ConfigWithSchema<S, Config>
       ) => {
         if (configPath === undefined) {
           throw new Error('config path not defined');
         }
         return core.configService.atPath(configPath, ConfigClass);
       },
-      createIfExists: <Schema extends schema.Any, Config>(
-        ConfigClass: ConfigWithSchema<Schema, Config>
+      createIfExists: <S extends Schema.Any, Config>(
+        ConfigClass: ConfigWithSchema<S, Config>
       ) => {
         if (configPath === undefined) {
           throw new Error('config path not defined');

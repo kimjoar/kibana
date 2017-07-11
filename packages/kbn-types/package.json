@@ -1,0 +1,8 @@
+{
+  "name": "kbn-types",
+  "version": "0.0.1",
+  "types": "./index.d.ts",
+  "dependencies": {
+    "rxjs": "^5.4.2"
+  }
+}

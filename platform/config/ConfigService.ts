@@ -4,7 +4,7 @@ import { get, isEqual } from 'lodash';
 import { Env } from './Env';
 import { Logger, LoggerFactory } from '../logger';
 import * as schema from '../lib/schema';
-import { ConfigWithSchema } from '../types';
+import { Schema, ConfigWithSchema } from 'kbn-types';
 
 type ConfigPath = string | string[];
 
@@ -44,9 +44,9 @@ export class ConfigService {
    *                    schema that we validate the config at the given `path`
    *                    against.
    */
-  atPath<Schema extends schema.Any, Config>(
+  atPath<S extends Schema.Any, Config>(
     path: ConfigPath,
-    ConfigClass: ConfigWithSchema<Schema, Config>
+    ConfigClass: ConfigWithSchema<S, Config>
   ) {
     return this.getDistinctRawConfig(path).map(rawConfig =>
       this.createConfig(rawConfig, ConfigClass)
@@ -59,9 +59,9 @@ export class ConfigService {
    *
    * @see atPath
    */
-  optionalAtPath<Schema extends schema.Any, Config>(
+  optionalAtPath<S extends Schema.Any, Config>(
     path: ConfigPath,
-    ConfigClass: ConfigWithSchema<Schema, Config>
+    ConfigClass: ConfigWithSchema<S, Config>
   ) {
     return this.getDistinctRawConfig(path).map(
       rawConfig =>
@@ -93,9 +93,9 @@ export class ConfigService {
     return true;
   }
 
-  private createConfig<Schema extends schema.Any, Config>(
+  private createConfig<S extends Schema.Any, Config>(
     rawConfig: {},
-    ConfigClass: ConfigWithSchema<Schema, Config>
+    ConfigClass: ConfigWithSchema<S, Config>
   ) {
     const config = ConfigClass.createSchema(schema).validate(rawConfig);
     return new ConfigClass(config, this.env);
