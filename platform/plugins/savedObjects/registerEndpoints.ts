@@ -1,6 +1,4 @@
-import { Router } from '../../server/http';
-import { LoggerFactory } from '../../logger';
-import { Schema } from '../../types';
+import { Router, LoggerFactory, Schema } from 'kbn-types';
 import { SavedObjectsService } from './SavedObjectsService';
 
 export function registerEndpoints(
