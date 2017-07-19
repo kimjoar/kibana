@@ -1,0 +1,7 @@
+{
+  "name": "kibana-plugin-pid",
+  "version": "1.0.0",
+  "dependencies": {
+    "kbn-types": "file:../../../packages/kbn-types"
+  }
+}

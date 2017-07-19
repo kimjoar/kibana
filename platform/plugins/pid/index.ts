@@ -1,6 +1,4 @@
-import { KibanaPlugin } from '../../server/plugins/types';
-import { KibanaPluginFeatures } from '../../types';
-import { Logger } from '../../logger';
+import { KibanaPlugin, Logger, KibanaPluginFeatures } from 'kbn-types';
 
 import { PidConfig } from './PidConfig';
 import { PidService } from './PidService';
