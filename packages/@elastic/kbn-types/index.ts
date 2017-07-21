@@ -1,10 +1,10 @@
 export {
   KibanaFunctionalPlugin,
-  KibanaPlugin
+  KibanaPlugin,
+  KibanaPluginFeatures
 } from '../../../platform/server/plugins/types';
 export { Logger, LoggerFactory } from '../../../platform/logger';
 export {
-  KibanaPluginFeatures,
   Schema,
   typeOfSchema
 } from '../../../platform/types';
