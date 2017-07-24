@@ -64,7 +64,7 @@
     "sterilize": "grunt sterilize",
     "uiFramework:start": "grunt uiFramework:start",
     "uiFramework:build": "grunt uiFramework:build",
-    "ts:build": "tsc",
+    "ts:build": "tsc -p platform/tsconfig.json",
     "ts:start": "tsc --watch",
     "prettier": "prettier --single-quote --write 'platform/**/*.ts' 'packages/**/*.ts'"
   },
@@ -148,7 +148,6 @@
     "json-loader": "0.5.3",
     "json-stringify-safe": "5.0.1",
     "jstimezonedetect": "1.0.5",
-    "kbn-types": "file:packages/@elastic/kbn-types",
     "leaflet": "0.7.5",
     "less": "2.7.1",
     "less-loader": "2.2.3",

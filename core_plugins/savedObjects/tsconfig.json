@@ -1,0 +1,9 @@
+{
+  "compilerOptions": {
+    "outDir": "../../target/plugins/savedObjects"
+  },
+  "extends": "../../tsconfig",
+  "include": [
+    "**/*.ts"
+  ]
+}
