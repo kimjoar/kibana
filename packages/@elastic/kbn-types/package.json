@@ -7,7 +7,13 @@
     "build": "tsc",
     "start": "tsc --watch"
   },
+  "peerDependencies": {
+    "rxjs": "5.4.2"
+  },
   "devDependencies": {
     "typescript": "^2.4.1"
+  },
+  "dependencies": {
+    "rxjs": "^5.4.2"
   }
 }

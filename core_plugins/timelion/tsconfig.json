@@ -1,9 +1,6 @@
 {
-  "compilerOptions": {
-    "outDir": "../../target/plugins/timelion"
-  },
   "extends": "../../tsconfig",
-  "include": [
-    "**/*.ts"
-  ]
+  "compilerOptions": {
+    "outDir": "target/"
+  }
 }
