@@ -1,0 +1,12 @@
+{
+  "name": "kibana-plugin-timelion-plugin-a",
+  "version": "1.0.0",
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc --watch"
+  },
+  "dependencies": {
+    "kbn-types": "file:../../packages/@elastic/kbn-types",
+    "typescript": "^2.4.2"
+  }
+}
