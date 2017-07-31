@@ -3,14 +3,11 @@
   "compilerOptions": {
     "declaration": true,
     "declarationDir": "./types",
-    "stripInternal": true
+    "stripInternal": true,
+    "outDir": "./dist"
   },
   "files": [
     "./index.ts",
     "../../../types/index.d.ts"
-  ],
-  "include": [],
-  "exclude": [
-    "node_modules"
   ]
 }
