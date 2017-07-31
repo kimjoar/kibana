@@ -6,7 +6,9 @@
     "watch": "tsc --watch"
   },
   "dependencies": {
-    "lodash": "^4.17.4",
+    "lodash": "^4.17.4"
+  },
+  "peerDependencies": {
     "rxjs": "^5.4.2"
   },
   "devDependencies": {
