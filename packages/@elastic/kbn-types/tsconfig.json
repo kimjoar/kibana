@@ -8,9 +8,5 @@
   "files": [
     "./index.ts",
     "../../../types/index.d.ts"
-  ],
-  "include": [],
-  "exclude": [
-    "node_modules"
   ]
 }
