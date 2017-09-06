@@ -1,11 +1,13 @@
 import Joi from 'joi';
 import { keysToCamelCaseShallow } from '../../../utils/case_conversion';
 
+import { uiSettingsService, savedObjectsClient } from '../prereqs';
+
 export const createFindRoute = (prereqs) => ({
   path: '/api/saved_objects/{type?}',
   method: 'GET',
   config: {
-    pre: [prereqs.getSavedObjectsClient],
+    pre: { uiSettingsService, savedObjectsClient },
     validate: {
       params: Joi.object().keys({
         type: Joi.string()
@@ -26,7 +28,9 @@ export const createFindRoute = (prereqs) => ({
         options.type = request.params.type;
       }
 
-      reply(request.pre.savedObjectsClient.find(options));
+      request.uiSettingsService()
+
+      reply(request.savedObjectsClient.find(options));
     }
   }
 });

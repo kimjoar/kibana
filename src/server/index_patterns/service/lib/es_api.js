@@ -16,6 +16,10 @@ import { convertEsError } from './errors';
  */
 export async function callIndexAliasApi(callCluster, indices) {
   try {
+    return await cluster.indices.getAlias({
+      ...
+    })
+
     return await callCluster('indices.getAlias', {
       index: indices,
       ignoreUnavailable: true,

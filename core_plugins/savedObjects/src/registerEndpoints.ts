@@ -20,9 +20,15 @@ export function registerEndpoints(
     }
   );
 
+  const getUiSettingsService = req => new getUiSettingsService(savedObjectsClient(req));
+  const savedObjectsClient = req => new savedObjectsClient(req);
+
   router.get(
     {
       path: '/:type',
+      pre: {
+        getUiSettingsService
+      },
       validate: {
         params: object({
           type: string()
@@ -42,7 +48,10 @@ export function registerEndpoints(
       }
     },
     async (savedObjectsService, req, res) => {
-      const { params, query } = req;
+      const cluster = getCluster(req, 'admin');
+      const uiSettingService = getUiSettingsService(cluster);
+
+      const { params, query, headers } = req;
 
       const savedObjects = await savedObjectsService.find({
         type: params.type,

@@ -9,16 +9,10 @@ import {
   createUpdateRoute
 } from './routes';
 
-export function savedObjectsMixin(kbnServer, server) {
-  const prereqs = {
-    getSavedObjectsClient: {
-      assign: 'savedObjectsClient',
-      method(req, reply) {
-        reply(req.getSavedObjectsClient());
-      }
-    },
-  };
+export savedObjectsClient = (req) => "test"
+export uiSettingsService = (req) => createMyService(savedObjectsClient(req))
 
+export function savedObjectsMixin(kbnServer, server) {
   server.route(createBulkGetRoute(prereqs));
   server.route(createCreateRoute(prereqs));
   server.route(createDeleteRoute(prereqs));
@@ -45,6 +39,8 @@ export function savedObjectsMixin(kbnServer, server) {
     const { callWithRequest } = server.plugins.elasticsearch.getCluster('admin');
     const callCluster = (...args) => callWithRequest(request, ...args);
     const savedObjectsClient = server.savedObjectsClientFactory({ callCluster });
+
+// Logger in user -> request -> Kibana -> search -> Elasticsearch
 
     savedObjectsClientCache.set(request, savedObjectsClient);
     return savedObjectsClient;
