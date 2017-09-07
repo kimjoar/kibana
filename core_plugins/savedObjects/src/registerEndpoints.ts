@@ -1,35 +1,19 @@
-import { Router, LoggerFactory, Schema } from 'kbn-types';
+import { Router, LoggerFactory, KibanaRequest } from 'kbn-types';
 import { SavedObjectsService } from './SavedObjectsService';
 
 export function registerEndpoints(
   router: Router<SavedObjectsService>,
   logger: LoggerFactory,
-  schema: Schema
+  savedObjectsService: (req: KibanaRequest) => SavedObjectsService
 ) {
-  const { object, string, number, maybe } = schema;
-  const log = logger.get('routes');
-
-  router.get(
+  router.route(
     {
-      path: '/fail'
-    },
-    async (savedObjectsService, req, res) => {
-      log.info(`GET should fail`);
-
-      return res.badRequest(new Error('nope'));
-    }
-  );
-
-  const getUiSettingsService = req => new getUiSettingsService(savedObjectsClient(req));
-  const savedObjectsClient = req => new savedObjectsClient(req);
-
-  router.get(
-    {
+      method: 'GET',
       path: '/:type',
       pre: {
-        getUiSettingsService
+        savedObjectsService
       },
-      validate: {
+      validate: ({ object, string, number, maybe }) => ({
         params: object({
           type: string()
         }),
@@ -45,13 +29,11 @@ export function registerEndpoints(
             })
           )
         })
-      }
+      })
     },
-    async (savedObjectsService, req, res) => {
-      const cluster = getCluster(req, 'admin');
-      const uiSettingService = getUiSettingsService(cluster);
-
-      const { params, query, headers } = req;
+    async (req, res, values) => {
+      const { params, query } = req;
+      const { savedObjectsService } = values;
 
       const savedObjects = await savedObjectsService.find({
         type: params.type,
@@ -60,8 +42,6 @@ export function registerEndpoints(
       });
 
       return res.ok(savedObjects);
-      // if 200 OK we can simplify to just:
-      // return savedObjects;
     }
   );
 }

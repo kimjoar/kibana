@@ -1,20 +1,23 @@
-import { KibanaPluginConfig } from 'kbn-types';
+import { KibanaPluginConfig, KibanaRequest } from 'kbn-types';
 import { SavedObjectsService } from './SavedObjectsService';
 import { registerEndpoints } from './registerEndpoints';
 
 export const plugin: KibanaPluginConfig<{}> = {
   plugin: kibana => {
-    const { kibana: _kibana, elasticsearch, logger, util, http } = kibana;
+    const { kibana: _kibana, elasticsearch, logger, http } = kibana;
   
     const log = logger.get();
   
     log.info('creating savedObjects plugin');
   
-    const router = http.createAndRegisterRouter('/api/saved_objects', {
-      onRequest: req =>
-        new SavedObjectsService(req, _kibana.config$, elasticsearch.service)
-    });
+    const router = http.createAndRegisterRouter('/api/saved_objects');
   
-    registerEndpoints(router, logger, util.schema);
+    const createSavedObjectsService = (req: KibanaRequest) =>
+      new SavedObjectsService(
+        elasticsearch.service.getClusterOfType$('admin', req),
+        _kibana.config$
+      );
+  
+    registerEndpoints(router, logger, createSavedObjectsService);
   }
 }
