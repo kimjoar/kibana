@@ -1,0 +1,3 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`returns error if completing without receiving any value 1`] = `"EmptyError: first() requires source stream to emit at least one value."`;

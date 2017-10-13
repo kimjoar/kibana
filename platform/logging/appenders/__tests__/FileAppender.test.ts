@@ -1,4 +1,4 @@
-import { Observable } from 'rxjs';
+import { k$, $of, delay, toPromise } from 'kbn-observable';
 import * as mockSchema from '../../../lib/schema';
 
 const mockCreateLayoutConfigSchema = jest.fn();
@@ -138,9 +138,7 @@ test('`dispose()` closes stream.', async () => {
   const mockStreamEndFinished = jest.fn();
   const mockStreamEnd = jest.fn(async (chunk, encoding, callback) => {
     // It's required to make sure `dispose` waits for `end` to complete.
-    await Observable.from([])
-      .delay(100)
-      .toPromise();
+    await k$($of(), delay(100), toPromise());
     mockStreamEndFinished();
     callback();
   });

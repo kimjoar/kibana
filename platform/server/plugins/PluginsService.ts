@@ -1,6 +1,15 @@
 import { readdir, stat } from 'fs';
 import { resolve } from 'path';
-import { Observable } from 'rxjs';
+import {
+  Observable,
+  k$,
+  first,
+  map,
+  mergeMap,
+  filter,
+  toArray,
+  toPromise
+} from 'kbn-observable';
 import { promisify } from 'util';
 
 import { Plugin } from './Plugin';
@@ -27,12 +36,13 @@ export class PluginsService implements CoreService {
   }
 
   async start() {
-    await this.getAllPlugins()
-      .mergeMap(
+    const plugins = await k$(
+      this.getAllPlugins(),
+      mergeMap(
         plugin => this.isPluginEnabled(plugin),
         (plugin, isEnabled) => ({ plugin, isEnabled })
-      )
-      .filter(obj => {
+      ),
+      filter(obj => {
         if (obj.isEnabled) {
           return true;
         }
@@ -42,11 +52,14 @@ export class PluginsService implements CoreService {
         );
 
         return false;
-      })
-      .do(plugin => {
-        this.pluginSystem.addPlugin(plugin.plugin);
-      })
-      .toPromise();
+      }),
+      toArray(),
+      toPromise()
+    );
+
+    plugins.forEach(plugin => {
+      this.pluginSystem.addPlugin(plugin.plugin);
+    });
 
     this.pluginSystem.startPlugins();
   }
@@ -56,24 +69,26 @@ export class PluginsService implements CoreService {
   }
 
   private getAllPlugins() {
-    return this.pluginsConfig$
-      .first()
-      .mergeMap(config => config.scanDirs)
-      .mergeMap(
+    return k$(
+      this.pluginsConfig$,
+      first(),
+      mergeMap(config => config.scanDirs),
+      mergeMap(
         dir => fsReadDirAsync(dir),
         (dir, pluginNames) =>
           pluginNames.map(pluginName => ({
             name: pluginName,
             path: resolve(dir, pluginName)
           }))
-      )
-      .mergeMap(plugins => plugins)
-      .mergeMap(
+      ),
+      mergeMap(plugins => plugins),
+      mergeMap(
         plugin => fsStatAsync(plugin.path),
         (plugin, stat) => ({ ...plugin, isDir: stat.isDirectory() })
-      )
-      .filter(plugin => plugin.isDir)
-      .map(plugin => this.createPlugin(plugin.name, plugin.path));
+      ),
+      filter(plugin => plugin.isDir),
+      map(plugin => this.createPlugin(plugin.name, plugin.path))
+    );
   }
 
   private createPlugin(name: PluginName, pluginPath: string) {

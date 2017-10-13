@@ -1,4 +1,11 @@
-import { Observable } from 'rxjs';
+import {
+  Observable,
+  k$,
+  map,
+  first,
+  distinctUntilChanged,
+  toPromise
+} from 'kbn-observable';
 import { isEqual } from 'lodash';
 
 import { Env } from './Env';
@@ -49,8 +56,9 @@ export class ConfigService {
     path: ConfigPath,
     ConfigClass: ConfigWithSchema<Schema, Config>
   ) {
-    return this.getDistinctRawConfig(path).map(rawConfig =>
-      this.createConfig(path, rawConfig, ConfigClass)
+    return k$(
+      this.getDistinctRawConfig(path),
+      map(rawConfig => this.createConfig(path, rawConfig, ConfigClass))
     );
   }
 
@@ -64,18 +72,21 @@ export class ConfigService {
     path: ConfigPath,
     ConfigClass: ConfigWithSchema<Schema, Config>
   ) {
-    return this.getDistinctRawConfig(path).map(
-      rawConfig =>
-        rawConfig === undefined
-          ? undefined
-          : this.createConfig(path, rawConfig, ConfigClass)
+    return k$(
+      this.getDistinctRawConfig(path),
+      map(
+        rawConfig =>
+          rawConfig === undefined
+            ? undefined
+            : this.createConfig(path, rawConfig, ConfigClass)
+      )
     );
   }
 
   async isEnabledAtPath(path: ConfigPath) {
     const enabledPath = createPluginEnabledPath(path);
 
-    const config = await this.config$.first().toPromise();
+    const config = await k$(this.config$, first(), toPromise());
 
     if (!config.has(enabledPath)) {
       return true;
@@ -114,9 +125,11 @@ export class ConfigService {
   private getDistinctRawConfig(path: ConfigPath) {
     this.markAsHandled(path);
 
-    return this.config$
-      .map(config => config.get(path))
-      .distinctUntilChanged((prev, next) => isEqual(prev, next));
+    return k$(
+      this.config$,
+      map(config => config.get(path)),
+      distinctUntilChanged((prev, next) => isEqual(prev, next))
+    );
   }
 
   private markAsHandled(path: ConfigPath) {
@@ -124,7 +137,7 @@ export class ConfigService {
   }
 
   async getUnusedPaths(): Promise<string[]> {
-    const config = await this.config$.first().toPromise();
+    const config = await k$(this.config$, first(), toPromise());
     const handledPaths = this.handledPaths.map(pathToString);
 
     return config
