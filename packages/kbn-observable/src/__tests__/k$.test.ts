@@ -57,7 +57,7 @@ test('observable to observable', () => {
   const numbers$ = Observable.of(1, 2, 3);
   const actual: any[] = [];
 
-  k$(numbers$, plus1, toString).subscribe({
+  k$(numbers$)(plus1, toString).subscribe({
     next(x) {
       actual.push(x);
     }
@@ -69,7 +69,7 @@ test('observable to observable', () => {
 test('observable to promise', async () => {
   const numbers$ = Observable.of(1, 2, 3);
 
-  const value = await k$(numbers$, plus1, toPromise);
+  const value = await k$(numbers$)(plus1, toPromise);
 
   expect(value).toEqual(4);
 });

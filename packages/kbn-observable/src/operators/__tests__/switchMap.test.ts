@@ -3,14 +3,14 @@ import { k$ } from '../../k$';
 import { switchMap, toArray, toPromise } from '../';
 
 const collect = <T>(source: Observable<T>) =>
-  k$(source, toArray(), toPromise());
+  k$(source)(toArray(), toPromise());
 const number$ = Observable.of(1, 2, 3);
 
 test('returns the modified value', async () => {
   const expected = ['a1', 'b1', 'c1', 'a2', 'b2', 'c2', 'a3', 'b3', 'c3'];
 
   const values = await collect(
-    k$(number$, switchMap(x => Observable.of('a' + x, 'b' + x, 'c' + x)))
+    k$(number$)(switchMap(x => Observable.of('a' + x, 'b' + x, 'c' + x)))
   );
 
   expect(values).toEqual(expected);
@@ -20,7 +20,7 @@ test('injects index to map', async () => {
   const expected = [0, 1, 2];
 
   const values = await collect(
-    k$(number$, switchMap((x, i) => Observable.of(i)))
+    k$(number$)(switchMap((x, i) => Observable.of(i)))
   );
 
   expect(values).toEqual(expected);
@@ -32,8 +32,7 @@ test('should unsub inner observables', () => {
   const unsubbed: string[] = [];
   const obs$ = Observable.of('a', 'b');
 
-  k$(
-    obs$,
+  k$(obs$)(
     switchMap(
       x =>
         new Observable(observer => {
@@ -72,7 +71,7 @@ test('should switch inner observables', () => {
 
   const actual: any[] = [];
 
-  k$(obs$, switchMap(x => choose[x])).subscribe({
+  k$(obs$)(switchMap(x => choose[x])).subscribe({
     next(val) {
       actual.push(val);
     }
@@ -113,7 +112,7 @@ test('should switch inner empty and empty', () => {
 
   const next = jest.fn();
 
-  k$(obs$, switchMap(x => choose[x])).subscribe({
+  k$(obs$)(switchMap(x => choose[x])).subscribe({
     next
   });
 
@@ -149,7 +148,7 @@ test('should switch inner never and throw', () => {
 
   const error = jest.fn();
   const complete = jest.fn();
-  k$(obs$, switchMap(x => choose[x])).subscribe({
+  k$(obs$)(switchMap(x => choose[x])).subscribe({
     error,
     complete
   });
@@ -171,7 +170,7 @@ test('should handle outer throw', () => {
 
   const error = jest.fn();
   const complete = jest.fn();
-  k$(obs$, switchMap(x => Observable.of(x))).subscribe({
+  k$(obs$)(switchMap(x => Observable.of(x))).subscribe({
     error,
     complete
   });
@@ -198,7 +197,7 @@ test('should handle outer error', () => {
   const actual: any[] = [];
   const error = jest.fn();
 
-  k$(obs$, switchMap(x => choose[x])).subscribe({
+  k$(obs$)(switchMap(x => choose[x])).subscribe({
     next(val) {
       actual.push(val);
     },
@@ -233,8 +232,7 @@ it('should raise error when projection throws', () => {
 
   const e = new Error('foo');
 
-  k$(
-    obs$,
+  k$(obs$)(
     switchMap(x => {
       throw e;
     })
@@ -270,7 +268,7 @@ test('should switch inner cold observables, outer is unsubscribed early', () => 
 
   const actual: any[] = [];
 
-  const sub = k$(obs$, switchMap(x => choose[x])).subscribe({
+  const sub = k$(obs$)(switchMap(x => choose[x])).subscribe({
     next(val) {
       actual.push(val);
     }

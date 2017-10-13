@@ -8,7 +8,7 @@ test('should distinguish between values', async () => {
   const values$ = new Subject<string>();
 
   const actual: any[] = [];
-  k$(values$, distinctUntilChanged()).subscribe({
+  k$(values$)(distinctUntilChanged()).subscribe({
     next(v) {
       actual.push(v);
     }
@@ -30,7 +30,7 @@ test('should distinguish between values and does not complete', () => {
   const values$ = new Subject<string>();
 
   const actual: any[] = [];
-  k$(values$, distinctUntilChanged()).subscribe({
+  k$(values$)(distinctUntilChanged()).subscribe({
     next(v) {
       actual.push(v);
     }
@@ -50,7 +50,7 @@ test('should distinguish between values and does not complete', () => {
 test('should complete if source is empty', done => {
   const values$ = $of();
 
-  k$(values$, distinctUntilChanged()).subscribe({
+  k$(values$)(distinctUntilChanged()).subscribe({
     complete: done
   });
 });
@@ -59,7 +59,7 @@ test('should emit if source emits single element only', () => {
   const values$ = new Subject<string>();
 
   const actual: any[] = [];
-  k$(values$, distinctUntilChanged()).subscribe({
+  k$(values$)(distinctUntilChanged()).subscribe({
     next(x) {
       actual.push(x);
     }
@@ -74,7 +74,7 @@ test('should emit if source is scalar', () => {
   const values$ = $of('a');
 
   const actual: any[] = [];
-  k$(values$, distinctUntilChanged()).subscribe({
+  k$(values$)(distinctUntilChanged()).subscribe({
     next(v) {
       actual.push(v);
     }
@@ -89,7 +89,7 @@ test('should raises error if source raises error', () => {
   const actual: any[] = [];
   const error = jest.fn();
 
-  k$(values$, distinctUntilChanged()).subscribe({
+  k$(values$)(distinctUntilChanged()).subscribe({
     next(v) {
       actual.push(v);
     },
@@ -113,7 +113,7 @@ test('should raises error if source throws', () => {
   });
 
   const error = jest.fn();
-  k$(obs, distinctUntilChanged()).subscribe({
+  k$(obs)(distinctUntilChanged()).subscribe({
     error
   });
 
@@ -124,7 +124,7 @@ test('should allow unsubscribing early and explicitly', () => {
   const values$ = new Subject<string>();
 
   const actual: any[] = [];
-  const sub = k$(values$, distinctUntilChanged()).subscribe({
+  const sub = k$(values$)(distinctUntilChanged()).subscribe({
     next(v) {
       actual.push(v);
     }
@@ -146,7 +146,7 @@ test('should emit once if comparator returns true always regardless of source em
   const values$ = new Subject<string>();
 
   const actual: any[] = [];
-  k$(values$, distinctUntilChanged(() => true)).subscribe({
+  k$(values$)(distinctUntilChanged(() => true)).subscribe({
     next(v) {
       actual.push(v);
     }
@@ -164,7 +164,7 @@ test('should emit all if comparator returns false always regardless of source em
   const values$ = new Subject<string>();
 
   const actual: any[] = [];
-  k$(values$, distinctUntilChanged(() => false)).subscribe({
+  k$(values$)(distinctUntilChanged(() => false)).subscribe({
     next(v) {
       actual.push(v);
     }
@@ -184,7 +184,7 @@ test('should distinguish values by comparator', () => {
   const comparator = (x: number, y: number) => y % 2 === 0;
 
   const actual: any[] = [];
-  k$(values$, distinctUntilChanged(comparator)).subscribe({
+  k$(values$)(distinctUntilChanged(comparator)).subscribe({
     next(v) {
       actual.push(v);
     }

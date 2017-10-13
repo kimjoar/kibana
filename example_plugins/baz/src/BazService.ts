@@ -13,7 +13,7 @@ export class BazService {
     const { page = 1, perPage = 20, type } = options;
 
     const [kibanaIndex, adminCluster] = await latestValues(
-      k$(this.kibanaConfig$, map(config => config.index)),
+      k$(this.kibanaConfig$)(map(config => config.index)),
       this.elasticsearchService.getClusterOfType$('admin')
     );
 
@@ -64,7 +64,7 @@ function latestValues<A, B, C, D>(
   d: Observable<D>
 ): Promise<[A, B, C, D]>;
 function latestValues(...values: Observable<any>[]) {
-  return k$($combineLatest(values),
+  return k$($combineLatest(values))(
     first(),
     toPromise());
 }

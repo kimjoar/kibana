@@ -44,8 +44,7 @@ test('returns config at path as observable', async () => {
 
   configService.loadConfig();
 
-  const exampleConfig = await k$(
-    configService.getConfig$(),
+  const exampleConfig = await k$(configService.getConfig$())(
     first(),
     toPromise()
   );

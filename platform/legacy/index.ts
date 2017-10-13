@@ -23,8 +23,7 @@ import {
  */
 export const injectIntoKbnServer = (rawKbnServer: any) => {
   const legacyConfig$ = new BehaviorSubject(rawKbnServer.config);
-  const config$ = k$(
-    legacyConfig$,
+  const config$ = k$(legacyConfig$)(
     map(legacyConfig => new LegacyConfigToRawConfigAdapter(legacyConfig))
   );
 

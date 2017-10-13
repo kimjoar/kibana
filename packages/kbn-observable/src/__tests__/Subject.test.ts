@@ -423,7 +423,7 @@ test('should be usable as an Observer of a finite delayed Observable', done => {
     }
   );
 
-  k$(source, delay(10)).subscribe(subject);
+  k$(source)(delay(10)).subscribe(subject);
 });
 
 test('should throw ObjectUnsubscribedError when emit after unsubscribed', () => {

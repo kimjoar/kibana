@@ -2,7 +2,7 @@ import { Observable } from '../../Observable';
 import { k$ } from '../../k$';
 import { BehaviorSubject } from '../../BehaviorSubject';
 import { mergeMap, delay } from '../';
-import { $of, $concat, $from } from '../../factories';
+import { $of, $concat } from '../../factories';
 
 it('should map values to constant resolved promises and merge', done => {
   expect.assertions(1);
@@ -10,7 +10,7 @@ it('should map values to constant resolved promises and merge', done => {
   const source = Observable.from([4, 3, 2, 1]);
   const results: any[] = [];
 
-  k$(source, mergeMap(() => Promise.resolve(42))).subscribe({
+  k$(source)(mergeMap(() => Promise.resolve(42))).subscribe({
     next(x) {
       results.push(x);
     },
@@ -29,7 +29,7 @@ it('should map values to constant rejected promises and merge', done => {
 
   const source = Observable.from([4, 3, 2, 1]);
 
-  k$(source, mergeMap(() => Promise.reject(42))).subscribe({
+  k$(source)(mergeMap(() => Promise.reject(42))).subscribe({
     next(val) {
       done(new Error(`next handled unexpectedly called with value: ${val}`));
     },
@@ -51,7 +51,7 @@ it('should map values to resolved promises and merge', done => {
     Promise.resolve(value + index);
 
   const results: number[] = [];
-  k$(source, mergeMap(project)).subscribe({
+  k$(source)(mergeMap(project)).subscribe({
     next(x) {
       results.push(x);
     },
@@ -72,7 +72,7 @@ it('should map values to rejected promises and merge', done => {
   const project = (value: number, index: number) =>
     Promise.reject(`${value} / ${index}`);
 
-  k$(source, mergeMap(project)).subscribe({
+  k$(source)(mergeMap(project)).subscribe({
     next(val) {
       done(new Error(`next handled unexpectedly called with value: ${val}`));
     },
@@ -96,7 +96,7 @@ it('should mergeMap values to resolved promises with resultSelector', done => {
 
   const results: any = [];
 
-  k$(source, mergeMap(project, resultSelector)).subscribe({
+  k$(source)(mergeMap(project, resultSelector)).subscribe({
     next(x) {
       results.push(x);
     },
@@ -121,7 +121,7 @@ it('should mergeMap values to rejected promises with resultSelector', done => {
     throw 'this should not be called';
   };
 
-  k$(source, mergeMap(project, resultSelector)).subscribe({
+  k$(source)(mergeMap(project, resultSelector)).subscribe({
     next(val) {
       done(new Error(`next handled unexpectedly called with value: ${val}`));
     },
@@ -141,13 +141,13 @@ it('should mergeMap many outer values to many inner values', done => {
   const source = Observable.from([1, 2, 3, 4]);
   const project = (value: number, index: number) =>
     $concat(
-      k$($of(`${value}-a`), delay(5)),
-      k$($of(`${value}-b`), delay(10)),
-      k$($of(`${value}-c`), delay(15))
+      k$($of(`${value}-a`))(delay(5)),
+      k$($of(`${value}-b`))(delay(10)),
+      k$($of(`${value}-c`))(delay(15))
     );
 
   const results: any[] = [];
-  k$(source, mergeMap(project)).subscribe({
+  k$(source)(mergeMap(project)).subscribe({
     next(x) {
       results.push(x);
     },
@@ -181,13 +181,13 @@ it('should mergeMap many outer values to many inner values, early complete', don
   const source = new BehaviorSubject(1);
   const project = (value: number, index: number) =>
     $concat(
-      k$($of(`${value}-a`), delay(5)),
-      k$($of(`${value}-b`), delay(10)),
-      k$($of(`${value}-c`), delay(15))
+      k$($of(`${value}-a`))(delay(5)),
+      k$($of(`${value}-b`))(delay(10)),
+      k$($of(`${value}-c`))(delay(15))
     );
 
   const results: any[] = [];
-  k$(source, mergeMap(project)).subscribe({
+  k$(source)(mergeMap(project)).subscribe({
     next(x) {
       results.push(x);
     },
@@ -233,7 +233,7 @@ it('should mergeMap many outer to many inner, and inner throws', done => {
   };
 
   const results: any[] = [];
-  k$(source, mergeMap(project)).subscribe({
+  k$(source)(mergeMap(project)).subscribe({
     next(x) {
       results.push(x);
     },
@@ -253,13 +253,13 @@ it('should mergeMap many outer to many inner, and outer throws', done => {
   const source = new BehaviorSubject(1);
   const project = (value: number, index: number) =>
     $concat(
-      k$($of(`${value}-a`), delay(5)),
-      k$($of(`${value}-b`), delay(10)),
-      k$($of(`${value}-c`), delay(15))
+      k$($of(`${value}-a`))(delay(5)),
+      k$($of(`${value}-b`))(delay(10)),
+      k$($of(`${value}-c`))(delay(15))
     );
 
   const results: any[] = [];
-  k$(source, mergeMap(project)).subscribe({
+  k$(source)(mergeMap(project)).subscribe({
     next(x) {
       results.push(x);
     },
@@ -288,7 +288,7 @@ it('should mergeMap many outer to an array for each value', done => {
   const source = Observable.from([1, 2, 3]);
   const results: any[] = [];
 
-  k$(source, mergeMap(() => $of('a', 'b', 'c'))).subscribe({
+  k$(source)(mergeMap(() => $of('a', 'b', 'c'))).subscribe({
     next(x) {
       results.push(x);
     },
@@ -310,7 +310,7 @@ it('should mergeMap many outer to inner arrays, using resultSelector', done => {
 
   const project = (num: number, str: string) => `${num}/${str}`;
 
-  k$(source, mergeMap(() => $of('a', 'b', 'c'), project)).subscribe({
+  k$(source)(mergeMap(() => $of('a', 'b', 'c'), project)).subscribe({
     next(x) {
       results.push(x);
     },

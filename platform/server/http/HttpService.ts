@@ -34,7 +34,7 @@ export class HttpService implements CoreService {
       }
     });
 
-    const config = await k$(this.config$, first(), toPromise());
+    const config = await k$(this.config$)(first(), toPromise());
     await this.httpServer.start(config);
   }
 

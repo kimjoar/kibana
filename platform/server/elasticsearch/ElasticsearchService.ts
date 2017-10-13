@@ -26,8 +26,7 @@ export class ElasticsearchService implements CoreService {
   ) {
     const log = logger.get('elasticsearch');
 
-    this.clusters$ = k$(
-      config$,
+    this.clusters$ = k$(config$)(
       filter(() => {
         if (this.subscription !== undefined) {
           log.error('clusters cannot be changed after they are created');
@@ -76,6 +75,6 @@ export class ElasticsearchService implements CoreService {
   }
 
   getClusterOfType$(type: ElasticsearchClusterType) {
-    return k$(this.clusters$, map(clusters => clusters[type]));
+    return k$(this.clusters$)(map(clusters => clusters[type]));
   }
 }

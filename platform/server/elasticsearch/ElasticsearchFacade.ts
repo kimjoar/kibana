@@ -8,8 +8,7 @@ export class ElasticsearchRequestHelpers {
   constructor(private readonly elasticsearchService: ElasticsearchService) {}
 
   getClusterOfType(type: ElasticsearchClusterType): Promise<Cluster> {
-    return k$(
-      this.elasticsearchService.getClusterOfType$(type),
+    return k$(this.elasticsearchService.getClusterOfType$(type))(
       first(),
       toPromise()
     );

@@ -8,7 +8,7 @@ test('returns the first value, then completes', async () => {
   const next = jest.fn();
   const complete = jest.fn();
 
-  k$(values$, first()).subscribe({
+  k$(values$)(first()).subscribe({
     next,
     complete
   });
@@ -25,7 +25,7 @@ test('returns error if completing without receiving any value', async () => {
 
   const error = jest.fn();
 
-  k$(values$, first()).subscribe({
+  k$(values$)(first()).subscribe({
     error
   });
 

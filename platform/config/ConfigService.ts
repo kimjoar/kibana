@@ -56,8 +56,7 @@ export class ConfigService {
     path: ConfigPath,
     ConfigClass: ConfigWithSchema<Schema, Config>
   ) {
-    return k$(
-      this.getDistinctRawConfig(path),
+    return k$(this.getDistinctRawConfig(path))(
       map(rawConfig => this.createConfig(path, rawConfig, ConfigClass))
     );
   }
@@ -72,8 +71,7 @@ export class ConfigService {
     path: ConfigPath,
     ConfigClass: ConfigWithSchema<Schema, Config>
   ) {
-    return k$(
-      this.getDistinctRawConfig(path),
+    return k$(this.getDistinctRawConfig(path))(
       map(
         rawConfig =>
           rawConfig === undefined
@@ -86,7 +84,7 @@ export class ConfigService {
   async isEnabledAtPath(path: ConfigPath) {
     const enabledPath = createPluginEnabledPath(path);
 
-    const config = await k$(this.config$, first(), toPromise());
+    const config = await k$(this.config$)(first(), toPromise());
 
     if (!config.has(enabledPath)) {
       return true;
@@ -125,8 +123,7 @@ export class ConfigService {
   private getDistinctRawConfig(path: ConfigPath) {
     this.markAsHandled(path);
 
-    return k$(
-      this.config$,
+    return k$(this.config$)(
       map(config => config.get(path)),
       distinctUntilChanged((prev, next) => isEqual(prev, next))
     );
@@ -137,7 +134,7 @@ export class ConfigService {
   }
 
   async getUnusedPaths(): Promise<string[]> {
-    const config = await k$(this.config$, first(), toPromise());
+    const config = await k$(this.config$)(first(), toPromise());
     const handledPaths = this.handledPaths.map(pathToString);
 
     return config

@@ -22,7 +22,7 @@ const observable = $from(1, 2, 3);
 // The first argument to `k$` is the source observable, and the rest are
 // "operators" that modify the input value and return an observable that
 // reflects all of the modifications.
-k$(observable, map(i => 2017 + i), last())
+k$(observable)(map(i => 2017 + i), last())
   .subscribe(console.log) // logs 2020
 ```
 

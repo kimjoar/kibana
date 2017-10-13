@@ -9,7 +9,7 @@ it('should mirror a simple source Observable', done => {
   const source = Observable.from([4, 3, 2, 1]);
   const results: any[] = [];
 
-  k$(source, shareLast()).subscribe({
+  k$(source)(shareLast()).subscribe({
     next(x) {
       results.push(x);
     },
@@ -28,7 +28,7 @@ it('should do nothing if result is not subscribed', () => {
   const source = new Observable(() => {
     subscribed = true;
   });
-  k$(source, shareLast());
+  k$(source)(shareLast());
   expect(subscribed).toBe(false);
 });
 
@@ -42,7 +42,7 @@ it('should multicast the same values to multiple observers', () => {
   });
 
   const results: any[] = [];
-  const source = k$(subject, shareLast());
+  const source = k$(subject)(shareLast());
 
   source.subscribe(x => {
     results.push(`1/${x}`);
@@ -86,7 +86,7 @@ it('should multicast an error from the source to multiple observers', () => {
   const subject = new BehaviorSubject('a');
   const results: any[] = [];
 
-  const source = k$(subject.asObservable(), shareLast());
+  const source = k$(subject.asObservable())(shareLast());
 
   source.subscribe({
     error(err) {
@@ -123,7 +123,7 @@ it('should replay results to subsequent subscriptions if source completes', () =
 
   const results: any[] = [];
 
-  const source = k$(observable, shareLast());
+  const source = k$(observable)(shareLast());
 
   source.subscribe(x => {
     results.push(`1/${x}`);
@@ -157,7 +157,7 @@ it('should completely restart for subsequent subscriptions if source errors', ()
 
   const results: any[] = [];
 
-  const source = k$(observable, shareLast());
+  const source = k$(observable)(shareLast());
 
   source.subscribe(x => {
     results.push(`1/${x}`);
@@ -191,7 +191,7 @@ it('restarts if refCount hits 0 due to unsubscriptions', () => {
 
   const results: any[] = [];
 
-  const source = k$(observable, shareLast());
+  const source = k$(observable)(shareLast());
 
   const sub1 = source.subscribe(x => {
     results.push(`1/${x}`);

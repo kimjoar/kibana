@@ -34,8 +34,7 @@ const run = (argv: { [key: string]: any }) => {
     process.exit(reason === undefined ? 0 : 1);
   };
 
-  const rawConfig$ = k$(
-    rawConfigService.getConfig$(),
+  const rawConfig$ = k$(rawConfigService.getConfig$())(
     map(rawConfig => overrideConfigWithArgv(rawConfig, argv))
   );
 

@@ -6,7 +6,7 @@ const number$ = $from([1, 2, 3]);
 
 test('returns the last value', async () => {
   const next = jest.fn();
-  k$(number$, last()).subscribe({
+  k$(number$)(last()).subscribe({
     next
   });
 

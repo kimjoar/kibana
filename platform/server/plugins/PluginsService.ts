@@ -36,8 +36,7 @@ export class PluginsService implements CoreService {
   }
 
   async start() {
-    const plugins = await k$(
-      this.getAllPlugins(),
+    const plugins = await k$(this.getAllPlugins())(
       mergeMap(
         plugin => this.isPluginEnabled(plugin),
         (plugin, isEnabled) => ({ plugin, isEnabled })
@@ -69,8 +68,7 @@ export class PluginsService implements CoreService {
   }
 
   private getAllPlugins() {
-    return k$(
-      this.pluginsConfig$,
+    return k$(this.pluginsConfig$)(
       first(),
       mergeMap(config => config.scanDirs),
       mergeMap(
