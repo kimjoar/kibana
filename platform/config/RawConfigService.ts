@@ -4,7 +4,7 @@ import {
   Observable,
   map,
   filter,
-  distinctUntilChanged
+  skipRepeats
 } from 'kbn-observable';
 import { get, has, isEqual, isPlainObject, set } from 'lodash';
 import typeDetect from 'type-detect';
@@ -84,7 +84,7 @@ export class RawConfigService {
         );
       }),
       // We only want to update the config if there are changes to it
-      distinctUntilChanged((current, next) => isEqual(current, next))
+      skipRepeats(isEqual)
     );
   }
 

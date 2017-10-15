@@ -3,7 +3,7 @@ import {
   k$,
   map,
   first,
-  distinctUntilChanged,
+  skipRepeats,
   toPromise
 } from 'kbn-observable';
 import { isEqual } from 'lodash';
@@ -125,7 +125,7 @@ export class ConfigService {
 
     return k$(this.config$)(
       map(config => config.get(path)),
-      distinctUntilChanged((prev, next) => isEqual(prev, next))
+      skipRepeats(isEqual)
     );
   }
 
