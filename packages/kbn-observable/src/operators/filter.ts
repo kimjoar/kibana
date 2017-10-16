@@ -16,7 +16,7 @@ import { MonoTypeOperatorFunction } from '../interfaces';
 export function filter<T>(
   predicate: (value: T, index: number) => boolean
 ): MonoTypeOperatorFunction<T> {
-  return function filterOperation(source: Observable<T>): Observable<T> {
+  return function filterOperation(source) {
     return new Observable(observer => {
       let i = 0;
 

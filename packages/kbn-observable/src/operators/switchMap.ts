@@ -11,7 +11,7 @@ import { OperatorFunction } from '../interfaces';
 export function switchMap<T, R>(
   project: (value: T, index: number) => Observable<R>
 ): OperatorFunction<T, R> {
-  return function switchMapOperation(source: Observable<T>): Observable<R> {
+  return function switchMapOperation(source) {
     return new Observable(destination => {
       let i = 0;
       let innerSubscription: Subscription | undefined = undefined;

@@ -6,7 +6,7 @@ import { MonoTypeOperatorFunction } from '../interfaces';
  * Operator that drops all but the last event from its source observable.
  */
 export function last<T>(): MonoTypeOperatorFunction<T> {
-  return function lastOperation(source: Observable<T>): Observable<T> {
+  return function lastOperation(source) {
     return new Observable(observer => {
       let hasReceivedValue = false;
       let latest: T;

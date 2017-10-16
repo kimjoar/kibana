@@ -7,7 +7,7 @@ import { MonoTypeOperatorFunction } from '../interfaces';
  * emitted by the source Observable.
  */
 export function first<T>(): MonoTypeOperatorFunction<T> {
-  return function firstOperation(source: Observable<T>): Observable<T> {
+  return function firstOperation(source) {
     return new Observable(observer => {
       let hasCompleted = false;
 

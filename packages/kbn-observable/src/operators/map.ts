@@ -14,7 +14,7 @@ import { OperatorFunction } from '../interfaces';
 export function map<T, R>(
   fn: (value: T, index: number) => R
 ): OperatorFunction<T, R> {
-  return function mapOperation(source: Observable<T>): Observable<R> {
+  return function mapOperation(source) {
     return new Observable(observer => {
       let i = 0;
 

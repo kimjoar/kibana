@@ -11,7 +11,7 @@ function concat<T>(source: Observable<T>) {
  * by source.
  */
 export function toArray<T>(): OperatorFunction<T, T[]> {
-  return function toArrayOperation(source: Observable<T>): Observable<T[]> {
+  return function toArrayOperation(source) {
     return concat(source);
   };
 }

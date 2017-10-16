@@ -36,7 +36,7 @@ export function mergeMap<T, I, R>(
     innerIndex: number
   ) => R)
 ): OperatorFunction<T, I | R> {
-  return function mergeMapOperation(source: Observable<T>): Observable<I | R> {
+  return function mergeMapOperation(source) {
     return new Observable(destination => {
       let completed = false;
       let active = 0;

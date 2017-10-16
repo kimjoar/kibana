@@ -16,7 +16,7 @@ export function scan<T, R>(
   accumulator: (acc: R, value: T, index: number) => R,
   initialValue: R
 ): OperatorFunction<T, R> {
-  return function scanOperation(source: Observable<T>): Observable<R> {
+  return function scanOperation(source) {
     return new Observable(observer => {
       let i = -1;
       let acc = initialValue;

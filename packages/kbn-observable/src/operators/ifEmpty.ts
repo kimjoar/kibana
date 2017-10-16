@@ -11,7 +11,7 @@ import { $fromFactory } from '../factories';
  * @return
  */
 export function ifEmpty<T, R>(factory: () => R): OperatorFunction<T, T | R> {
-  return function ifEmptyOperation(source: Observable<T>): Observable<T | R> {
+  return function ifEmptyOperation(source) {
     return new Observable(observer => {
       let empty = true;
       const subs: Subscription[] = [];

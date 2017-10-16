@@ -10,7 +10,7 @@ import { MonoTypeOperatorFunction } from '../interfaces';
  * @return
  */
 export function delay<T>(ms: number): MonoTypeOperatorFunction<T> {
-  return function delayOperation(source: Observable<T>): Observable<T> {
+  return function delayOperation(source) {
     return new Observable(observer => {
       const pending = new Set();
 

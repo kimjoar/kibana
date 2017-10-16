@@ -1,4 +1,3 @@
-import { Observable } from '../Observable';
 import { last } from './last';
 import { scan } from './scan';
 import { ifEmpty } from './ifEmpty';
@@ -16,7 +15,7 @@ export function reduce<T, R>(
   accumulator: (acc: R, value: T, index: number) => R,
   initialValue: R
 ): OperatorFunction<T, R> {
-  return function reduceOperation(source: Observable<T>): Observable<R> {
+  return function reduceOperation(source) {
     return pipe(
       scan(accumulator, initialValue),
       last(),

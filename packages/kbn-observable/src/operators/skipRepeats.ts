@@ -16,9 +16,7 @@ const isStrictlyEqual = (a: any, b: any) => a === b;
 export function skipRepeats<T>(
   equals: (x: T, y: T) => boolean = isStrictlyEqual
 ): MonoTypeOperatorFunction<T> {
-  return function skipRepeatsOperation(
-    source: Observable<T>
-  ): Observable<T> {
+  return function skipRepeatsOperation(source) {
     return new Observable(observer => {
       let hasInitialValue = false;
       let currentValue: T;
