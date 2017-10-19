@@ -9,7 +9,7 @@ API.txt for details.
 */
 
 (function($) {
-  var options = {
+  const options = {
     xaxis: {
       timezone: null, // "browser" for local to the client or timezone for timezone-js
       timeformat: null, // format string to use
@@ -32,16 +32,16 @@ API.txt for details.
       return d.strftime(fmt);
     }
 
-    var leftPad = function(n, pad) {
+    const leftPad = function(n, pad) {
       n = `${n}`;
       pad = `${pad == null ? '0' : pad}`;
       return n.length == 1 ? pad + n : n;
     };
 
-    var r = [];
-    var escape = false;
-    var hours = d.getHours();
-    var isAM = hours < 12;
+    const r = [];
+    let escape = false;
+    const hours = d.getHours();
+    const isAM = hours < 12;
 
     if (monthNames == null) {
       monthNames = [
@@ -64,7 +64,7 @@ API.txt for details.
       dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
     }
 
-    var hours12;
+    let hours12;
 
     if (hours > 12) {
       hours12 = hours - 12;
@@ -74,8 +74,8 @@ API.txt for details.
       hours12 = hours;
     }
 
-    for (var i = 0; i < fmt.length; ++i) {
-      var c = fmt.charAt(i);
+    for (let i = 0; i < fmt.length; ++i) {
+      let c = fmt.charAt(i);
 
       if (escape) {
         switch (c) {
@@ -156,7 +156,7 @@ API.txt for details.
       };
     }
 
-    var utc = {
+    const utc = {
       date: d
     };
 
@@ -169,7 +169,7 @@ API.txt for details.
     addProxyMethod(utc, 'getTime', d, 'getTime');
     addProxyMethod(utc, 'setTime', d, 'setTime');
 
-    var props = [
+    const props = [
       'Date',
       'Day',
       'FullYear',
@@ -180,7 +180,7 @@ API.txt for details.
       'Seconds'
     ];
 
-    for (var p = 0; p < props.length; p++) {
+    for (let p = 0; p < props.length; p++) {
       addProxyMethod(utc, `get${props[p]}`, d, `getUTC${props[p]}`);
       addProxyMethod(utc, `set${props[p]}`, d, `setUTC${props[p]}`);
     }
@@ -200,7 +200,7 @@ API.txt for details.
       typeof timezoneJS != 'undefined' &&
       typeof timezoneJS.Date != 'undefined'
     ) {
-      var d = new timezoneJS.Date();
+      const d = new timezoneJS.Date();
       // timezone-js is fickle, so be sure to set the time zone before
       // setting the time.
       d.setTimezone(opts.timezone);
@@ -213,7 +213,7 @@ API.txt for details.
 
   // map of app. size of time units in milliseconds
 
-  var timeUnitSize = {
+  const timeUnitSize = {
     second: 1000,
     minute: 60 * 1000,
     hour: 60 * 60 * 1000,
@@ -226,7 +226,7 @@ API.txt for details.
   // the allowed tick sizes, after 1 year we use
   // an integer algorithm
 
-  var baseSpec = [
+  const baseSpec = [
     [1, 'second'],
     [2, 'second'],
     [5, 'second'],
@@ -254,8 +254,8 @@ API.txt for details.
   // we don't know which variant(s) we'll need yet, but generating both is
   // cheap
 
-  var specMonths = baseSpec.concat([[3, 'month'], [6, 'month'], [1, 'year']]);
-  var specQuarters = baseSpec.concat([
+  const specMonths = baseSpec.concat([[3, 'month'], [6, 'month'], [1, 'year']]);
+  const specQuarters = baseSpec.concat([
     [1, 'quarter'],
     [2, 'quarter'],
     [1, 'year']
@@ -264,18 +264,18 @@ API.txt for details.
   function init(plot) {
     plot.hooks.processOptions.push(function(plot, options) {
       $.each(plot.getAxes(), function(axisName, axis) {
-        var opts = axis.options;
+        const opts = axis.options;
 
         if (opts.mode == 'time') {
           axis.tickGenerator = function(axis) {
-            var ticks = [];
-            var d = dateGenerator(axis.min, opts);
-            var minSize = 0;
+            const ticks = [];
+            const d = dateGenerator(axis.min, opts);
+            let minSize = 0;
 
             // make quarter use a possibility if quarters are
             // mentioned in either of these options
 
-            var spec =
+            const spec =
               (opts.tickSize && opts.tickSize[1] === 'quarter') ||
               (opts.minTickSize && opts.minTickSize[1] === 'quarter')
                 ? specQuarters
@@ -302,8 +302,8 @@ API.txt for details.
               }
             }
 
-            var size = spec[i][0];
-            var unit = spec[i][1];
+            let size = spec[i][0];
+            let unit = spec[i][1];
 
             // special-case the possibility of several years
 
@@ -314,12 +314,12 @@ API.txt for details.
               if (opts.minTickSize != null && opts.minTickSize[1] == 'year') {
                 size = Math.floor(opts.minTickSize[0]);
               } else {
-                var magn =
+                const magn =
                   10 **
                   Math.floor(
                     Math.log(axis.delta / timeUnitSize.year) / Math.LN10
                   );
-                var norm = axis.delta / timeUnitSize.year / magn;
+                const norm = axis.delta / timeUnitSize.year / magn;
 
                 if (norm < 1.5) {
                   size = 1;
@@ -342,10 +342,10 @@ API.txt for details.
             }
 
             axis.tickSize = opts.tickSize || [size, unit];
-            var tickSize = axis.tickSize[0];
+            const tickSize = axis.tickSize[0];
             unit = axis.tickSize[1];
 
-            var step = tickSize * timeUnitSize[unit];
+            const step = tickSize * timeUnitSize[unit];
 
             if (unit == 'second') {
               d.setSeconds(floorInBase(d.getSeconds(), tickSize));
@@ -387,9 +387,9 @@ API.txt for details.
               d.setMonth(0);
             }
 
-            var carry = 0;
-            var v = Number.NaN;
-            var prev;
+            let carry = 0;
+            let v = Number.NaN;
+            let prev;
 
             do {
               prev = v;
@@ -404,9 +404,9 @@ API.txt for details.
                   // the middle of a day
 
                   d.setDate(1);
-                  var start = d.getTime();
+                  const start = d.getTime();
                   d.setMonth(d.getMonth() + (unit == 'quarter' ? 3 : 1));
-                  var end = d.getTime();
+                  const end = d.getTime();
                   d.setTime(
                     v + carry * timeUnitSize.hour + (end - start) * tickSize
                   );
@@ -428,7 +428,7 @@ API.txt for details.
           };
 
           axis.tickFormatter = function(v, axis) {
-            var d = dateGenerator(v, axis.options);
+            const d = dateGenerator(v, axis.options);
 
             // first check global format
 
@@ -444,17 +444,17 @@ API.txt for details.
             // possibly use quarters if quarters are mentioned in
             // any of these places
 
-            var useQuarters =
+            const useQuarters =
               (axis.options.tickSize &&
                 axis.options.tickSize[1] == 'quarter') ||
               (axis.options.minTickSize &&
                 axis.options.minTickSize[1] == 'quarter');
 
-            var t = axis.tickSize[0] * timeUnitSize[axis.tickSize[1]];
-            var span = axis.max - axis.min;
-            var suffix = opts.twelveHourClock ? ' %p' : '';
-            var hourCode = opts.twelveHourClock ? '%I' : '%H';
-            var fmt;
+            const t = axis.tickSize[0] * timeUnitSize[axis.tickSize[1]];
+            const span = axis.max - axis.min;
+            const suffix = opts.twelveHourClock ? ' %p' : '';
+            const hourCode = opts.twelveHourClock ? '%I' : '%H';
+            let fmt;
 
             if (t < timeUnitSize.minute) {
               fmt = `${hourCode}:%M:%S${suffix}`;
@@ -485,7 +485,7 @@ API.txt for details.
               fmt = '%Y';
             }
 
-            var rt = formatDate(d, fmt, opts.monthNames, opts.dayNames);
+            const rt = formatDate(d, fmt, opts.monthNames, opts.dayNames);
 
             return rt;
           };

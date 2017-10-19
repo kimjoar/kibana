@@ -43,19 +43,19 @@ You may need to check for this in hover events.
 */
 
 (function($) {
-  var options = {
+  const options = {
     series: { threshold: null } // or { below: number, color: color spec}
   };
 
   function init(plot) {
     function thresholdData(plot, s, datapoints, below, color) {
-      var ps = datapoints.pointsize; // note: shallow copy
-      var i;
-      var x;
-      var y;
-      var p;
-      var prevp;
-      var thresholded = $.extend({}, s);
+      const ps = datapoints.pointsize; // note: shallow copy
+      let i;
+      let x;
+      let y;
+      let p;
+      let prevp;
+      const thresholded = $.extend({}, s);
 
       thresholded.datapoints = {
         points: [],
@@ -68,12 +68,12 @@ You may need to check for this in hover events.
       thresholded.originSeries = s;
       thresholded.data = [];
 
-      var origpoints = datapoints.points;
-      var addCrossingPoints = s.lines.show;
+      const origpoints = datapoints.points;
+      const addCrossingPoints = s.lines.show;
 
-      var threspoints = [];
-      var newpoints = [];
-      var m;
+      const threspoints = [];
+      const newpoints = [];
+      let m;
 
       for (i = 0; i < origpoints.length; i += ps) {
         x = origpoints[i];
@@ -90,7 +90,7 @@ You may need to check for this in hover events.
           i > 0 &&
           origpoints[i - ps] != null
         ) {
-          var interx =
+          const interx =
             x +
             (below - y) *
               (x - origpoints[i - ps]) /
@@ -116,7 +116,7 @@ You may need to check for this in hover events.
       thresholded.datapoints.points = threspoints;
 
       if (thresholded.datapoints.points.length > 0) {
-        var origIndex = $.inArray(s, plot.getData());
+        const origIndex = $.inArray(s, plot.getData());
         // Insert newly-generated series right after original one (to prevent it from becoming top-most)
         plot.getData().splice(origIndex + 1, 0, thresholded);
       }

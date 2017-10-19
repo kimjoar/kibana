@@ -21,16 +21,16 @@ can just fix the size of their placeholders.
  */
 (function($, e, t) {
   '$:nomunge';
-  var i = [];
-  var n = ($.resize = $.extend($.resize, {}));
-  var a;
-  var r = false;
-  var s = 'setTimeout';
-  var u = 'resize';
-  var m = `${u}-special-event`;
-  var o = 'pendingDelay';
-  var l = 'activeDelay';
-  var f = 'throttleWindow';
+  const i = [];
+  const n = ($.resize = $.extend($.resize, {}));
+  let a;
+  let r = false;
+  const s = 'setTimeout';
+  const u = 'resize';
+  const m = `${u}-special-event`;
+  const o = 'pendingDelay';
+  const l = 'activeDelay';
+  const f = 'throttleWindow';
   n[o] = 200;
   n[l] = 20;
   n[f] = true;
@@ -39,7 +39,7 @@ can just fix the size of their placeholders.
       if (!n[f] && this[s]) {
         return false;
       }
-      var e = $(this);
+      const e = $(this);
       i.push(this);
       e.data(m, { w: e.width(), h: e.height() });
       if (i.length === 1) {
@@ -51,8 +51,8 @@ can just fix the size of their placeholders.
       if (!n[f] && this[s]) {
         return false;
       }
-      var e = $(this);
-      for (var t = i.length - 1; t >= 0; t--) {
+      const e = $(this);
+      for (let t = i.length - 1; t >= 0; t--) {
         if (i[t] == this) {
           i.splice(t, 1);
           break;
@@ -72,10 +72,10 @@ can just fix the size of their placeholders.
       if (!n[f] && this[s]) {
         return false;
       }
-      var i;
+      let i;
       function a(e, n, a) {
-        var r = $(this);
-        var s = r.data(m) || {};
+        const r = $(this);
+        const s = r.data(m) || {};
         s.w = n !== t ? n : r.width();
         s.h = a !== t ? a : r.height();
         i.apply(this, arguments);
@@ -93,11 +93,11 @@ can just fix the size of their placeholders.
     if (r === true) {
       r = t || 1;
     }
-    for (var s = i.length - 1; s >= 0; s--) {
-      var l = $(i[s]);
+    for (let s = i.length - 1; s >= 0; s--) {
+      const l = $(i[s]);
       if (l[0] == e || l.is(':visible')) {
-        var f = l.width();
-        var c = l.height();
+        const f = l.width();
+        const c = l.height();
         var d = l.data(m);
         if (d && (f !== d.w || c !== d.h)) {
           l.trigger(u, [(d.w = f), (d.h = c)]);
@@ -147,11 +147,11 @@ can just fix the size of their placeholders.
 })(jQuery, this);
 
 (function($) {
-  var options = {}; // no options
+  const options = {}; // no options
 
   function init(plot) {
     function onResize() {
-      var placeholder = plot.getPlaceholder();
+      const placeholder = plot.getPlaceholder();
 
       // somebody might have hidden us and we can't plot
       // when we don't have the dimensions

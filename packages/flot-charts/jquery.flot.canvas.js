@@ -28,20 +28,20 @@ browser, but needs to redraw with canvas text when exporting as an image.
 */
 
 (function($) {
-  var options = {
+  const options = {
     canvas: true
   };
 
-  var render;
-  var getTextInfo;
-  var addText;
+  let render;
+  let getTextInfo;
+  let addText;
 
   // Cache the prototype hasOwnProperty for faster access
 
-  var hasOwnProperty = Object.prototype.hasOwnProperty;
+  const hasOwnProperty = Object.prototype.hasOwnProperty;
 
   function init(plot, classes) {
-    var Canvas = classes.Canvas;
+    const Canvas = classes.Canvas;
 
     // We only want to replace the functions once; the second time around
     // we would just get our new function back.  This whole replacing of
@@ -60,26 +60,26 @@ browser, but needs to redraw with canvas text when exporting as an image.
         return render.call(this);
       }
 
-      var context = this.context;
-      var cache = this._textCache;
+      const context = this.context;
+      const cache = this._textCache;
 
       // For each text layer, render elements marked as active
 
       context.save();
       context.textBaseline = 'middle';
 
-      for (var layerKey in cache) {
+      for (const layerKey in cache) {
         if (hasOwnProperty.call(cache, layerKey)) {
-          var layerCache = cache[layerKey];
-          for (var styleKey in layerCache) {
+          const layerCache = cache[layerKey];
+          for (const styleKey in layerCache) {
             if (hasOwnProperty.call(layerCache, styleKey)) {
-              var styleCache = layerCache[styleKey];
-              var updateStyles = true;
-              for (var key in styleCache) {
+              const styleCache = layerCache[styleKey];
+              let updateStyles = true;
+              for (const key in styleCache) {
                 if (hasOwnProperty.call(styleCache, key)) {
-                  var info = styleCache[key];
-                  var positions = info.positions;
-                  var lines = info.lines;
+                  const info = styleCache[key];
+                  const positions = info.positions;
+                  const lines = info.lines;
 
                   // Since every element at this level of the cache have the
                   // same font and fill styles, we can just change them once
@@ -91,9 +91,9 @@ browser, but needs to redraw with canvas text when exporting as an image.
                     updateStyles = false;
                   }
 
-                  for (var i = 0, position; (position = positions[i]); i++) {
+                  for (let i = 0, position; (position = positions[i]); i++) {
                     if (position.active) {
-                      for (var j = 0, line; (line = position.lines[j]); j++) {
+                      for (let j = 0, line; (line = position.lines[j]); j++) {
                         context.fillText(lines[j].text, line[0], line[1]);
                       }
                     } else {
@@ -147,10 +147,10 @@ browser, but needs to redraw with canvas text when exporting as an image.
         return getTextInfo.call(this, layer, text, font, angle, width);
       }
 
-      var textStyle;
-      var layerCache;
-      var styleCache;
-      var info;
+      let textStyle;
+      let layerCache;
+      let styleCache;
+      let info;
 
       // Cast the value to a string, in case we were given a number
 
@@ -181,13 +181,13 @@ browser, but needs to redraw with canvas text when exporting as an image.
       info = styleCache[text];
 
       if (info == null) {
-        var context = this.context;
+        const context = this.context;
 
         // If the font was provided as CSS, create a div with those
         // classes and examine it to generate a canvas font spec.
 
         if (typeof font !== 'object') {
-          var element = $('<div>&nbsp;</div>')
+          const element = $('<div>&nbsp;</div>')
             .css('position', 'absolute')
             .addClass(typeof font === 'string' ? font : null)
             .appendTo(this.getTextLayer(layer));
@@ -236,11 +236,11 @@ browser, but needs to redraw with canvas text when exporting as an image.
         // Note that we could split directly on regexps, but IE < 9 is
         // broken; revisit when we drop IE 7/8 support.
 
-        var lines = `${text}`.replace(/<br ?\/?>|\r\n|\r/g, '\n').split('\n');
+        const lines = `${text}`.replace(/<br ?\/?>|\r\n|\r/g, '\n').split('\n');
 
-        for (var i = 0; i < lines.length; ++i) {
-          var lineText = lines[i];
-          var measured = context.measureText(lineText);
+        for (let i = 0; i < lines.length; ++i) {
+          const lineText = lines[i];
+          const measured = context.measureText(lineText);
 
           info.width = Math.max(measured.width, info.width);
           info.height += font.lineHeight;
@@ -286,9 +286,9 @@ browser, but needs to redraw with canvas text when exporting as an image.
         );
       }
 
-      var info = this.getTextInfo(layer, text, font, angle, width);
-      var positions = info.positions;
-      var lines = info.lines;
+      const info = this.getTextInfo(layer, text, font, angle, width);
+      const positions = info.positions;
+      const lines = info.lines;
 
       // Text is drawn with baseline 'middle', which we need to account
       // for by adding half a line's height to the y position.
@@ -339,7 +339,7 @@ browser, but needs to redraw with canvas text when exporting as an image.
       // Fill in the x & y positions of each line, adjusting them
       // individually for horizontal alignment.
 
-      for (var i = 0, line; (line = lines[i]); i++) {
+      for (let i = 0, line; (line = lines[i]); i++) {
         if (halign == 'center') {
           position.lines.push([Math.round(x - line.width / 2), y]);
         } else if (halign == 'right') {

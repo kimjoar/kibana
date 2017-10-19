@@ -25,19 +25,19 @@
 
   // construct color object with some convenient chainable helpers
   $.color.make = function(r, g, b, a) {
-    var o = {};
+    const o = {};
     o.r = r || 0;
     o.g = g || 0;
     o.b = b || 0;
     o.a = a != null ? a : 1;
 
     o.add = function(c, d) {
-      for (var i = 0; i < c.length; ++i) o[c.charAt(i)] += d;
+      for (let i = 0; i < c.length; ++i) o[c.charAt(i)] += d;
       return o.normalize();
     };
 
     o.scale = function(c, f) {
-      for (var i = 0; i < c.length; ++i) o[c.charAt(i)] *= f;
+      for (let i = 0; i < c.length; ++i) o[c.charAt(i)] *= f;
       return o.normalize();
     };
 
@@ -71,7 +71,7 @@
   // extract CSS color property from element, going up in the DOM
   // if it's "transparent"
   $.color.extract = function(elem, css) {
-    var c;
+    let c;
 
     do {
       c = elem.css(css).toLowerCase();
@@ -91,8 +91,8 @@
   // returns color object, if parsing failed, you get black (0, 0,
   // 0) out
   $.color.parse = function(str) {
-    var res;
-    var m = $.color.make;
+    let res;
+    const m = $.color.make;
 
     // Look for rgb(num,num,num)
     if (
@@ -161,7 +161,7 @@
       );
 
     // Otherwise, we're most likely dealing with a named color
-    var name = $.trim(str).toLowerCase();
+    const name = $.trim(str).toLowerCase();
     if (name == 'transparent') return m(255, 255, 255, 0);
     else {
       // default to black

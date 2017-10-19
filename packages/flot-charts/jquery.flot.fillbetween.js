@@ -30,7 +30,7 @@ jquery.flot.stack.js plugin, possibly some code could be shared.
 */
 
 (function($) {
-  var options = {
+  const options = {
     series: {
       fillBetween: null // or number
     }
@@ -38,7 +38,7 @@ jquery.flot.stack.js plugin, possibly some code could be shared.
 
   function init(plot) {
     function findBottomSeries(s, allseries) {
-      var i;
+      let i;
 
       for (i = 0; i < allseries.length; ++i) {
         if (allseries[i].id === s.fillBetween) {
@@ -61,31 +61,31 @@ jquery.flot.stack.js plugin, possibly some code could be shared.
         return;
       }
 
-      var other = findBottomSeries(s, plot.getData());
+      const other = findBottomSeries(s, plot.getData());
 
       if (!other) {
         return;
       }
 
-      var ps = datapoints.pointsize;
-      var points = datapoints.points;
-      var otherps = other.datapoints.pointsize;
-      var otherpoints = other.datapoints.points;
-      var newpoints = [];
-      var px;
-      var py;
-      var intery;
-      var qx;
-      var qy;
-      var bottom;
-      var withlines = s.lines.show;
-      var withbottom = ps > 2 && datapoints.format[2].y;
-      var withsteps = withlines && s.lines.steps;
-      var fromgap = true;
-      var i = 0;
-      var j = 0;
-      var l;
-      var m;
+      const ps = datapoints.pointsize;
+      const points = datapoints.points;
+      const otherps = other.datapoints.pointsize;
+      const otherpoints = other.datapoints.points;
+      const newpoints = [];
+      let px;
+      let py;
+      let intery;
+      let qx;
+      let qy;
+      let bottom;
+      const withlines = s.lines.show;
+      const withbottom = ps > 2 && datapoints.format[2].y;
+      const withsteps = withlines && s.lines.steps;
+      let fromgap = true;
+      let i = 0;
+      let j = 0;
+      let l;
+      let m;
 
       while (true) {
         if (i >= points.length) {

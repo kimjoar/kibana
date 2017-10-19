@@ -44,7 +44,7 @@ as "categories" on the axis object, e.g. plot.getAxes().xaxis.categories.
 */
 
 (function($) {
-  var options = {
+  const options = {
     xaxis: {
       categories: null
     },
@@ -58,23 +58,23 @@ as "categories" on the axis object, e.g. plot.getAxes().xaxis.categories.
     // auto-transformation to numbers so the strings are intact
     // for later processing
 
-    var xCategories = series.xaxis.options.mode == 'categories';
+    const xCategories = series.xaxis.options.mode == 'categories';
 
-    var yCategories = series.yaxis.options.mode == 'categories';
+    const yCategories = series.yaxis.options.mode == 'categories';
 
     if (!(xCategories || yCategories)) return;
 
-    var format = datapoints.format;
+    let format = datapoints.format;
 
     if (!format) {
       // FIXME: auto-detection should really not be defined here
-      var s = series;
+      const s = series;
       format = [];
       format.push({ x: true, number: true, required: true });
       format.push({ y: true, number: true, required: true });
 
       if (s.bars.show || (s.lines.show && s.lines.fill)) {
-        var autoscale = !!(
+        const autoscale = !!(
           (s.bars.show && s.bars.zero) ||
           (s.lines.show && s.lines.zero)
         );
@@ -94,7 +94,7 @@ as "categories" on the axis object, e.g. plot.getAxes().xaxis.categories.
       datapoints.format = format;
     }
 
-    for (var m = 0; m < format.length; ++m) {
+    for (let m = 0; m < format.length; ++m) {
       if (format[m].x && xCategories) format[m].number = false;
 
       if (format[m].y && yCategories) format[m].number = false;
@@ -102,17 +102,18 @@ as "categories" on the axis object, e.g. plot.getAxes().xaxis.categories.
   }
 
   function getNextIndex(categories) {
-    var index = -1;
+    let index = -1;
 
-    for (var v in categories) if (categories[v] > index) index = categories[v];
+    for (const v in categories)
+      if (categories[v] > index) index = categories[v];
 
     return index + 1;
   }
 
   function categoriesTickGenerator(axis) {
-    var res = [];
-    for (var label in axis.categories) {
-      var v = axis.categories[label];
+    const res = [];
+    for (const label in axis.categories) {
+      const v = axis.categories[label];
       if (v >= axis.min && v <= axis.max) res.push([v, label]);
     }
 
@@ -128,13 +129,13 @@ as "categories" on the axis object, e.g. plot.getAxes().xaxis.categories.
 
     if (!series[axis].categories) {
       // parse options
-      var c = {};
+      const c = {};
 
-      var o = series[axis].options.categories || {};
+      const o = series[axis].options.categories || {};
       if ($.isArray(o)) {
-        for (var i = 0; i < o.length; ++i) c[o[i]] = i;
+        for (let i = 0; i < o.length; ++i) c[o[i]] = i;
       } else {
-        for (var v in o) c[v] = o[v];
+        for (const v in o) c[v] = o[v];
       }
 
       series[axis].categories = c;
@@ -149,18 +150,18 @@ as "categories" on the axis object, e.g. plot.getAxes().xaxis.categories.
 
   function transformPointsOnAxis(datapoints, axis, categories) {
     // go through the points, transforming them
-    var points = datapoints.points;
+    const points = datapoints.points;
 
-    var ps = datapoints.pointsize;
-    var format = datapoints.format;
-    var formatColumn = axis.charAt(0);
-    var index = getNextIndex(categories);
+    const ps = datapoints.pointsize;
+    const format = datapoints.format;
+    const formatColumn = axis.charAt(0);
+    let index = getNextIndex(categories);
 
-    for (var i = 0; i < points.length; i += ps) {
+    for (let i = 0; i < points.length; i += ps) {
       if (points[i] == null) continue;
 
-      for (var m = 0; m < ps; ++m) {
-        var val = points[i + m];
+      for (let m = 0; m < ps; ++m) {
+        const val = points[i + m];
 
         if (val == null || !format[m][formatColumn]) continue;
 

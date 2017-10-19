@@ -36,14 +36,14 @@ charts or filled areas).
 */
 
 (function($) {
-  var options = {
+  const options = {
     series: { stack: null } // or number/string
   };
 
   function init(plot) {
     function findMatchingSeries(s, allseries) {
-      var res = null;
-      for (var i = 0; i < allseries.length; ++i) {
+      let res = null;
+      for (let i = 0; i < allseries.length; ++i) {
         if (s == allseries[i]) break;
 
         if (allseries[i].stack == s.stack) res = allseries[i];
@@ -55,35 +55,35 @@ charts or filled areas).
     function stackData(plot, s, datapoints) {
       if (s.stack == null || s.stack === false) return;
 
-      var other = findMatchingSeries(s, plot.getData());
+      const other = findMatchingSeries(s, plot.getData());
       if (!other) return;
 
-      var ps = datapoints.pointsize;
-      var points = datapoints.points;
-      var otherps = other.datapoints.pointsize;
-      var otherpoints = other.datapoints.points;
-      var newpoints = [];
-      var px;
-      var py;
-      var intery;
-      var qx;
-      var qy;
-      var bottom;
-      var withlines = s.lines.show;
-      var horizontal = s.bars.horizontal;
+      const ps = datapoints.pointsize;
+      const points = datapoints.points;
+      const otherps = other.datapoints.pointsize;
+      const otherpoints = other.datapoints.points;
+      const newpoints = [];
+      let px;
+      let py;
+      let intery;
+      let qx;
+      let qy;
+      let bottom;
+      const withlines = s.lines.show;
+      const horizontal = s.bars.horizontal;
 
-      var withbottom =
+      const withbottom =
         ps > 2 &&
         (horizontal ? datapoints.format[2].x : datapoints.format[2].y);
 
-      var withsteps = withlines && s.lines.steps;
-      var fromgap = true;
-      var keyOffset = horizontal ? 1 : 0;
-      var accumulateOffset = horizontal ? 0 : 1;
-      var i = 0;
-      var j = 0;
-      var l;
-      var m;
+      const withsteps = withlines && s.lines.steps;
+      let fromgap = true;
+      const keyOffset = horizontal ? 1 : 0;
+      const accumulateOffset = horizontal ? 0 : 1;
+      let i = 0;
+      let j = 0;
+      let l;
+      let m;
 
       while (true) {
         if (i >= points.length) break;

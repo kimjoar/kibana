@@ -53,7 +53,7 @@ Google Maps).
 */
 
 (function($) {
-  var options = {
+  const options = {
     series: {
       images: {
         show: false,
@@ -66,10 +66,10 @@ Google Maps).
   $.plot.image = {};
 
   $.plot.image.loadDataImages = function(series, options, callback) {
-    var urls = [];
-    var points = [];
+    const urls = [];
+    const points = [];
 
-    var defaultShow = options.series.images.show;
+    const defaultShow = options.series.images.show;
 
     $.each(series, function(i, s) {
       if (!(defaultShow || s.images.show)) return;
@@ -86,7 +86,7 @@ Google Maps).
 
     $.plot.image.load(urls, function(loadedImages) {
       $.each(points, function(i, p) {
-        var url = p[0];
+        const url = p[0];
         if (loadedImages[url]) p[0] = loadedImages[url];
       });
 
@@ -95,12 +95,12 @@ Google Maps).
   };
 
   $.plot.image.load = function(urls, callback) {
-    var missing = urls.length;
-    var loaded = {};
+    let missing = urls.length;
+    const loaded = {};
     if (missing == 0) callback({});
 
     $.each(urls, function(i, url) {
-      var handler = function() {
+      const handler = function() {
         --missing;
 
         loaded[url] = this;
@@ -116,22 +116,22 @@ Google Maps).
   };
 
   function drawSeries(plot, ctx, series) {
-    var plotOffset = plot.getPlotOffset();
+    const plotOffset = plot.getPlotOffset();
 
     if (!series.images || !series.images.show) return;
 
-    var points = series.datapoints.points;
-    var ps = series.datapoints.pointsize;
+    const points = series.datapoints.points;
+    const ps = series.datapoints.pointsize;
 
-    for (var i = 0; i < points.length; i += ps) {
-      var img = points[i];
-      var x1 = points[i + 1];
-      var y1 = points[i + 2];
-      var x2 = points[i + 3];
-      var y2 = points[i + 4];
-      var xaxis = series.xaxis;
-      var yaxis = series.yaxis;
-      var tmp;
+    for (let i = 0; i < points.length; i += ps) {
+      const img = points[i];
+      let x1 = points[i + 1];
+      let y1 = points[i + 2];
+      let x2 = points[i + 3];
+      let y2 = points[i + 4];
+      const xaxis = series.xaxis;
+      const yaxis = series.yaxis;
+      let tmp;
 
       // actually we should check img.complete, but it
       // appears to be a somewhat unreliable indicator in
@@ -171,10 +171,10 @@ Google Maps).
       )
         continue;
 
-      var sx1 = 0;
-      var sy1 = 0;
-      var sx2 = img.width;
-      var sy2 = img.height;
+      let sx1 = 0;
+      let sy1 = 0;
+      let sx2 = img.width;
+      let sy2 = img.height;
       if (x1 < xaxis.min) {
         sx1 += (sx2 - sx1) * (xaxis.min - x1) / (x2 - x1);
         x1 = xaxis.min;

@@ -59,7 +59,7 @@ The plugin also adds four public methods:
 */
 
 (function($) {
-  var options = {
+  const options = {
     crosshair: {
       mode: null, // one of null, "x", "y" or "xy",
       color: 'rgba(170, 0, 0, 0.80)',
@@ -69,12 +69,12 @@ The plugin also adds four public methods:
 
   function init(plot) {
     // position of crosshair in pixels
-    var crosshair = { x: -1, y: -1, locked: false };
+    const crosshair = { x: -1, y: -1, locked: false };
 
     plot.setCrosshair = function setCrosshair(pos) {
       if (!pos) crosshair.x = -1;
       else {
-        var o = plot.p2c(pos);
+        const o = plot.p2c(pos);
         crosshair.x = Math.max(0, Math.min(o.left, plot.width()));
         crosshair.y = Math.max(0, Math.min(o.top, plot.height()));
       }
@@ -110,7 +110,7 @@ The plugin also adds four public methods:
         return;
       }
 
-      var offset = plot.offset();
+      const offset = plot.offset();
       crosshair.x = Math.max(0, Math.min(e.pageX - offset.left, plot.width()));
       crosshair.y = Math.max(0, Math.min(e.pageY - offset.top, plot.height()));
       plot.triggerRedrawOverlay();
@@ -124,16 +124,16 @@ The plugin also adds four public methods:
     });
 
     plot.hooks.drawOverlay.push(function(plot, ctx) {
-      var c = plot.getOptions().crosshair;
+      const c = plot.getOptions().crosshair;
       if (!c.mode) return;
 
-      var plotOffset = plot.getPlotOffset();
+      const plotOffset = plot.getPlotOffset();
 
       ctx.save();
       ctx.translate(plotOffset.left, plotOffset.top);
 
       if (crosshair.x != -1) {
-        var adj = plot.getOptions().crosshair.lineWidth % 2 ? 0.5 : 0;
+        const adj = plot.getOptions().crosshair.lineWidth % 2 ? 0.5 : 0;
 
         ctx.strokeStyle = c.color;
         ctx.lineWidth = c.lineWidth;
@@ -141,12 +141,12 @@ The plugin also adds four public methods:
 
         ctx.beginPath();
         if (c.mode.includes('x')) {
-          var drawX = Math.floor(crosshair.x) + adj;
+          const drawX = Math.floor(crosshair.x) + adj;
           ctx.moveTo(drawX, 0);
           ctx.lineTo(drawX, plot.height());
         }
         if (c.mode.includes('y')) {
-          var drawY = Math.floor(crosshair.y) + adj;
+          const drawY = Math.floor(crosshair.y) + adj;
           ctx.moveTo(0, drawY);
           ctx.lineTo(plot.width(), drawY);
         }

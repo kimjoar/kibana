@@ -63,7 +63,7 @@ shadowSize and lineWidth are derived as well from the points series.
 */
 
 (function($) {
-  var options = {
+  const options = {
     series: {
       points: {
         errorbars: null, //should be 'x', 'y' or 'xy'
@@ -93,12 +93,12 @@ shadowSize and lineWidth are derived as well from the points series.
     if (!series.points.errorbars) return;
 
     // x,y values
-    var format = [
+    const format = [
       { x: true, number: true, required: true },
       { y: true, number: true, required: true }
     ];
 
-    var errors = series.points.errorbars;
+    const errors = series.points.errorbars;
     // error bars - first X then Y
     if (errors == 'x' || errors == 'xy') {
       // lower / upper error
@@ -118,18 +118,18 @@ shadowSize and lineWidth are derived as well from the points series.
   }
 
   function parseErrors(series, i) {
-    var points = series.datapoints.points;
+    const points = series.datapoints.points;
 
     // read errors from points array
-    var exl = null;
+    let exl = null;
 
-    var exu = null;
-    var eyl = null;
-    var eyu = null;
-    var xerr = series.points.xerr;
-    var yerr = series.points.yerr;
+    let exu = null;
+    let eyl = null;
+    let eyu = null;
+    const xerr = series.points.xerr;
+    const yerr = series.points.yerr;
 
-    var eb = series.points.errorbars;
+    const eb = series.points.errorbars;
     // error bars - first X
     if (eb == 'x' || eb == 'xy') {
       if (xerr.asymmetric) {
@@ -159,7 +159,7 @@ shadowSize and lineWidth are derived as well from the points series.
     if (exu == null) exu = exl;
     if (eyu == null) eyu = eyl;
 
-    var errRanges = [exl, exu, eyl, eyu];
+    const errRanges = [exl, exu, eyl, eyu];
     // nullify if not showing
     if (!xerr.show) {
       errRanges[0] = null;
@@ -173,14 +173,14 @@ shadowSize and lineWidth are derived as well from the points series.
   }
 
   function drawSeriesErrors(plot, ctx, s) {
-    var points = s.datapoints.points;
-    var ps = s.datapoints.pointsize;
-    var ax = [s.xaxis, s.yaxis];
-    var radius = s.points.radius;
-    var err = [s.points.xerr, s.points.yerr];
+    const points = s.datapoints.points;
+    const ps = s.datapoints.pointsize;
+    const ax = [s.xaxis, s.yaxis];
+    const radius = s.points.radius;
+    const err = [s.points.xerr, s.points.yerr];
 
     //sanity check, in case some inverted axis hack is applied to flot
-    var invertX = false;
+    let invertX = false;
     if (ax[0].p2c(ax[0].max) < ax[0].p2c(ax[0].min)) {
       invertX = true;
       var tmp = err[0].lowerCap;
@@ -188,7 +188,7 @@ shadowSize and lineWidth are derived as well from the points series.
       err[0].upperCap = tmp;
     }
 
-    var invertY = false;
+    let invertY = false;
     if (ax[1].p2c(ax[1].min) < ax[1].p2c(ax[1].max)) {
       invertY = true;
       var tmp = err[1].lowerCap;
@@ -196,25 +196,25 @@ shadowSize and lineWidth are derived as well from the points series.
       err[1].upperCap = tmp;
     }
 
-    for (var i = 0; i < s.datapoints.points.length; i += ps) {
+    for (let i = 0; i < s.datapoints.points.length; i += ps) {
       //parse
-      var errRanges = parseErrors(s, i);
+      const errRanges = parseErrors(s, i);
 
       //cycle xerr & yerr
-      for (var e = 0; e < err.length; e++) {
-        var minmax = [ax[e].min, ax[e].max];
+      for (let e = 0; e < err.length; e++) {
+        const minmax = [ax[e].min, ax[e].max];
 
         //draw this error?
         if (errRanges[e * err.length]) {
           //data coordinates
-          var x = points[i];
+          let x = points[i];
 
-          var y = points[i + 1];
+          let y = points[i + 1];
 
           //errorbar ranges
-          var upper = [x, y][e] + errRanges[e * err.length + 1];
+          let upper = [x, y][e] + errRanges[e * err.length + 1];
 
-          var lower = [x, y][e] - errRanges[e * err.length];
+          let lower = [x, y][e] - errRanges[e * err.length];
 
           //points outside of the canvas
           if (err[e].err == 'x')
@@ -235,9 +235,9 @@ shadowSize and lineWidth are derived as well from the points series.
               continue;
 
           // prevent errorbars getting out of the canvas
-          var drawUpper = true;
+          let drawUpper = true;
 
-          var drawLower = true;
+          let drawLower = true;
 
           if (upper > minmax[1]) {
             drawUpper = false;
@@ -272,14 +272,14 @@ shadowSize and lineWidth are derived as well from the points series.
           minmax[1] = ax[e].p2c(minmax[1]);
 
           //same style as points by default
-          var lw = err[e].lineWidth ? err[e].lineWidth : s.points.lineWidth;
+          const lw = err[e].lineWidth ? err[e].lineWidth : s.points.lineWidth;
 
-          var sw =
+          const sw =
             s.points.shadowSize != null ? s.points.shadowSize : s.shadowSize;
 
           //shadow as for points
           if (lw > 0 && sw > 0) {
-            var w = sw / 2;
+            const w = sw / 2;
             ctx.lineWidth = w;
             ctx.strokeStyle = 'rgba(0,0,0,0.1)';
             drawError(
@@ -399,12 +399,12 @@ shadowSize and lineWidth are derived as well from the points series.
   function drawPath(ctx, pts) {
     ctx.beginPath();
     ctx.moveTo(pts[0][0], pts[0][1]);
-    for (var p = 1; p < pts.length; p++) ctx.lineTo(pts[p][0], pts[p][1]);
+    for (let p = 1; p < pts.length; p++) ctx.lineTo(pts[p][0], pts[p][1]);
     ctx.stroke();
   }
 
   function draw(plot, ctx) {
-    var plotOffset = plot.getPlotOffset();
+    const plotOffset = plot.getPlotOffset();
 
     ctx.save();
     ctx.translate(plotOffset.left, plotOffset.top);
