@@ -487,8 +487,8 @@ Licensed under the MIT License ~ http://threedubmedia.googlecode.com/files/MIT-L
   }
 
   $.plot.plugins.push({
-    init: init,
-    options: options,
+    init,
+    options,
     name: 'navigate',
     version: '1.3'
   });

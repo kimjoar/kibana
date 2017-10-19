@@ -63,7 +63,7 @@ The symbols are accessed as strings through the standard symbol options:
   }
 
   $.plot.plugins.push({
-    init: init,
+    init,
     name: 'symbols',
     version: '1.0'
   });

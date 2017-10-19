@@ -185,8 +185,8 @@ charts or filled areas).
   }
 
   $.plot.plugins.push({
-    init: init,
-    options: options,
+    init,
+    options,
     name: 'stack',
     version: '1.2'
   });

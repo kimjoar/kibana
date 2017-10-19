@@ -343,8 +343,8 @@ browser, but needs to redraw with canvas text when exporting as an image.
       position = {
         active: true,
         lines: [],
-        x: x,
-        y: y
+        x,
+        y
       };
 
       positions.push(position);
@@ -366,8 +366,8 @@ browser, but needs to redraw with canvas text when exporting as an image.
   }
 
   $.plot.plugins.push({
-    init: init,
-    options: options,
+    init,
+    options,
     name: 'canvas',
     version: '1.0'
   });

@@ -416,8 +416,8 @@ shadowSize and lineWidth are derived as well from the points series.
   }
 
   $.plot.plugins.push({
-    init: init,
-    options: options,
+    init,
+    options,
     name: 'errorbars',
     version: '1.0'
   });

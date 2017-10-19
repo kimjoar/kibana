@@ -150,8 +150,8 @@ You may need to check for this in hover events.
   }
 
   $.plot.plugins.push({
-    init: init,
-    options: options,
+    init,
+    options,
     name: 'threshold',
     version: '1.2'
   });

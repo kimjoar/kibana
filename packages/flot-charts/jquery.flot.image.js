@@ -248,8 +248,8 @@ Google Maps).
   }
 
   $.plot.plugins.push({
-    init: init,
-    options: options,
+    init,
+    options,
     name: 'image',
     version: '1.1'
   });

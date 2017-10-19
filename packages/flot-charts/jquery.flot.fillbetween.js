@@ -218,8 +218,8 @@ jquery.flot.stack.js plugin, possibly some code could be shared.
   }
 
   $.plot.plugins.push({
-    init: init,
-    options: options,
+    init,
+    options,
     name: 'fillbetween',
     version: '1.0'
   });

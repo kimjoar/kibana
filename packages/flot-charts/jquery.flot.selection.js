@@ -270,7 +270,7 @@ The plugin allso adds the following methods to the plot object:
         to = tmp;
       }
 
-      return { from: from, to: to, axis: axis };
+      return { from, to, axis };
     }
 
     function setSelection(ranges, preventEvent) {
@@ -360,7 +360,7 @@ The plugin allso adds the following methods to the plot object:
   }
 
   $.plot.plugins.push({
-    init: init,
+    init,
     options: {
       selection: {
         mode: null, // one of null, "x", "y" or "xy"

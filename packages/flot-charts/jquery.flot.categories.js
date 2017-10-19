@@ -82,7 +82,7 @@ as "categories" on the axis object, e.g. plot.getAxes().xaxis.categories.
           number: true,
           required: false,
           defaultValue: 0,
-          autoscale: autoscale
+          autoscale
         });
         if (s.bars.horizontal) {
           delete format[format.length - 1].y;
@@ -182,8 +182,8 @@ as "categories" on the axis object, e.g. plot.getAxes().xaxis.categories.
   }
 
   $.plot.plugins.push({
-    init: init,
-    options: options,
+    init,
+    options,
     name: 'categories',
     version: '1.0'
   });

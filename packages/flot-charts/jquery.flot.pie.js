@@ -239,7 +239,7 @@ More detail and specific examples can be found in the included HTML file.
       if (numCombined > 1) {
         newdata.push({
           data: [[1, combined]],
-          color: color,
+          color,
           label: options.series.pie.combine.label,
           angle: combined * Math.PI * 2 / total,
           percent: combined / (total / 100)
@@ -768,7 +768,7 @@ More detail and specific examples can be found in the included HTML file.
       var i = indexOfHighlight(s);
 
       if (i == -1) {
-        highlights.push({ series: s, auto: auto });
+        highlights.push({ series: s, auto });
         plot.triggerRedrawOverlay();
       } else if (!auto) {
         highlights[i].auto = false;
@@ -912,8 +912,8 @@ More detail and specific examples can be found in the included HTML file.
   };
 
   $.plot.plugins.push({
-    init: init,
-    options: options,
+    init,
+    options,
     name: 'pie',
     version: '1.1'
   });

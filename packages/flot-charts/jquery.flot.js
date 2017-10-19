@@ -535,7 +535,7 @@ Licensed under the MIT license.
       info = styleCache[text] = {
         width: element.outerWidth(true),
         height: element.outerHeight(true),
-        element: element,
+        element,
         positions: []
       };
 
@@ -612,8 +612,8 @@ Licensed under the MIT license.
       active: true,
       rendered: false,
       element: positions.length ? info.element.clone() : info.element,
-      x: x,
-      y: y
+      x,
+      y
     };
 
     positions.push(position);
@@ -920,7 +920,7 @@ Licensed under the MIT license.
       // References to key classes, allowing plugins to modify them
 
       var classes = {
-        Canvas: Canvas
+        Canvas
       };
 
       for (var i = 0; i < plugins.length; ++i) {
@@ -1357,7 +1357,7 @@ Licensed under the MIT license.
               number: true,
               required: false,
               defaultValue: 0,
-              autoscale: autoscale
+              autoscale
             });
             if (s.bars.horizontal) {
               delete format[format.length - 1].y;
@@ -2112,7 +2112,7 @@ Licensed under the MIT license.
           if (t.length > 1) label = t[1];
         } else v = +t;
         if (label == null) label = axis.tickFormatter(v, axis);
-        if (!isNaN(v)) axis.ticks.push({ v: v, label: label });
+        if (!isNaN(v)) axis.ticks.push({ v, label });
       }
     }
 
@@ -2192,7 +2192,7 @@ Licensed under the MIT license.
         to = tmp;
       }
 
-      return { from: from, to: to, axis: axis };
+      return { from, to, axis };
     }
 
     function drawBackground() {
@@ -3105,7 +3105,7 @@ Licensed under the MIT license.
           label = lf ? lf(s.label, s) : s.label;
           if (label) {
             entries.push({
-              label: label,
+              label,
               color: s.color
             });
           }
@@ -3444,7 +3444,7 @@ Licensed under the MIT license.
 
       var i = indexOfHighlight(s, point);
       if (i == -1) {
-        highlights.push({ series: s, point: point, auto: auto });
+        highlights.push({ series: s, point, auto });
 
         triggerRedrawOverlay();
       } else if (!auto) highlights[i].auto = false;

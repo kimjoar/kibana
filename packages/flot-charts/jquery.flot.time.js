@@ -496,8 +496,8 @@ API.txt for details.
   }
 
   $.plot.plugins.push({
-    init: init,
-    options: options,
+    init,
+    options,
     name: 'time',
     version: '1.0'
   });

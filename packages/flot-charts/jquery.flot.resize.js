@@ -175,8 +175,8 @@ can just fix the size of their placeholders.
   }
 
   $.plot.plugins.push({
-    init: init,
-    options: options,
+    init,
+    options,
     name: 'resize',
     version: '1.0'
   });
