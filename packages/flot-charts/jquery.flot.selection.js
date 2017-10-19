@@ -246,8 +246,8 @@ The plugin allso adds the following methods to the plot object:
       for (var k in axes) {
         axis = axes[k];
         if (axis.direction == coord) {
-          key = coord + axis.n + 'axis';
-          if (!ranges[key] && axis.n == 1) key = coord + 'axis'; // support x1axis as xaxis
+          key = `${coord + axis.n}axis`;
+          if (!ranges[key] && axis.n == 1) key = `${coord}axis`; // support x1axis as xaxis
           if (ranges[key]) {
             from = ranges[key].from;
             to = ranges[key].to;
@@ -259,8 +259,8 @@ The plugin allso adds the following methods to the plot object:
       // backwards-compat stuff - to be removed in future
       if (!ranges[key]) {
         axis = coord == 'x' ? plot.getXAxes()[0] : plot.getYAxes()[0];
-        from = ranges[coord + '1'];
-        to = ranges[coord + '2'];
+        from = ranges[`${coord}1`];
+        to = ranges[`${coord}2`];
       }
 
       // auto-reverse as an added bonus

@@ -27,7 +27,7 @@ can just fix the size of their placeholders.
   var r = false;
   var s = 'setTimeout';
   var u = 'resize';
-  var m = u + '-special-event';
+  var m = `${u}-special-event`;
   var o = 'pendingDelay';
   var l = 'activeDelay';
   var f = 'throttleWindow';

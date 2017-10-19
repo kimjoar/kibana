@@ -47,9 +47,9 @@ Licensed under the MIT license.
     };
     o.toString = function() {
       if (o.a >= 1) {
-        return 'rgb(' + [o.r, o.g, o.b].join(',') + ')';
+        return `rgb(${[o.r, o.g, o.b].join(',')})`;
       } else {
-        return 'rgba(' + [o.r, o.g, o.b, o.a].join(',') + ')';
+        return `rgba(${[o.r, o.g, o.b, o.a].join(',')})`;
       }
     };
     o.normalize = function() {
@@ -221,7 +221,7 @@ Licensed under the MIT license.
   // operations don't work unless the canvas is attached to the DOM.
 
   function Canvas(cls, container) {
-    var element = container.children('.' + cls)[0];
+    var element = container.children(`.${cls}`)[0];
 
     if (element == null) {
       element = document.createElement('canvas');
@@ -291,7 +291,7 @@ Licensed under the MIT license.
   Canvas.prototype.resize = function(width, height) {
     if (width <= 0 || height <= 0) {
       throw new Error(
-        'Invalid dimensions for plot, width = ' + width + ', height = ' + height
+        `Invalid dimensions for plot, width = ${width}, height = ${height}`
       );
     }
 
@@ -308,13 +308,13 @@ Licensed under the MIT license.
 
     if (this.width != width) {
       element.width = width * pixelRatio;
-      element.style.width = width + 'px';
+      element.style.width = `${width}px`;
       this.width = width;
     }
 
     if (this.height != height) {
       element.height = height * pixelRatio;
-      element.style.height = height + 'px';
+      element.style.height = `${height}px`;
       this.height = height;
     }
 
@@ -478,23 +478,12 @@ Licensed under the MIT license.
 
     // Cast the value to a string, in case we were given a number or such
 
-    text = '' + text;
+    text = `${text}`;
 
     // If the font is a font-spec object, generate a CSS font definition
 
     if (typeof font === 'object') {
-      textStyle =
-        font.style +
-        ' ' +
-        font.variant +
-        ' ' +
-        font.weight +
-        ' ' +
-        font.size +
-        'px/' +
-        font.lineHeight +
-        'px ' +
-        font.family;
+      textStyle = `${font.style} ${font.variant} ${font.weight} ${font.size}px/${font.lineHeight}px ${font.family}`;
     } else {
       textStyle = font;
     }
@@ -858,7 +847,7 @@ Licensed under the MIT license.
       var i;
       $.each(xaxes.concat(yaxes), function(_, axis) {
         if (axis)
-          res[axis.direction + (axis.n != 1 ? axis.n : '') + 'axis'] = axis;
+          res[`${axis.direction + (axis.n != 1 ? axis.n : '')}axis`] = axis;
       });
       return res;
     };
@@ -1128,7 +1117,7 @@ Licensed under the MIT license.
     }
 
     function axisNumber(obj, coord) {
-      var a = obj[coord + 'axis'];
+      var a = obj[`${coord}axis`];
       if (typeof a == 'object')
         // if we got a real axis, extract number
         a = a.n;
@@ -1151,12 +1140,12 @@ Licensed under the MIT license.
       var axis;
       for (i = 0; i < xaxes.length; ++i) {
         axis = xaxes[i];
-        if (axis && axis.used) res['x' + axis.n] = axis.c2p(pos.left);
+        if (axis && axis.used) res[`x${axis.n}`] = axis.c2p(pos.left);
       }
 
       for (i = 0; i < yaxes.length; ++i) {
         axis = yaxes[i];
-        if (axis && axis.used) res['y' + axis.n] = axis.c2p(pos.top);
+        if (axis && axis.used) res[`y${axis.n}`] = axis.c2p(pos.top);
       }
 
       if (res.x1 !== undefined) res.x = res.x1;
@@ -1176,7 +1165,7 @@ Licensed under the MIT license.
       for (i = 0; i < xaxes.length; ++i) {
         axis = xaxes[i];
         if (axis && axis.used) {
-          key = 'x' + axis.n;
+          key = `x${axis.n}`;
           if (pos[key] == null && axis.n == 1) key = 'x';
 
           if (pos[key] != null) {
@@ -1189,7 +1178,7 @@ Licensed under the MIT license.
       for (i = 0; i < yaxes.length; ++i) {
         axis = yaxes[i];
         if (axis && axis.used) {
-          key = 'y' + axis.n;
+          key = `y${axis.n}`;
           if (pos[key] == null && axis.n == 1) key = 'y';
 
           if (pos[key] != null) {
@@ -1670,17 +1659,9 @@ Licensed under the MIT license.
           ? Math.floor(surface.width / (ticks.length || 1))
           : null);
 
-      var legacyStyles =
-        axis.direction + 'Axis ' + axis.direction + axis.n + 'Axis';
+      var legacyStyles = `${axis.direction}Axis ${axis.direction}${axis.n}Axis`;
 
-      var layer =
-        'flot-' +
-        axis.direction +
-        '-axis flot-' +
-        axis.direction +
-        axis.n +
-        '-axis ' +
-        legacyStyles;
+      var layer = `flot-${axis.direction}-axis flot-${axis.direction}${axis.n}-axis ${legacyStyles}`;
 
       var font = opts.font || 'flot-tick-label tickLabel';
 
@@ -2041,7 +2022,7 @@ Licensed under the MIT license.
 
         axis.tickFormatter = function(value, axis) {
           var factor = axis.tickDecimals ? 10 ** axis.tickDecimals : 1;
-          var formatted = '' + Math.round(value * factor) / factor;
+          var formatted = `${Math.round(value * factor) / factor}`;
 
           // If tickDecimals was specified, ensure that we have exactly that
           // much precision; otherwise default to the value's own precision.
@@ -2051,8 +2032,8 @@ Licensed under the MIT license.
             var precision = decimal == -1 ? 0 : formatted.length - decimal - 1;
             if (precision < axis.tickDecimals) {
               return (
-                (precision ? formatted : formatted + '.') +
-                ('' + factor).substr(1, axis.tickDecimals - precision)
+                (precision ? formatted : `${formatted}.`) +
+                `${factor}`.substr(1, axis.tickDecimals - precision)
               );
             }
           }
@@ -2063,7 +2044,7 @@ Licensed under the MIT license.
 
       if ($.isFunction(opts.tickFormatter))
         axis.tickFormatter = function(v, axis) {
-          return '' + opts.tickFormatter(v, axis);
+          return `${opts.tickFormatter(v, axis)}`;
         };
 
       if (opts.alignTicksWithAxis != null) {
@@ -2201,8 +2182,8 @@ Licensed under the MIT license.
       for (var i = 0; i < axes.length; ++i) {
         axis = axes[i];
         if (axis.direction == coord) {
-          key = coord + axis.n + 'axis';
-          if (!ranges[key] && axis.n == 1) key = coord + 'axis'; // support x1axis as xaxis
+          key = `${coord + axis.n}axis`;
+          if (!ranges[key] && axis.n == 1) key = `${coord}axis`; // support x1axis as xaxis
           if (ranges[key]) {
             from = ranges[key].from;
             to = ranges[key].to;
@@ -2214,8 +2195,8 @@ Licensed under the MIT license.
       // backwards-compat stuff - to be removed in future
       if (!ranges[key]) {
         axis = coord == 'x' ? xaxes[0] : yaxes[0];
-        from = ranges[coord + '1'];
-        to = ranges[coord + '2'];
+        from = ranges[`${coord}1`];
+        to = ranges[`${coord}2`];
       }
 
       // auto-reverse as an added bonus
@@ -2493,17 +2474,9 @@ Licensed under the MIT license.
       $.each(allAxes(), function(_, axis) {
         var box = axis.box;
 
-        var legacyStyles =
-          axis.direction + 'Axis ' + axis.direction + axis.n + 'Axis';
+        var legacyStyles = `${axis.direction}Axis ${axis.direction}${axis.n}Axis`;
 
-        var layer =
-          'flot-' +
-          axis.direction +
-          '-axis flot-' +
-          axis.direction +
-          axis.n +
-          '-axis ' +
-          legacyStyles;
+        var layer = `flot-${axis.direction}-axis flot-${axis.direction}${axis.n}-axis ${legacyStyles}`;
 
         var font = axis.options.font || 'flot-tick-label tickLabel';
         var tick;
@@ -3181,14 +3154,9 @@ Licensed under the MIT license.
         }
 
         fragments.push(
-          '<td class="legendColorBox"><div style="border:1px solid ' +
-            options.legend.labelBoxBorderColor +
-            ';padding:1px"><div style="width:4px;height:0;border:5px solid ' +
-            entry.color +
-            ';overflow:hidden"></div></div></td>' +
-            '<td class="legendLabel">' +
-            entry.label +
-            '</td>'
+          `<td class="legendColorBox"><div style="border:1px solid ${options
+            .legend
+            .labelBoxBorderColor};padding:1px"><div style="width:4px;height:0;border:5px solid ${entry.color};overflow:hidden"></div></div></td><td class="legendLabel">${entry.label}</td>`
         );
       }
 
@@ -3196,12 +3164,8 @@ Licensed under the MIT license.
 
       if (fragments.length == 0) return;
 
-      var table =
-        '<table style="font-size:smaller;color:' +
-        options.grid.color +
-        '">' +
-        fragments.join('') +
-        '</table>';
+      var table = `<table style="font-size:smaller;color:${options.grid
+        .color}">${fragments.join('')}</table>`;
       if (options.legend.container != null)
         $(options.legend.container).html(table);
       else {
@@ -3209,17 +3173,16 @@ Licensed under the MIT license.
         var p = options.legend.position;
         var m = options.legend.margin;
         if (m[0] == null) m = [m, m];
-        if (p.charAt(0) == 'n') pos += 'top:' + (m[1] + plotOffset.top) + 'px;';
+        if (p.charAt(0) == 'n') pos += `top:${m[1] + plotOffset.top}px;`;
         else if (p.charAt(0) == 's')
-          pos += 'bottom:' + (m[1] + plotOffset.bottom) + 'px;';
-        if (p.charAt(1) == 'e')
-          pos += 'right:' + (m[0] + plotOffset.right) + 'px;';
-        else if (p.charAt(1) == 'w')
-          pos += 'left:' + (m[0] + plotOffset.left) + 'px;';
+          pos += `bottom:${m[1] + plotOffset.bottom}px;`;
+        if (p.charAt(1) == 'e') pos += `right:${m[0] + plotOffset.right}px;`;
+        else if (p.charAt(1) == 'w') pos += `left:${m[0] + plotOffset.left}px;`;
         var legend = $(
-          '<div class="legend">' +
-            table.replace('style="', 'style="position:absolute;' + pos + ';') +
-            '</div>'
+          `<div class="legend">${table.replace(
+            'style="',
+            `style="position:absolute;${pos};`
+          )}</div>`
         ).appendTo(placeholder);
         if (options.legend.backgroundOpacity != 0.0) {
           // put in the transparent background
@@ -3235,15 +3198,7 @@ Licensed under the MIT license.
           }
           var div = legend.children();
           $(
-            '<div style="position:absolute;width:' +
-              div.width() +
-              'px;height:' +
-              div.height() +
-              'px;' +
-              pos +
-              'background-color:' +
-              c +
-              ';"> </div>'
+            `<div style="position:absolute;width:${div.width()}px;height:${div.height()}px;${pos}background-color:${c};"> </div>`
           )
             .prependTo(legend)
             .css('opacity', options.legend.backgroundOpacity);

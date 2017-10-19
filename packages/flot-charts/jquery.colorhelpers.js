@@ -43,9 +43,9 @@
 
     o.toString = function() {
       if (o.a >= 1.0) {
-        return 'rgb(' + [o.r, o.g, o.b].join(',') + ')';
+        return `rgb(${[o.r, o.g, o.b].join(',')})`;
       } else {
-        return 'rgba(' + [o.r, o.g, o.b, o.a].join(',') + ')';
+        return `rgba(${[o.r, o.g, o.b, o.a].join(',')})`;
       }
     };
 

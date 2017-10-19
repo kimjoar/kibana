@@ -33,8 +33,8 @@ API.txt for details.
     }
 
     var leftPad = function(n, pad) {
-      n = '' + n;
-      pad = '' + (pad == null ? '0' : pad);
+      n = `${n}`;
+      pad = `${pad == null ? '0' : pad}`;
       return n.length == 1 ? pad + n : n;
     };
 
@@ -80,10 +80,10 @@ API.txt for details.
       if (escape) {
         switch (c) {
           case 'a':
-            c = '' + dayNames[d.getDay()];
+            c = `${dayNames[d.getDay()]}`;
             break;
           case 'b':
-            c = '' + monthNames[d.getMonth()];
+            c = `${monthNames[d.getMonth()]}`;
             break;
           case 'd':
             c = leftPad(d.getDate());
@@ -109,7 +109,7 @@ API.txt for details.
             break;
           // quarters not in Open Group's strftime specification
           case 'q':
-            c = '' + (Math.floor(d.getMonth() / 3) + 1);
+            c = `${Math.floor(d.getMonth() / 3) + 1}`;
             break;
           case 'S':
             c = leftPad(d.getSeconds());
@@ -118,7 +118,7 @@ API.txt for details.
             c = leftPad(d.getFullYear() % 100);
             break;
           case 'Y':
-            c = '' + d.getFullYear();
+            c = `${d.getFullYear()}`;
             break;
           case 'p':
             c = isAM ? '' + 'am' : '' + 'pm';
@@ -127,7 +127,7 @@ API.txt for details.
             c = isAM ? '' + 'AM' : '' + 'PM';
             break;
           case 'w':
-            c = '' + d.getDay();
+            c = `${d.getDay()}`;
             break;
         }
         r.push(c);
@@ -181,8 +181,8 @@ API.txt for details.
     ];
 
     for (var p = 0; p < props.length; p++) {
-      addProxyMethod(utc, 'get' + props[p], d, 'getUTC' + props[p]);
-      addProxyMethod(utc, 'set' + props[p], d, 'setUTC' + props[p]);
+      addProxyMethod(utc, `get${props[p]}`, d, `getUTC${props[p]}`);
+      addProxyMethod(utc, `set${props[p]}`, d, `setUTC${props[p]}`);
     }
 
     return utc;
@@ -457,12 +457,12 @@ API.txt for details.
             var fmt;
 
             if (t < timeUnitSize.minute) {
-              fmt = hourCode + ':%M:%S' + suffix;
+              fmt = `${hourCode}:%M:%S${suffix}`;
             } else if (t < timeUnitSize.day) {
               if (span < 2 * timeUnitSize.day) {
-                fmt = hourCode + ':%M' + suffix;
+                fmt = `${hourCode}:%M${suffix}`;
               } else {
-                fmt = '%b %d ' + hourCode + ':%M' + suffix;
+                fmt = `%b %d ${hourCode}:%M${suffix}`;
               }
             } else if (t < timeUnitSize.month) {
               fmt = '%b %d';

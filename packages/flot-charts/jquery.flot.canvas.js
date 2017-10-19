@@ -154,21 +154,12 @@ browser, but needs to redraw with canvas text when exporting as an image.
 
       // Cast the value to a string, in case we were given a number
 
-      text = '' + text;
+      text = `${text}`;
 
       // If the font is a font-spec object, generate a CSS definition
 
       if (typeof font === 'object') {
-        textStyle =
-          font.style +
-          ' ' +
-          font.variant +
-          ' ' +
-          font.weight +
-          ' ' +
-          font.size +
-          'px ' +
-          font.family;
+        textStyle = `${font.style} ${font.variant} ${font.weight} ${font.size}px ${font.family}`;
       } else {
         textStyle = font;
       }
@@ -221,16 +212,7 @@ browser, but needs to redraw with canvas text when exporting as an image.
           element.remove();
         }
 
-        textStyle =
-          font.style +
-          ' ' +
-          font.variant +
-          ' ' +
-          font.weight +
-          ' ' +
-          font.size +
-          'px ' +
-          font.family;
+        textStyle = `${font.style} ${font.variant} ${font.weight} ${font.size}px ${font.family}`;
 
         // Create a new info object, initializing the dimensions to
         // zero so we can count them up line-by-line.
@@ -254,7 +236,7 @@ browser, but needs to redraw with canvas text when exporting as an image.
         // Note that we could split directly on regexps, but IE < 9 is
         // broken; revisit when we drop IE 7/8 support.
 
-        var lines = (text + '').replace(/<br ?\/?>|\r\n|\r/g, '\n').split('\n');
+        var lines = `${text}`.replace(/<br ?\/?>|\r\n|\r/g, '\n').split('\n');
 
         for (var i = 0; i < lines.length; ++i) {
           var lineText = lines[i];

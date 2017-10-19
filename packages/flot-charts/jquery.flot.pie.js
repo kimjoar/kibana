@@ -523,19 +523,10 @@ More detail and specific examples can be found in the included HTML file.
               Math.round(Math.sin(halfAngle) * radius) *
                 options.series.pie.tilt;
 
-            var html =
-              "<span class='pieLabel' id='pieLabel" +
-              index +
-              "' style='position:absolute;top:" +
-              y +
-              'px;left:' +
-              x +
-              "px;'>" +
-              text +
-              '</span>';
+            var html = `<span class='pieLabel' id='pieLabel${index}' style='position:absolute;top:${y}px;left:${x}px;'>${text}</span>`;
             target.append(html);
 
-            var label = target.children('#pieLabel' + index);
+            var label = target.children(`#pieLabel${index}`);
             var labelTop = y - label.height() / 2;
             var labelLeft = x - label.width() / 2;
 
@@ -562,17 +553,9 @@ More detail and specific examples can be found in the included HTML file.
                 c = slice.color;
               }
 
-              var pos = 'top:' + labelTop + 'px;left:' + labelLeft + 'px;';
+              var pos = `top:${labelTop}px;left:${labelLeft}px;`;
               $(
-                "<div class='pieLabelBackground' style='position:absolute;width:" +
-                  label.width() +
-                  'px;height:' +
-                  label.height() +
-                  'px;' +
-                  pos +
-                  'background-color:' +
-                  c +
-                  ";'></div>"
+                `<div class='pieLabelBackground' style='position:absolute;width:${label.width()}px;height:${label.height()}px;${pos}background-color:${c};'></div>`
               )
                 .css('opacity', options.series.pie.label.background.opacity)
                 .insertBefore(label);
@@ -834,8 +817,8 @@ More detail and specific examples can be found in the included HTML file.
         }
 
         //octx.fillStyle = parseColor(options.series.pie.highlight.color).scale(null, null, null, options.series.pie.highlight.opacity).toString();
-        octx.fillStyle =
-          'rgba(255, 255, 255, ' + options.series.pie.highlight.opacity + ')'; // this is temporary until we have access to parseColor
+        octx.fillStyle = `rgba(255, 255, 255, ${options.series.pie.highlight
+          .opacity})`; // this is temporary until we have access to parseColor
         octx.beginPath();
         if (Math.abs(series.angle - Math.PI * 2) > 0.000000001) {
           octx.moveTo(0, 0); // Center of the pie
@@ -888,15 +871,9 @@ More detail and specific examples can be found in the included HTML file.
         label: {
           show: 'auto',
           formatter: function(label, slice) {
-            return (
-              "<div style='font-size:x-small;text-align:center;padding:2px;color:" +
-              slice.color +
-              ";'>" +
-              label +
-              '<br/>' +
-              Math.round(slice.percent) +
-              '%</div>'
-            );
+            return `<div style='font-size:x-small;text-align:center;padding:2px;color:${slice.color};'>${label}<br/>${Math.round(
+              slice.percent
+            )}%</div>`;
           }, // formatter function
           radius: 1, // radius at which to place the labels (based on full calculated radius if <=1, or hard pixel value)
           background: {
