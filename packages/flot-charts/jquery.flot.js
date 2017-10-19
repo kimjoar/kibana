@@ -1954,7 +1954,7 @@ Licensed under the MIT license.
         dec = maxDec;
       }
 
-      var magn = Math.pow(10, -dec),
+      var magn = 10 ** -dec,
         norm = delta / magn, // norm is between 1.0 and 10.0
         size;
 
@@ -2011,7 +2011,7 @@ Licensed under the MIT license.
         };
 
         axis.tickFormatter = function(value, axis) {
-          var factor = axis.tickDecimals ? Math.pow(10, axis.tickDecimals) : 1;
+          var factor = axis.tickDecimals ? 10 ** axis.tickDecimals : 1;
           var formatted = '' + Math.round(value * factor) / factor;
 
           // If tickDecimals was specified, ensure that we have exactly that

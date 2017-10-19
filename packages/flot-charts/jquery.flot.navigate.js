@@ -149,7 +149,7 @@ Licensed under the MIT License ~ http://threedubmedia.googlecode.com/files/MIT-L
     return e === !1 ? !1 : e || b.result;
   }
   function g(a) {
-    return Math.pow(a, 2);
+    return a ** 2;
   }
   function h() {
     return d.dragging === !1;

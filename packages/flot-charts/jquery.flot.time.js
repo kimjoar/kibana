@@ -314,12 +314,11 @@ API.txt for details.
               if (opts.minTickSize != null && opts.minTickSize[1] == 'year') {
                 size = Math.floor(opts.minTickSize[0]);
               } else {
-                var magn = Math.pow(
-                  10,
+                var magn =
+                  10 **
                   Math.floor(
                     Math.log(axis.delta / timeUnitSize.year) / Math.LN10
-                  )
-                );
+                  );
                 var norm = axis.delta / timeUnitSize.year / magn;
 
                 if (norm < 1.5) {
