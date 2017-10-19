@@ -140,12 +140,12 @@ The plugin also adds four public methods:
         ctx.lineJoin = 'round';
 
         ctx.beginPath();
-        if (c.mode.indexOf('x') != -1) {
+        if (c.mode.includes('x')) {
           var drawX = Math.floor(crosshair.x) + adj;
           ctx.moveTo(drawX, 0);
           ctx.lineTo(drawX, plot.height());
         }
-        if (c.mode.indexOf('y') != -1) {
+        if (c.mode.includes('y')) {
           var drawY = Math.floor(crosshair.y) + adj;
           ctx.moveTo(0, drawY);
           ctx.lineTo(plot.width(), drawY);
