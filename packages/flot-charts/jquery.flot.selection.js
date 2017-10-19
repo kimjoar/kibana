@@ -169,13 +169,13 @@ The plugin allso adds the following methods to the plot object:
 
       if (!selection.show) return null;
 
-      var r = {},
-        c1 = selection.first,
-        c2 = selection.second;
+      var r = {};
+      var c1 = selection.first;
+      var c2 = selection.second;
       $.each(plot.getAxes(), function(name, axis) {
         if (axis.used) {
-          var p1 = axis.c2p(c1[axis.direction]),
-            p2 = axis.c2p(c2[axis.direction]);
+          var p1 = axis.c2p(c1[axis.direction]);
+          var p2 = axis.c2p(c2[axis.direction]);
           r[name] = { from: Math.min(p1, p2), to: Math.max(p1, p2) };
         }
       });
@@ -237,11 +237,11 @@ The plugin allso adds the following methods to the plot object:
 
     // function taken from markings support in Flot
     function extractRange(ranges, coord) {
-      var axis,
-        from,
-        to,
-        key,
-        axes = plot.getAxes();
+      var axis;
+      var from;
+      var to;
+      var key;
+      var axes = plot.getAxes();
 
       for (var k in axes) {
         axis = axes[k];
@@ -274,9 +274,9 @@ The plugin allso adds the following methods to the plot object:
     }
 
     function setSelection(ranges, preventEvent) {
-      var axis,
-        range,
-        o = plot.getOptions();
+      var axis;
+      var range;
+      var o = plot.getOptions();
 
       if (o.selection.mode == 'y') {
         selection.first.x = 0;
@@ -339,10 +339,10 @@ The plugin allso adds the following methods to the plot object:
         ctx.lineJoin = o.selection.shape;
         ctx.fillStyle = c.scale('a', 0.4).toString();
 
-        var x = Math.min(selection.first.x, selection.second.x) + 0.5,
-          y = Math.min(selection.first.y, selection.second.y) + 0.5,
-          w = Math.abs(selection.second.x - selection.first.x) - 1,
-          h = Math.abs(selection.second.y - selection.first.y) - 1;
+        var x = Math.min(selection.first.x, selection.second.x) + 0.5;
+        var y = Math.min(selection.first.y, selection.second.y) + 0.5;
+        var w = Math.abs(selection.second.x - selection.first.x) - 1;
+        var h = Math.abs(selection.second.y - selection.first.y) - 1;
 
         ctx.fillRect(x, y, w, h);
         ctx.strokeRect(x, y, w, h);

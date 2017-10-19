@@ -58,30 +58,32 @@ charts or filled areas).
       var other = findMatchingSeries(s, plot.getData());
       if (!other) return;
 
-      var ps = datapoints.pointsize,
-        points = datapoints.points,
-        otherps = other.datapoints.pointsize,
-        otherpoints = other.datapoints.points,
-        newpoints = [],
-        px,
-        py,
-        intery,
-        qx,
-        qy,
-        bottom,
-        withlines = s.lines.show,
-        horizontal = s.bars.horizontal,
-        withbottom =
-          ps > 2 &&
-          (horizontal ? datapoints.format[2].x : datapoints.format[2].y),
-        withsteps = withlines && s.lines.steps,
-        fromgap = true,
-        keyOffset = horizontal ? 1 : 0,
-        accumulateOffset = horizontal ? 0 : 1,
-        i = 0,
-        j = 0,
-        l,
-        m;
+      var ps = datapoints.pointsize;
+      var points = datapoints.points;
+      var otherps = other.datapoints.pointsize;
+      var otherpoints = other.datapoints.points;
+      var newpoints = [];
+      var px;
+      var py;
+      var intery;
+      var qx;
+      var qy;
+      var bottom;
+      var withlines = s.lines.show;
+      var horizontal = s.bars.horizontal;
+
+      var withbottom =
+        ps > 2 &&
+        (horizontal ? datapoints.format[2].x : datapoints.format[2].y);
+
+      var withsteps = withlines && s.lines.steps;
+      var fromgap = true;
+      var keyOffset = horizontal ? 1 : 0;
+      var accumulateOffset = horizontal ? 0 : 1;
+      var i = 0;
+      var j = 0;
+      var l;
+      var m;
 
       while (true) {
         if (i >= points.length) break;

@@ -66,8 +66,8 @@ Google Maps).
   $.plot.image = {};
 
   $.plot.image.loadDataImages = function(series, options, callback) {
-    var urls = [],
-      points = [];
+    var urls = [];
+    var points = [];
 
     var defaultShow = options.series.images.show;
 
@@ -95,8 +95,8 @@ Google Maps).
   };
 
   $.plot.image.load = function(urls, callback) {
-    var missing = urls.length,
-      loaded = {};
+    var missing = urls.length;
+    var loaded = {};
     if (missing == 0) callback({});
 
     $.each(urls, function(i, url) {
@@ -120,18 +120,18 @@ Google Maps).
 
     if (!series.images || !series.images.show) return;
 
-    var points = series.datapoints.points,
-      ps = series.datapoints.pointsize;
+    var points = series.datapoints.points;
+    var ps = series.datapoints.pointsize;
 
     for (var i = 0; i < points.length; i += ps) {
-      var img = points[i],
-        x1 = points[i + 1],
-        y1 = points[i + 2],
-        x2 = points[i + 3],
-        y2 = points[i + 4],
-        xaxis = series.xaxis,
-        yaxis = series.yaxis,
-        tmp;
+      var img = points[i];
+      var x1 = points[i + 1];
+      var y1 = points[i + 2];
+      var x2 = points[i + 3];
+      var y2 = points[i + 4];
+      var xaxis = series.xaxis;
+      var yaxis = series.yaxis;
+      var tmp;
 
       // actually we should check img.complete, but it
       // appears to be a somewhat unreliable indicator in
@@ -171,10 +171,10 @@ Google Maps).
       )
         continue;
 
-      var sx1 = 0,
-        sy1 = 0,
-        sx2 = img.width,
-        sy2 = img.height;
+      var sx1 = 0;
+      var sy1 = 0;
+      var sx2 = img.width;
+      var sy2 = img.height;
       if (x1 < xaxis.min) {
         sx1 += (sx2 - sx1) * (xaxis.min - x1) / (x2 - x1);
         x1 = xaxis.min;

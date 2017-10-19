@@ -65,14 +65,14 @@ More detail and specific examples can be found in the included HTML file.
   var REDRAW_SHRINK = 0.95;
 
   function init(plot) {
-    var canvas = null,
-      target = null,
-      options = null,
-      maxRadius = null,
-      centerLeft = null,
-      centerTop = null,
-      processed = false,
-      ctx = null;
+    var canvas = null;
+    var target = null;
+    var options = null;
+    var maxRadius = null;
+    var centerLeft = null;
+    var centerTop = null;
+    var processed = false;
+    var ctx = null;
 
     // interactive variables
 
@@ -158,11 +158,11 @@ More detail and specific examples can be found in the included HTML file.
     }
 
     function combine(data) {
-      var total = 0,
-        combined = 0,
-        numCombined = 0,
-        color = options.series.pie.combine.color,
-        newdata = [];
+      var total = 0;
+      var combined = 0;
+      var numCombined = 0;
+      var color = options.series.pie.combine.color;
+      var newdata = [];
 
       // Fix up the raw data from Flot, ensuring the data is numeric
 
@@ -254,14 +254,15 @@ More detail and specific examples can be found in the included HTML file.
         return; // if no series were passed
       }
 
-      var canvasWidth = plot.getPlaceholder().width(),
-        canvasHeight = plot.getPlaceholder().height(),
-        legendWidth =
-          target
-            .children()
-            .filter('.legend')
-            .children()
-            .width() || 0;
+      var canvasWidth = plot.getPlaceholder().width();
+      var canvasHeight = plot.getPlaceholder().height();
+
+      var legendWidth =
+        target
+          .children()
+          .filter('.legend')
+          .children()
+          .width() || 0;
 
       ctx = newCtx;
 
@@ -310,8 +311,8 @@ More detail and specific examples can be found in the included HTML file.
         centerLeft += options.series.pie.offset.left;
       }
 
-      var slices = plot.getData(),
-        attempts = 0;
+      var slices = plot.getData();
+      var attempts = 0;
 
       // Keep shrinking the pie's radius until drawPie returns true,
       // indicating that all the labels fit, or we try too many times.
@@ -500,9 +501,10 @@ More detail and specific examples can be found in the included HTML file.
 
             // format label text
 
-            var lf = options.legend.labelFormatter,
-              text,
-              plf = options.series.pie.label.formatter;
+            var lf = options.legend.labelFormatter;
+
+            var text;
+            var plf = options.series.pie.label.formatter;
 
             if (lf) {
               text = lf(slice.label, slice);
@@ -631,14 +633,16 @@ More detail and specific examples can be found in the included HTML file.
     }
 
     function findNearbySlice(mouseX, mouseY) {
-      var slices = plot.getData(),
-        options = plot.getOptions(),
-        radius =
-          options.series.pie.radius > 1
-            ? options.series.pie.radius
-            : maxRadius * options.series.pie.radius,
-        x,
-        y;
+      var slices = plot.getData();
+      var options = plot.getOptions();
+
+      var radius =
+        options.series.pie.radius > 1
+          ? options.series.pie.radius
+          : maxRadius * options.series.pie.radius;
+
+      var x;
+      var y;
 
       for (var i = 0; i < slices.length; ++i) {
         var s = slices[i];
@@ -681,25 +685,28 @@ More detail and specific examples can be found in the included HTML file.
           } else {
             // excanvas for IE doesn;t support isPointInPath, this is a workaround.
 
-            var p1X = radius * Math.cos(s.startAngle),
-              p1Y = radius * Math.sin(s.startAngle),
-              p2X = radius * Math.cos(s.startAngle + s.angle / 4),
-              p2Y = radius * Math.sin(s.startAngle + s.angle / 4),
-              p3X = radius * Math.cos(s.startAngle + s.angle / 2),
-              p3Y = radius * Math.sin(s.startAngle + s.angle / 2),
-              p4X = radius * Math.cos(s.startAngle + s.angle / 1.5),
-              p4Y = radius * Math.sin(s.startAngle + s.angle / 1.5),
-              p5X = radius * Math.cos(s.startAngle + s.angle),
-              p5Y = radius * Math.sin(s.startAngle + s.angle),
-              arrPoly = [
-                [0, 0],
-                [p1X, p1Y],
-                [p2X, p2Y],
-                [p3X, p3Y],
-                [p4X, p4Y],
-                [p5X, p5Y]
-              ],
-              arrPoint = [x, y];
+            var p1X = radius * Math.cos(s.startAngle);
+
+            var p1Y = radius * Math.sin(s.startAngle);
+            var p2X = radius * Math.cos(s.startAngle + s.angle / 4);
+            var p2Y = radius * Math.sin(s.startAngle + s.angle / 4);
+            var p3X = radius * Math.cos(s.startAngle + s.angle / 2);
+            var p3Y = radius * Math.sin(s.startAngle + s.angle / 2);
+            var p4X = radius * Math.cos(s.startAngle + s.angle / 1.5);
+            var p4Y = radius * Math.sin(s.startAngle + s.angle / 1.5);
+            var p5X = radius * Math.cos(s.startAngle + s.angle);
+            var p5Y = radius * Math.sin(s.startAngle + s.angle);
+
+            var arrPoly = [
+              [0, 0],
+              [p1X, p1Y],
+              [p2X, p2Y],
+              [p3X, p3Y],
+              [p4X, p4Y],
+              [p5X, p5Y]
+            ];
+
+            var arrPoint = [x, y];
 
             // TODO: perhaps do some mathmatical trickery here with the Y-coordinate to compensate for pie tilt?
 

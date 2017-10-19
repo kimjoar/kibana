@@ -121,12 +121,13 @@ shadowSize and lineWidth are derived as well from the points series.
     var points = series.datapoints.points;
 
     // read errors from points array
-    var exl = null,
-      exu = null,
-      eyl = null,
-      eyu = null;
-    var xerr = series.points.xerr,
-      yerr = series.points.yerr;
+    var exl = null;
+
+    var exu = null;
+    var eyl = null;
+    var eyu = null;
+    var xerr = series.points.xerr;
+    var yerr = series.points.yerr;
 
     var eb = series.points.errorbars;
     // error bars - first X
@@ -172,11 +173,11 @@ shadowSize and lineWidth are derived as well from the points series.
   }
 
   function drawSeriesErrors(plot, ctx, s) {
-    var points = s.datapoints.points,
-      ps = s.datapoints.pointsize,
-      ax = [s.xaxis, s.yaxis],
-      radius = s.points.radius,
-      err = [s.points.xerr, s.points.yerr];
+    var points = s.datapoints.points;
+    var ps = s.datapoints.pointsize;
+    var ax = [s.xaxis, s.yaxis];
+    var radius = s.points.radius;
+    var err = [s.points.xerr, s.points.yerr];
 
     //sanity check, in case some inverted axis hack is applied to flot
     var invertX = false;
@@ -206,12 +207,14 @@ shadowSize and lineWidth are derived as well from the points series.
         //draw this error?
         if (errRanges[e * err.length]) {
           //data coordinates
-          var x = points[i],
-            y = points[i + 1];
+          var x = points[i];
+
+          var y = points[i + 1];
 
           //errorbar ranges
-          var upper = [x, y][e] + errRanges[e * err.length + 1],
-            lower = [x, y][e] - errRanges[e * err.length];
+          var upper = [x, y][e] + errRanges[e * err.length + 1];
+
+          var lower = [x, y][e] - errRanges[e * err.length];
 
           //points outside of the canvas
           if (err[e].err == 'x')
@@ -232,8 +235,9 @@ shadowSize and lineWidth are derived as well from the points series.
               continue;
 
           // prevent errorbars getting out of the canvas
-          var drawUpper = true,
-            drawLower = true;
+          var drawUpper = true;
+
+          var drawLower = true;
 
           if (upper > minmax[1]) {
             drawUpper = false;
@@ -268,9 +272,10 @@ shadowSize and lineWidth are derived as well from the points series.
           minmax[1] = ax[e].p2c(minmax[1]);
 
           //same style as points by default
-          var lw = err[e].lineWidth ? err[e].lineWidth : s.points.lineWidth,
-            sw =
-              s.points.shadowSize != null ? s.points.shadowSize : s.shadowSize;
+          var lw = err[e].lineWidth ? err[e].lineWidth : s.points.lineWidth;
+
+          var sw =
+            s.points.shadowSize != null ? s.points.shadowSize : s.shadowSize;
 
           //shadow as for points
           if (lw > 0 && sw > 0) {

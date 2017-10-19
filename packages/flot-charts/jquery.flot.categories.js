@@ -58,8 +58,9 @@ as "categories" on the axis object, e.g. plot.getAxes().xaxis.categories.
     // auto-transformation to numbers so the strings are intact
     // for later processing
 
-    var xCategories = series.xaxis.options.mode == 'categories',
-      yCategories = series.yaxis.options.mode == 'categories';
+    var xCategories = series.xaxis.options.mode == 'categories';
+
+    var yCategories = series.yaxis.options.mode == 'categories';
 
     if (!(xCategories || yCategories)) return;
 
@@ -127,8 +128,9 @@ as "categories" on the axis object, e.g. plot.getAxes().xaxis.categories.
 
     if (!series[axis].categories) {
       // parse options
-      var c = {},
-        o = series[axis].options.categories || {};
+      var c = {};
+
+      var o = series[axis].options.categories || {};
       if ($.isArray(o)) {
         for (var i = 0; i < o.length; ++i) c[o[i]] = i;
       } else {
@@ -147,11 +149,12 @@ as "categories" on the axis object, e.g. plot.getAxes().xaxis.categories.
 
   function transformPointsOnAxis(datapoints, axis, categories) {
     // go through the points, transforming them
-    var points = datapoints.points,
-      ps = datapoints.pointsize,
-      format = datapoints.format,
-      formatColumn = axis.charAt(0),
-      index = getNextIndex(categories);
+    var points = datapoints.points;
+
+    var ps = datapoints.pointsize;
+    var format = datapoints.format;
+    var formatColumn = axis.charAt(0);
+    var index = getNextIndex(categories);
 
     for (var i = 0; i < points.length; i += ps) {
       if (points[i] == null) continue;

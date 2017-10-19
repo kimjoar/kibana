@@ -91,8 +91,8 @@
   // returns color object, if parsing failed, you get black (0, 0,
   // 0) out
   $.color.parse = function(str) {
-    var res,
-      m = $.color.make;
+    var res;
+    var m = $.color.make;
 
     // Look for rgb(num,num,num)
     if (

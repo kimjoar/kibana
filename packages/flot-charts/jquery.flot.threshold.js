@@ -49,13 +49,13 @@ You may need to check for this in hover events.
 
   function init(plot) {
     function thresholdData(plot, s, datapoints, below, color) {
-      var ps = datapoints.pointsize,
-        i,
-        x,
-        y,
-        p,
-        prevp,
-        thresholded = $.extend({}, s); // note: shallow copy
+      var ps = datapoints.pointsize; // note: shallow copy
+      var i;
+      var x;
+      var y;
+      var p;
+      var prevp;
+      var thresholded = $.extend({}, s);
 
       thresholded.datapoints = {
         points: [],
@@ -68,8 +68,8 @@ You may need to check for this in hover events.
       thresholded.originSeries = s;
       thresholded.data = [];
 
-      var origpoints = datapoints.points,
-        addCrossingPoints = s.lines.show;
+      var origpoints = datapoints.points;
+      var addCrossingPoints = s.lines.show;
 
       var threspoints = [];
       var newpoints = [];

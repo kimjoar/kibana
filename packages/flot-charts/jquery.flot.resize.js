@@ -21,16 +21,16 @@ can just fix the size of their placeholders.
  */
 (function($, e, t) {
   '$:nomunge';
-  var i = [],
-    n = ($.resize = $.extend($.resize, {})),
-    a,
-    r = false,
-    s = 'setTimeout',
-    u = 'resize',
-    m = u + '-special-event',
-    o = 'pendingDelay',
-    l = 'activeDelay',
-    f = 'throttleWindow';
+  var i = [];
+  var n = ($.resize = $.extend($.resize, {}));
+  var a;
+  var r = false;
+  var s = 'setTimeout';
+  var u = 'resize';
+  var m = u + '-special-event';
+  var o = 'pendingDelay';
+  var l = 'activeDelay';
+  var f = 'throttleWindow';
   n[o] = 200;
   n[l] = 20;
   n[f] = true;
@@ -74,8 +74,8 @@ can just fix the size of their placeholders.
       }
       var i;
       function a(e, n, a) {
-        var r = $(this),
-          s = r.data(m) || {};
+        var r = $(this);
+        var s = r.data(m) || {};
         s.w = n !== t ? n : r.width();
         s.h = a !== t ? a : r.height();
         i.apply(this, arguments);
@@ -96,9 +96,9 @@ can just fix the size of their placeholders.
     for (var s = i.length - 1; s >= 0; s--) {
       var l = $(i[s]);
       if (l[0] == e || l.is(':visible')) {
-        var f = l.width(),
-          c = l.height(),
-          d = l.data(m);
+        var f = l.width();
+        var c = l.height();
+        var d = l.data(m);
         if (d && (f !== d.w || c !== d.h)) {
           l.trigger(u, [(d.w = f), (d.h = c)]);
           r = t || true;

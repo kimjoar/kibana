@@ -89,9 +89,9 @@ Licensed under the MIT License ~ http://threedubmedia.googlecode.com/files/MIT-L
 */
 (function(a) {
   function e(h) {
-    var k,
-      j = this,
-      l = h.data || {};
+    var k;
+    var j = this;
+    var l = h.data || {};
     if (l.elem)
       (j = h.dragTarget = l.elem),
         (h.dragProxy = d.proxy || j),
@@ -169,29 +169,31 @@ Licensed under the MIT License ~ http://threedubmedia.googlecode.com/files/MIT-L
       a ? this.bind('drag', b ? b : a) : this.trigger('drag')
     );
   };
-  var b = a.event,
-    c = b.special,
-    d = (c.drag = {
-      not: ':input',
-      distance: 0,
-      which: 1,
-      dragging: !1,
-      setup: function(c) {
-        (c = a.extend(
-          { distance: d.distance, which: d.which, not: d.not },
-          c || {}
-        )),
-          (c.distance = g(c.distance)),
-          b.add(this, 'mousedown', e, c),
-          this.attachEvent && this.attachEvent('ondragstart', h);
-      },
-      teardown: function() {
-        b.remove(this, 'mousedown', e),
-          this === d.dragging && (d.dragging = d.proxy = !1),
-          i(this, !0),
-          this.detachEvent && this.detachEvent('ondragstart', h);
-      }
-    });
+  var b = a.event;
+  var c = b.special;
+
+  var d = (c.drag = {
+    not: ':input',
+    distance: 0,
+    which: 1,
+    dragging: !1,
+    setup: function(c) {
+      (c = a.extend(
+        { distance: d.distance, which: d.which, not: d.not },
+        c || {}
+      )),
+        (c.distance = g(c.distance)),
+        b.add(this, 'mousedown', e, c),
+        this.attachEvent && this.attachEvent('ondragstart', h);
+    },
+    teardown: function() {
+      b.remove(this, 'mousedown', e),
+        this === d.dragging && (d.dragging = d.proxy = !1),
+        i(this, !0),
+        this.detachEvent && this.detachEvent('ondragstart', h);
+    }
+  });
+
   c.dragstart = c.dragend = { setup: function() {}, teardown: function() {} };
 })(jQuery);
 
@@ -208,12 +210,12 @@ Licensed under the MIT License ~ http://threedubmedia.googlecode.com/files/MIT-L
  */
 (function(d) {
   function e(a) {
-    var b = a || window.event,
-      c = [].slice.call(arguments, 1),
-      f = 0,
-      e = 0,
-      g = 0,
-      a = d.event.fix(b);
+    var b = a || window.event;
+    var c = [].slice.call(arguments, 1);
+    var f = 0;
+    var e = 0;
+    var g = 0;
+    var a = d.event.fix(b);
     a.type = 'mousewheel';
     b.wheelDelta && (f = b.wheelDelta / 120);
     b.detail && (f = -b.detail / 3);
@@ -284,10 +286,10 @@ Licensed under the MIT License ~ http://threedubmedia.googlecode.com/files/MIT-L
       return false;
     }
 
-    var prevCursor = 'default',
-      prevPageX = 0,
-      prevPageY = 0,
-      panTimeout = null;
+    var prevCursor = 'default';
+    var prevPageX = 0;
+    var prevPageY = 0;
+    var panTimeout = null;
 
     function onDragStart(e) {
       if (e.which != 1)
@@ -355,32 +357,33 @@ Licensed under the MIT License ~ http://threedubmedia.googlecode.com/files/MIT-L
     plot.zoom = function(args) {
       if (!args) args = {};
 
-      var c = args.center,
-        amount = args.amount || plot.getOptions().zoom.amount,
-        w = plot.width(),
-        h = plot.height();
+      var c = args.center;
+      var amount = args.amount || plot.getOptions().zoom.amount;
+      var w = plot.width();
+      var h = plot.height();
 
       if (!c) c = { left: w / 2, top: h / 2 };
 
-      var xf = c.left / w,
-        yf = c.top / h,
-        minmax = {
-          x: {
-            min: c.left - xf * w / amount,
-            max: c.left + (1 - xf) * w / amount
-          },
-          y: {
-            min: c.top - yf * h / amount,
-            max: c.top + (1 - yf) * h / amount
-          }
-        };
+      var xf = c.left / w;
+      var yf = c.top / h;
+
+      var minmax = {
+        x: {
+          min: c.left - xf * w / amount,
+          max: c.left + (1 - xf) * w / amount
+        },
+        y: {
+          min: c.top - yf * h / amount,
+          max: c.top + (1 - yf) * h / amount
+        }
+      };
 
       $.each(plot.getAxes(), function(_, axis) {
-        var opts = axis.options,
-          min = minmax[axis.direction].min,
-          max = minmax[axis.direction].max,
-          zr = opts.zoomRange,
-          pr = opts.panRange;
+        var opts = axis.options;
+        var min = minmax[axis.direction].min;
+        var max = minmax[axis.direction].max;
+        var zr = opts.zoomRange;
+        var pr = opts.panRange;
 
         if (zr === false)
           // no zooming on this axis
@@ -434,10 +437,10 @@ Licensed under the MIT License ~ http://threedubmedia.googlecode.com/files/MIT-L
       if (isNaN(delta.y)) delta.y = 0;
 
       $.each(plot.getAxes(), function(_, axis) {
-        var opts = axis.options,
-          min,
-          max,
-          d = delta[axis.direction];
+        var opts = axis.options;
+        var min;
+        var max;
+        var d = delta[axis.direction];
 
         (min = axis.c2p(axis.p2c(axis.min) + d)),
           (max = axis.c2p(axis.p2c(axis.max) + d));

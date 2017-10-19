@@ -32,7 +32,9 @@ browser, but needs to redraw with canvas text when exporting as an image.
     canvas: true
   };
 
-  var render, getTextInfo, addText;
+  var render;
+  var getTextInfo;
+  var addText;
 
   // Cache the prototype hasOwnProperty for faster access
 
@@ -58,8 +60,8 @@ browser, but needs to redraw with canvas text when exporting as an image.
         return render.call(this);
       }
 
-      var context = this.context,
-        cache = this._textCache;
+      var context = this.context;
+      var cache = this._textCache;
 
       // For each text layer, render elements marked as active
 
@@ -71,13 +73,13 @@ browser, but needs to redraw with canvas text when exporting as an image.
           var layerCache = cache[layerKey];
           for (var styleKey in layerCache) {
             if (hasOwnProperty.call(layerCache, styleKey)) {
-              var styleCache = layerCache[styleKey],
-                updateStyles = true;
+              var styleCache = layerCache[styleKey];
+              var updateStyles = true;
               for (var key in styleCache) {
                 if (hasOwnProperty.call(styleCache, key)) {
-                  var info = styleCache[key],
-                    positions = info.positions,
-                    lines = info.lines;
+                  var info = styleCache[key];
+                  var positions = info.positions;
+                  var lines = info.lines;
 
                   // Since every element at this level of the cache have the
                   // same font and fill styles, we can just change them once
@@ -145,7 +147,10 @@ browser, but needs to redraw with canvas text when exporting as an image.
         return getTextInfo.call(this, layer, text, font, angle, width);
       }
 
-      var textStyle, layerCache, styleCache, info;
+      var textStyle;
+      var layerCache;
+      var styleCache;
+      var info;
 
       // Cast the value to a string, in case we were given a number
 
@@ -252,8 +257,8 @@ browser, but needs to redraw with canvas text when exporting as an image.
         var lines = (text + '').replace(/<br ?\/?>|\r\n|\r/g, '\n').split('\n');
 
         for (var i = 0; i < lines.length; ++i) {
-          var lineText = lines[i],
-            measured = context.measureText(lineText);
+          var lineText = lines[i];
+          var measured = context.measureText(lineText);
 
           info.width = Math.max(measured.width, info.width);
           info.height += font.lineHeight;
@@ -299,9 +304,9 @@ browser, but needs to redraw with canvas text when exporting as an image.
         );
       }
 
-      var info = this.getTextInfo(layer, text, font, angle, width),
-        positions = info.positions,
-        lines = info.lines;
+      var info = this.getTextInfo(layer, text, font, angle, width);
+      var positions = info.positions;
+      var lines = info.lines;
 
       // Text is drawn with baseline 'middle', which we need to account
       // for by adding half a line's height to the y position.

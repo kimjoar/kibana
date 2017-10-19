@@ -67,25 +67,25 @@ jquery.flot.stack.js plugin, possibly some code could be shared.
         return;
       }
 
-      var ps = datapoints.pointsize,
-        points = datapoints.points,
-        otherps = other.datapoints.pointsize,
-        otherpoints = other.datapoints.points,
-        newpoints = [],
-        px,
-        py,
-        intery,
-        qx,
-        qy,
-        bottom,
-        withlines = s.lines.show,
-        withbottom = ps > 2 && datapoints.format[2].y,
-        withsteps = withlines && s.lines.steps,
-        fromgap = true,
-        i = 0,
-        j = 0,
-        l,
-        m;
+      var ps = datapoints.pointsize;
+      var points = datapoints.points;
+      var otherps = other.datapoints.pointsize;
+      var otherpoints = other.datapoints.points;
+      var newpoints = [];
+      var px;
+      var py;
+      var intery;
+      var qx;
+      var qy;
+      var bottom;
+      var withlines = s.lines.show;
+      var withbottom = ps > 2 && datapoints.format[2].y;
+      var withsteps = withlines && s.lines.steps;
+      var fromgap = true;
+      var i = 0;
+      var j = 0;
+      var l;
+      var m;
 
       while (true) {
         if (i >= points.length) {
