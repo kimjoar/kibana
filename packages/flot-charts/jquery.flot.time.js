@@ -152,7 +152,7 @@ API.txt for details.
   function makeUtcWrapper(d) {
     function addProxyMethod(sourceObj, sourceMethod, targetObj, targetMethod) {
       sourceObj[sourceMethod] = function(...args) {
-        return targetObj[targetMethod].apply(targetObj, args);
+        return targetObj[targetMethod](...args);
       };
     }
 
