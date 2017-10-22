@@ -20,7 +20,7 @@ module.directive('fileUpload', function () {
       const $dropzone = $elem.find('.dropzone');
 
       const handleFile = (file) => {
-        if (_.isUndefined(file)) return;
+        if (file === undefined) return;
 
         if (_.has(attrs, 'onRead')) {
           const reader = new FileReader();

@@ -56,7 +56,7 @@ export function VislibVisualizationsLineChartProvider(Private) {
       .selectAll('circle')
       .data(function appendData() {
         return data.values.filter(function (d) {
-          return !_.isNull(d.y);
+          return d.y !== null;
         });
       });
 
@@ -172,13 +172,13 @@ export function VislibVisualizationsLineChartProvider(Private) {
       .attr('d', () => {
         const d3Line = d3.svg.line()
           .defined(function (d) {
-            return !_.isNull(d.y);
+            return d.y !== null;
           })
           .interpolate(interpolate)
           .x(isHorizontal ? cx : cy)
           .y(isHorizontal ? cy : cx);
         return d3Line(data.values.filter(function (d) {
-          return !_.isNull(d.y);
+          return d.y !== null;
         }));
       })
       .attr('fill', 'none')

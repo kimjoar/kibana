@@ -39,7 +39,7 @@ module.directive('kbnTimepicker', function (timeUnits, refreshIntervals) {
       $scope.modes = ['quick', 'relative', 'absolute'];
       $scope.activeTab = $scope.activeTab || 'filter';
 
-      if (_.isUndefined($scope.mode)) $scope.mode = 'quick';
+      if ($scope.mode === undefined) $scope.mode = 'quick';
 
       $scope.refreshLists = _(refreshIntervals).groupBy('section').values().value();
 

@@ -47,7 +47,7 @@ export default new Chainable('condition', {
 
         const ifVal = getNumber(config.if);
         const thenVal = getNumber(config.then);
-        const elseVal = _.isUndefined(config.else) ? point[1] : getNumber(config.else);
+        const elseVal = config.else === undefined ? point[1] : getNumber(config.else);
 
         const newValue = (function () {
           switch (config.operator) {

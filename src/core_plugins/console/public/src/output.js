@@ -1,4 +1,3 @@
-import _ from 'lodash';
 let ace = require('ace');
 let settings = require('./settings');
 let OutputMode = require('./sense_editor/mode/output');
@@ -31,7 +30,7 @@ export function initializeOutput($el) {
       cb = fold_previous;
       fold_previous = true;
     }
-    if (_.isUndefined(fold_previous)) {
+    if (fold_previous === undefined) {
       fold_previous = true;
     }
     var session = output.getSession();

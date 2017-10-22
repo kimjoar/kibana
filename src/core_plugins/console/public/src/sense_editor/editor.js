@@ -94,7 +94,7 @@ export default function SenseEditor($el) {
   })(editor.getSession());
 
   editor.prevRequestStart = function (rowOrPos) {
-    rowOrPos = _.isUndefined(rowOrPos) || rowOrPos == null ? editor.getCursorPosition() : rowOrPos;
+    rowOrPos = rowOrPos == null ? editor.getCursorPosition() : rowOrPos;
 
     var curRow = _.isObject(rowOrPos) ? rowOrPos.row : rowOrPos;
     while (curRow > 0 && !editor.parser.isStartRequestRow(curRow, editor)) curRow--;
@@ -106,7 +106,7 @@ export default function SenseEditor($el) {
   };
 
   editor.nextRequestStart = function (rowOrPos) {
-    rowOrPos = _.isUndefined(rowOrPos) || rowOrPos == null ? editor.getCursorPosition() : rowOrPos;
+    rowOrPos = rowOrPos == null ? editor.getCursorPosition() : rowOrPos;
     var session = editor.getSession();
     var curRow = _.isObject(rowOrPos) ? rowOrPos.row : rowOrPos;
     var maxLines = session.getLength();
@@ -188,7 +188,7 @@ export default function SenseEditor($el) {
   };
 
   editor.getRequestRange = onceDoneTokenizing(function (row, cb) {
-    if (_.isUndefined(cb)) {
+    if (cb === undefined) {
       cb = row;
       row = null;
     }
@@ -210,7 +210,7 @@ export default function SenseEditor($el) {
   });
 
   editor.getEngulfingRequestsRange = onceDoneTokenizing(function (range, cb) {
-    if (_.isUndefined(cb)) {
+    if (cb === undefined) {
       cb = range;
       range = null;
     }
@@ -322,11 +322,11 @@ export default function SenseEditor($el) {
   });
 
   editor.getRequestsInRange = function (range, includeNonRequestBlocks, cb) {
-    if (_.isUndefined(includeNonRequestBlocks)) {
+    if (includeNonRequestBlocks === undefined) {
       includeNonRequestBlocks = false;
       cb = range;
       range = null;
-    } else if (_.isUndefined(cb)) {
+    } else if (cb === undefined) {
       cb = includeNonRequestBlocks;
       includeNonRequestBlocks = false;
     }
@@ -384,7 +384,7 @@ export default function SenseEditor($el) {
   };
 
   editor.getRequest = onceDoneTokenizing(function (row, cb) {
-    if (_.isUndefined(cb)) {
+    if (cb === undefined) {
       cb = row;
       row = null;
     }
@@ -514,12 +514,12 @@ export default function SenseEditor($el) {
   }, true);
 
   editor.getRequestsAsCURL = function (range, cb) {
-    if (_.isUndefined(cb)) {
+    if (cb === undefined) {
       cb = range;
       range = null;
     }
 
-    if (_.isUndefined(cb)) {
+    if (cb === undefined) {
       cb = $.noop;
     }
 

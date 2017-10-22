@@ -366,7 +366,7 @@ function discoverController(
           // prepared to be sent. When all requests are completed,
           // fetchStatus is set to null, so it's important that we
           // specifically check for undefined to determine a loading status.
-          const preparingForFetch = _.isUndefined(fetchStatus);
+          const preparingForFetch = fetchStatus === undefined;
           if (preparingForFetch) return status.LOADING;
           else if (rowsEmpty && fetchStatus) return status.LOADING;
           else if (!rowsEmpty) return status.READY;

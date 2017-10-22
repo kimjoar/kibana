@@ -12,7 +12,7 @@ uiModules
         const illegalCharacters = ['\\', '/', '?', '"', '<', '>', '|', ' ', ','];
 
         const allowWildcard =
-          !_.isUndefined(attr.validateIndexPatternAllowWildcard)
+          attr.validateIndexPatternAllowWildcard !== undefined
           && attr.validateIndexPatternAllowWildcard !== 'false';
 
         if (!allowWildcard) {

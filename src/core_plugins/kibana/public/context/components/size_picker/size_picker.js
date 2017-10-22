@@ -1,4 +1,3 @@
-import _ from 'lodash';
 import { uiModules } from 'ui/modules';
 import { callAfterBindingsWorkaround } from 'ui/compat';
 import contextSizePickerTemplate from './size_picker.html';
@@ -41,6 +40,6 @@ function ContextSizePickerController($scope) {
   );
 
   this.getOrSetCount = (count) => (
-    _.isUndefined(count) ? this.count : this.onChangeCount(count)
+    count === undefined ? this.count : this.onChangeCount(count)
   );
 }

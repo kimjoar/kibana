@@ -56,7 +56,7 @@ export function VislibVisualizationsColumnChartProvider(Private) {
 
       const bars = layer.selectAll('rect')
       .data(data.values.filter(function (d) {
-        return !_.isNull(d.y);
+        return d.y !== null;
       }));
 
       bars

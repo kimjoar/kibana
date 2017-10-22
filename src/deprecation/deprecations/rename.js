@@ -1,10 +1,10 @@
-import { get, isUndefined, noop, set } from 'lodash';
+import { get, noop, set } from 'lodash';
 import { unset } from '../../utils';
 
 export function rename(oldKey, newKey) {
   return (settings, log = noop) => {
     const value = get(settings, oldKey);
-    if (isUndefined(value)) {
+    if (value === undefined) {
       return;
     }
 

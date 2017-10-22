@@ -1,6 +1,5 @@
 import $ from 'jquery';
 import html from 'plugins/kibana/discover/components/field_chooser/discover_field.html';
-import _ from 'lodash';
 import 'ui/directives/css_truncate';
 import 'ui/directives/field_name';
 import detailsHtml from 'plugins/kibana/discover/components/field_chooser/lib/detail_views/string.html';
@@ -69,7 +68,7 @@ app.directive('discoverField', function ($compile) {
       };
 
       $scope.toggleDetails = function (field, recompute) {
-        if (_.isUndefined(field.details) || recompute) {
+        if (field.details === undefined || recompute) {
           $scope.onShowDetails(field, recompute);
           detailScope = $scope.$new();
           detailScope.warnings = getWarnings(field);

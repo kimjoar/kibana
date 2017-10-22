@@ -1,12 +1,11 @@
-import _ from 'lodash';
 import * as literal from '../node_types/literal';
 import { getPhraseScript } from 'ui/filter_manager/lib/phrase';
 
 export function buildNodeParams(fieldName, value, serializeStyle = 'operator') {
-  if (_.isUndefined(fieldName)) {
+  if (fieldName === undefined) {
     throw new Error('fieldName is a required argument');
   }
-  if (_.isUndefined(value)) {
+  if (value === undefined) {
     throw new Error('value is a required argument');
   }
 
@@ -20,7 +19,7 @@ export function toElasticsearchQuery(node, indexPattern) {
   const { arguments:  [ fieldNameArg, valueArg ] } = node;
   const fieldName = literal.toElasticsearchQuery(fieldNameArg);
   const field = indexPattern.fields.byName[fieldName];
-  const value = !_.isUndefined(valueArg) ? literal.toElasticsearchQuery(valueArg) : valueArg;
+  const value = valueArg !== undefined ? literal.toElasticsearchQuery(valueArg) : valueArg;
 
   if (field && field.scripted) {
     return {
@@ -63,7 +62,7 @@ export function toKueryExpression(node) {
 
   const { arguments:  [ fieldNameArg, valueArg ] } = node;
   const fieldName = literal.toKueryExpression(fieldNameArg);
-  const value = !_.isUndefined(valueArg) ? literal.toKueryExpression(valueArg) : valueArg;
+  const value = valueArg !== undefined ? literal.toKueryExpression(valueArg) : valueArg;
 
   return `${fieldName}:${value}`;
 }

@@ -51,7 +51,7 @@ export function toKueryExpression(node) {
   const fieldName = ast.toKueryExpression(fieldNameArg);
   const { gte, lte } = extractArguments(args);
 
-  if (_.isUndefined(gte) || _.isUndefined(lte)) {
+  if (gte === undefined || lte === undefined) {
     throw new Error(`Operator syntax only supports inclusive ranges`);
   }
 

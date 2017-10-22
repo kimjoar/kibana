@@ -46,7 +46,7 @@ function getOptions(description) {
   var options = {};
   var template = getTemplate(description);
 
-  if (!_.isUndefined(template)) {
+  if (template !== undefined) {
     options.template = template;
   }
   return options;
@@ -96,7 +96,7 @@ function compileParametrizedValue(value, compilingContext, template) {
     throw new Error("no factory found for '" + value + "'");
   }
   component = component(value, null, template);
-  if (!_.isUndefined(template)) {
+  if (template !== undefined) {
     component = engine.wrapComponentWithDefaults(component, { template: template });
   }
   return component;

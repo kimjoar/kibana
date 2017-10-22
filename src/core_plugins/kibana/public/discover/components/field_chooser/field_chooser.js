@@ -213,7 +213,7 @@ app.directive('discFieldChooser', function ($location, globalState, config, $rou
       }
 
       $scope.computeDetails = function (field, recompute) {
-        if (_.isUndefined(field.details) || recompute) {
+        if (field.details === undefined || recompute) {
           field.details = {
             visualizeUrl: field.visualizable ? getVisualizeUrl(field) : null,
             ...fieldCalculator.getFieldValueCounts({

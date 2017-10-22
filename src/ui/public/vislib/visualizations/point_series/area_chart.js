@@ -123,11 +123,11 @@ export function VislibVisualizationsAreaChartProvider(Private) {
         .attr('d', function () {
           const area = getArea()
           .defined(function (d) {
-            return !_.isNull(d.y);
+            return d.y !== null;
           })
           .interpolate(interpolate);
           return area(data.values.filter(function (d) {
-            return !_.isNull(d.y);
+            return d.y !== null;
           }));
         })
         .style('stroke-width', '1px');
@@ -163,7 +163,7 @@ export function VislibVisualizationsAreaChartProvider(Private) {
       const circles = layer.selectAll('circles')
       .data(function appendData() {
         return data.values.filter(function isZeroOrNull(d) {
-          return d.y !== 0 && !_.isNull(d.y);
+          return d.y !== 0 && d.y !== null;
         });
       });
 

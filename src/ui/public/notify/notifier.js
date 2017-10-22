@@ -191,11 +191,11 @@ Notifier.prototype.set = set;
 function formatInfo() {
   const info = [];
 
-  if (!_.isUndefined(version)) {
+  if (version !== undefined) {
     info.push(`Version: ${version}`);
   }
 
-  if (!_.isUndefined(buildNum)) {
+  if (buildNum !== undefined) {
     info.push(`Build: ${buildNum}`);
   }
 

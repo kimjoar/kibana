@@ -1,5 +1,3 @@
-import _ from 'lodash';
-
 // eslint-disable-next-line kibana-custom/no-default-export
 export default function (chrome, internals) {
   /**
@@ -37,7 +35,7 @@ export default function (chrome, internals) {
    * @return {boolean} - display state of the chrome
    */
   chrome.getVisible = function () {
-    if (_.isUndefined(internals.visible)) return !permanentlyHideChrome;
+    if (internals.visible === undefined) return !permanentlyHideChrome;
     return internals.visible;
   };
 }

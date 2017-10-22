@@ -205,7 +205,7 @@ export function VisProvider(Private, indexPatterns, timefilter, getAppState) {
      */
     uiStateVal(key, val) {
       if (this.hasUiState()) {
-        if (_.isUndefined(val)) {
+        if (val === undefined) {
           return this.__uiState.get(key);
         }
         return this.__uiState.set(key, val);

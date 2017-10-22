@@ -9,13 +9,13 @@ uiModules.get('kibana')
     scope: true,
     link: {
       pre: function ($scope, $el, attrs) {
-        if (_.isUndefined(attrs.bottomControls)) attrs.bottomControls = true;
+        if (attrs.bottomControls === undefined) attrs.bottomControls = true;
         if ($el.find('paginate-controls.paginate-bottom').size() === 0 && attrs.bottomControls) {
           $el.append($compile('<paginate-controls class="paginate-bottom">')($scope));
         }
       },
       post: function ($scope, $el, attrs) {
-        if (_.isUndefined(attrs.topControls)) attrs.topControls = false;
+        if (attrs.topControls === undefined) attrs.topControls = false;
         if ($el.find('paginate-controls.paginate-top').size() === 0 && attrs.topControls) {
           $el.prepend($compile('<paginate-controls class="paginate-top">')($scope));
         }

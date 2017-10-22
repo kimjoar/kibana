@@ -62,8 +62,8 @@ function ListComponent(name, list, parent, multi_valued, allow_non_valid_values)
   this.listGenerator = _.isArray(list) ? function () {
     return list
   } : list;
-  this.multi_valued = _.isUndefined(multi_valued) ? true : multi_valued;
-  this.allow_non_valid_values = _.isUndefined(allow_non_valid_values) ? false : allow_non_valid_values;
+  this.multi_valued = multi_valued === undefined ? true : multi_valued;
+  this.allow_non_valid_values = allow_non_valid_values === undefined ? false : allow_non_valid_values;
 }
 
 ListComponent.prototype = _.create(SharedComponent.prototype, { "constructor": ListComponent });

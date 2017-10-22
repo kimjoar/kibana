@@ -105,7 +105,7 @@ export default function (editor) {
 
     var valueToInsert = termAsString;
     var templateInserted = false;
-    if (context.addTemplate && !_.isUndefined(term.template) && !_.isNull(term.template)) {
+    if (context.addTemplate && term.template !== undefined && term.template !== null) {
       var indentedTemplateLines = utils.jsonToString(term.template, true).split("\n");
       var currentIndentation = session.getLine(context.rangeToReplace.start.row);
       currentIndentation = currentIndentation.match(/^\s*/)[0];

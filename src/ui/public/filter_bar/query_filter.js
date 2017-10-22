@@ -116,7 +116,7 @@ export function FilterBarQueryFilterProvider(Private, $rootScope, getAppState, g
    */
   queryFilter.toggleFilter = function (filter, force) {
     // Toggle the disabled flag
-    const disabled = _.isUndefined(force) ? !filter.meta.disabled : !!force;
+    const disabled = force === undefined ? !filter.meta.disabled : !!force;
     filter.meta.disabled = disabled;
     return filter;
   };

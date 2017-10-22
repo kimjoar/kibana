@@ -10,7 +10,7 @@ import { migrateFilter } from '../_migrate_filter';
  */
 const filterNegate = function (reverse) {
   return function (filter) {
-    if (_.isUndefined(filter.meta) || _.isUndefined(filter.meta.negate)) return !reverse;
+    if (filter.meta === undefined || filter.meta.negate === undefined) return !reverse;
     return filter.meta && filter.meta.negate === reverse;
   };
 };

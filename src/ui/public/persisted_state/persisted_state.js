@@ -11,7 +11,7 @@ import { SimpleEmitter } from 'ui/utils/simple_emitter';
 
 function prepSetParams(key, value, path) {
   // key must be the value, set the entire state using it
-  if (_.isUndefined(value) && (_.isPlainObject(key) || path.length > 0)) {
+  if (value === undefined && (_.isPlainObject(key) || path.length > 0)) {
     // setting entire tree, swap the key and value to write to the state
     value = key;
     key = undefined;
@@ -91,7 +91,7 @@ export class PersistedState {
     const origValue = _.get(this._defaultState, keyPath);
     const currentValue = _.get(this._mergedState, keyPath);
 
-    if (_.isUndefined(origValue)) {
+    if (origValue === undefined) {
       this._cleanPath(path, this._mergedState);
     } else {
       _.set(this._mergedState, keyPath, origValue);
@@ -119,7 +119,7 @@ export class PersistedState {
   removeChild(path) {
     const origValue = _.get(this._defaultState, this._getIndex(path));
 
-    if (_.isUndefined(origValue)) {
+    if (origValue === undefined) {
       this.reset(path);
     } else {
       this.set(path, origValue);
@@ -143,7 +143,7 @@ export class PersistedState {
   }
 
   _getIndex(key) {
-    if (_.isUndefined(key)) return this._path;
+    if (key === undefined) return this._path;
     return (this._path || []).concat(toPath(key));
   }
 
@@ -197,7 +197,7 @@ export class PersistedState {
     if (this._parent) return this._parent._get(this._getIndex(key), def);
 
     // no path and no key, get the whole state
-    if (!this._hasPath() && _.isUndefined(key)) {
+    if (!this._hasPath() && key === undefined) {
       return this._mergedState;
     }
 
@@ -214,7 +214,7 @@ export class PersistedState {
     // if this is the initial state value, save value as the default
     if (initialState) {
       this._changedState = {};
-      if (!this._hasPath() && _.isUndefined(key)) this._defaultState = value;
+      if (!this._hasPath() && key === undefined) this._defaultState = value;
       else this._defaultState = _.set({}, keyPath, value);
     }
 
@@ -226,7 +226,7 @@ export class PersistedState {
     // everything in here affects only the parent state
     if (!initialState) {
       // no path and no key, set the whole state
-      if (!this._hasPath() && _.isUndefined(key)) {
+      if (!this._hasPath() && key === undefined) {
         // compare changedState and new state, emit an event when different
         stateChanged = !_.isEqual(this._changedState, value);
         if (!initialChildState) {
@@ -260,7 +260,7 @@ export class PersistedState {
       // if not initial state, skip default merge method (ie. return value, see note below)
       if (!initialState && !initialChildState && _.isEqual(keyPath, self._getIndex(mergeKey))) {
         // use the sourceValue or fall back to targetValue
-        return !_.isUndefined(sourceValue) ? sourceValue : targetValue;
+        return sourceValue !== undefined ? sourceValue : targetValue;
       }
     };
 

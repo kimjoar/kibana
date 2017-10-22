@@ -94,7 +94,7 @@ export function KbnUrlProvider($injector, $location, $rootScope, $parse, Private
       const p = $parse(key)(paramObj);
 
       // if evaluation can't be made, throw
-      if (_.isUndefined(p)) {
+      if (p === undefined) {
         throw new Error('Replacement failed, unresolved expression: ' + expr);
       }
 

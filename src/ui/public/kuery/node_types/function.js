@@ -1,11 +1,10 @@
-import _ from 'lodash';
 import { functions } from '../functions';
 import { nodeTypes } from '../node_types';
 
 export function buildNode(functionName, ...functionArgs) {
   const kueryFunction = functions[functionName];
 
-  if (_.isUndefined(kueryFunction)) {
+  if (kueryFunction === undefined) {
     throw new Error(`Unknown function "${functionName}"`);
   }
 
@@ -18,7 +17,7 @@ export function buildNode(functionName, ...functionArgs) {
 
 // Mainly only useful in the grammar where we'll already have real argument nodes in hand
 export function buildNodeWithArgumentNodes(functionName, argumentNodes, serializeStyle = 'function') {
-  if (_.isUndefined(functions[functionName])) {
+  if (functions[functionName] === undefined) {
     throw new Error(`Unknown function "${functionName}"`);
   }
 
@@ -38,7 +37,7 @@ export function toElasticsearchQuery(node, indexPattern) {
 export function toKueryExpression(node) {
   const kueryFunction = functions[node.function];
 
-  if (!_.isUndefined(node.text)) {
+  if (node.text !== undefined) {
     return node.text;
   }
 

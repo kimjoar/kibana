@@ -1,12 +1,11 @@
 import grammar from 'raw!./kuery.peg';
 import PEG from 'pegjs';
-import _ from 'lodash';
 import { nodeTypes } from '../node_types/index';
 
 const kueryParser = PEG.buildParser(grammar);
 
 export function fromKueryExpression(expression, parseOptions = {}) {
-  if (_.isUndefined(expression)) {
+  if (expression === undefined) {
     throw new Error('expression must be a string, got undefined instead');
   }
 

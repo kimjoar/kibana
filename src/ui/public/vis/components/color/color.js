@@ -18,7 +18,7 @@ export function VislibComponentsColorColorProvider(Private) {
     }
 
     arrayOfStringsOrNumbers.forEach(function (val) {
-      if (!_.isString(val) && !_.isNumber(val) && !_.isUndefined(val)) {
+      if (!_.isString(val) && !_.isNumber(val) && val !== undefined) {
         throw new TypeError('ColorUtil expects an array of strings, numbers, or undefined values');
       }
     });

@@ -97,7 +97,7 @@ export function VislibVisualizationsPointSeriesProvider(Private) {
       const xScale = xAxis.getScale();
       const ordered = xAxis.ordered;
       const isHorizontal = xAxis.axisConfig.isHorizontal();
-      const missingMinMax = !ordered || _.isUndefined(ordered.min) || _.isUndefined(ordered.max);
+      const missingMinMax = !ordered || ordered.min === undefined || ordered.max === undefined;
 
       if (missingMinMax || ordered.endzones === false) return;
 

@@ -22,8 +22,8 @@ uiModules
         $scope.spy.params = $scope.spy.params || {};
 
         function getSpyObject(name) {
-          name = _.isUndefined(name) ? $scope.spy.mode.name : name;
-          fullPageSpy = (_.isNull(name)) ? false : fullPageSpy;
+          name = name === undefined ? $scope.spy.mode.name : name;
+          fullPageSpy = (name === null) ? false : fullPageSpy;
 
           return {
             name: name,
@@ -92,7 +92,7 @@ uiModules
           'spy.mode.fill'
         ], function (newVals, oldVals) {
           // update the ui state, but only if it really changes
-          const changedVals = newVals.filter((val) => !_.isUndefined(val)).length > 0;
+          const changedVals = newVals.filter((val) => val !== undefined).length > 0;
           if (changedVals && !_.isEqual(newVals, oldVals)) {
             if ($scope.uiState) $scope.uiState.set('spy.mode', $scope.spy.mode);
           }

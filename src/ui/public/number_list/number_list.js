@@ -32,7 +32,7 @@ uiModules
         self.getUnitName = _.partial($parse($attrs.unit), $scope);
 
         const defaultRange = self.range = parseRange('[0,Infinity)');
-        self.validateAscOrder = _.isUndefined($scope.validateAscendingOrder) ? true : $scope.validateAscendingOrder;
+        self.validateAscOrder = $scope.validateAscendingOrder === undefined ? true : $scope.validateAscendingOrder;
 
         $scope.$watch(function () {
           return $attrs.range;

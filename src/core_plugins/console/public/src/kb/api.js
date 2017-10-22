@@ -27,7 +27,7 @@ function Api(urlParametrizedComponentFactories, bodyParametrizedComponentFactori
 
   cls.getGlobalAutocompleteComponents = function (term, throwOnMissing) {
     var result = this.globalRules[term];
-    if (_.isUndefined(result) && (throwOnMissing || _.isUndefined(throwOnMissing))) {
+    if (result === undefined && (throwOnMissing || throwOnMissing === undefined)) {
       throw new Error("failed to resolve global components for  ['" + term + "']");
     }
     return result;

@@ -65,7 +65,7 @@ export function createRawData(vis, resp) {
       const _record = _.flattenDeep([record, bucket.key]);
       _.each(metrics, function (metric) {
         let value = bucket.doc_count;
-        if (bucket[metric.id] && !_.isUndefined(bucket[metric.id].value)) {
+        if (bucket[metric.id] && bucket[metric.id].value !== undefined) {
           value = bucket[metric.id].value;
         }
         _record.push(value);

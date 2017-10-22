@@ -26,7 +26,7 @@ ParamComponent.prototype = _.create(engine.ConstantComponent.prototype, { "const
 export function UrlParams(description, defaults) {
   // This is not really a component, just a handy container to make iteration logic simpler
   this.rootComponent = new engine.SharedComponent("ROOT");
-  if (_.isUndefined(defaults)) {
+  if (defaults === undefined) {
     defaults = {
       "pretty": "__flag__",
       "format": ["json", "yaml"],
