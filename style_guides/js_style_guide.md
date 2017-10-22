@@ -604,7 +604,7 @@ function foo(options = {}) {
 
 // bad
 function foo(options) {
-  if (typeof options === 'undefined') {
+  if (options === undefined) {
     options = {};
   }
   ...

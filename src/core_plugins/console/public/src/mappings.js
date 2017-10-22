@@ -113,7 +113,7 @@ function getIndices(include_aliases) {
   $.each(per_index_types, function (index) {
     ret.push(index);
   });
-  if (typeof include_aliases === "undefined" ? true : include_aliases) {
+  if (include_aliases === undefined ? true : include_aliases) {
     $.each(per_alias_indexes, function (alias) {
       ret.push(alias);
     });

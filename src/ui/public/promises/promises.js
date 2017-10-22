@@ -7,7 +7,7 @@ const module = uiModules.get('kibana');
 // bluebird, reimplemented using the $q service
 module.service('Promise', function ($q, $timeout) {
   function Promise(fn) {
-    if (typeof this === 'undefined') throw new Error('Promise constructor must be called with "new"');
+    if (this === undefined) throw new Error('Promise constructor must be called with "new"');
 
     const defer = $q.defer();
     try {

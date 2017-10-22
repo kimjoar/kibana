@@ -81,7 +81,7 @@ class Resize extends Component {
   }
 
   reset(containerWidth, containerHeight) {
-    if (typeof window === 'undefined') {
+    if (window === undefined) {
       return;
     }
 
@@ -106,7 +106,7 @@ class Resize extends Component {
   }
 
   handleScroll(e) {
-    if (typeof window === 'undefined') {
+    if (window === undefined) {
       return;
     }
 

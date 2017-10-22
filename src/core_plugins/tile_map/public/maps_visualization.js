@@ -50,7 +50,7 @@ export function MapsVisualizationProvider(serviceSettings, Notifier, getAppState
         }
         if (status.params || status.aggs) await this._updateParams();
 
-        if (esResponse && typeof esResponse.geohashGridAgg === 'undefined') {
+        if (esResponse && esResponse.geohashGridAgg === undefined) {
           return resolve();
         }
 

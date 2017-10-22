@@ -33,7 +33,7 @@ function setAutocomplete(settings) {
 }
 
 export function applyCurrentSettings(editor) {
-  if (typeof editor === 'undefined') {
+  if (editor === undefined) {
     applyCurrentSettings(getInput());
     applyCurrentSettings(getOutput());
   }
