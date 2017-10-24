@@ -62,13 +62,13 @@ export function $combineLatest<T>(
       $from(observable).subscribe({
         next(value) {
           if (values[i] === pending) {
-            needFirstCount -= 1;
+            needFirstCount--;
           }
 
           values[i] = value;
 
           if (needFirstCount === 0) {
-            observer.next(values.slice(0) as T[]);
+            observer.next(values.slice() as T[]);
           }
         },
 
@@ -77,7 +77,7 @@ export function $combineLatest<T>(
         },
 
         complete() {
-          activeCount -= 1;
+          activeCount--;
 
           if (activeCount === 0) {
             observer.complete();
