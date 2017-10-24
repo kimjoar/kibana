@@ -17,7 +17,7 @@ import { Observable, ObservableInput } from '../Observable';
  * @return {Observable}
  */
 export function $from<T>(input: ObservableInput<T>): Observable<T> {
-  const coerced = tryCoerce(input);
+  const coerced = tryCoerce<T>(input);
 
   if (coerced === undefined) {
     throw new TypeError(`${input} can't be coerced to an observable`);

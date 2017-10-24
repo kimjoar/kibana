@@ -1,13 +1,9 @@
-import { Observable, ObservableInput } from '../Observable';
+import { Observable } from '../Observable';
 import { $fromPromise, $fromIterable, $fromSubscribable } from '../factories';
 
-function hasMethod(value: any, name: symbol | string) {
-  return value && typeof value[name] === 'function';
-}
+const isFunction = (value: any) => typeof value === 'function';
 
-export function tryCoerce<T>(
-  value: ObservableInput<T>
-): Observable<T> | undefined {
+export function tryCoerce<T>(value: any): Observable<T> | undefined {
   if (value == null || typeof value !== 'object') {
     return undefined;
   }
@@ -16,16 +12,17 @@ export function tryCoerce<T>(
     return value;
   }
 
-  if (hasMethod(value, Symbol.observable)) {
-    return $fromSubscribable((value as any)[Symbol.observable]());
+  if (isFunction(value[Symbol.observable])) {
+    const observable = value[Symbol.observable]();
+    return $fromSubscribable(observable);
   }
 
-  if (hasMethod(value, Symbol.iterator)) {
-    return $fromIterable(value as any);
+  if (isFunction(value[Symbol.iterator])) {
+    return $fromIterable(value);
   }
 
-  if (hasMethod(value, 'then')) {
-    return $fromPromise(value as Promise<T>);
+  if (isFunction(value['then'])) {
+    return $fromPromise(value);
   }
 
   return undefined;

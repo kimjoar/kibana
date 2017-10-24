@@ -31,8 +31,9 @@ export function $fromFactory<T>(
     // TODO decide if this is needed or not
 
     // try to coerce the result into an observable
-    const coerced = tryCoerce(result as any);
-    if (coerced) {
+    const coerced = tryCoerce<T>(result);
+
+    if (coerced !== undefined) {
       return coerced.subscribe(observer);
     }
 
