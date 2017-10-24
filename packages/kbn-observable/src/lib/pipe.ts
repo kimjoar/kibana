@@ -63,20 +63,17 @@ export function pipe<T, A, B, C, D, E, F, G, H, I>(
   op8: UnaryFunction<G, H>,
   op9: UnaryFunction<H, I>
 ): UnaryFunction<T, I>;
-/* tslint:enable:max-line-length */
 
-export function pipe<T, R>(
-  ...fns: Array<UnaryFunction<T, R>>
-): UnaryFunction<T, R> {
+export function pipe<T, R>(...fns: UnaryFunction<T, R>[]): UnaryFunction<T, R> {
   return pipeFromArray(fns);
 }
 
 /* @internal */
 export function pipeFromArray<T, R>(
-  fns: Array<UnaryFunction<T, R>>
+  fns: UnaryFunction<T, R>[]
 ): UnaryFunction<T, R> {
-  if (!fns) {
-    return noop as UnaryFunction<any, any>;
+  if (fns.length === 0) {
+    return noop as UnaryFunction<T, R>;
   }
 
   if (fns.length === 1) {
