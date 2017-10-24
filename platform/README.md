@@ -56,12 +56,15 @@ $ cat ~/.vscode/settings.json
 
 ## Starting plugins in the new platform
 
-Plugins in `../core_plugins` will be started automatically. In addition, dirs to
-scan for plugins can be specified in the Kibana config by setting the
-`__newPlatform.plugins.scanDirs` value, e.g.
+Plugins in `../core_plugins` will be started automatically. To scan additional
+directories for plugins you can specify the `__newPlatform.plugins.scanDirs`
+value in the Kibana config, e.g.
 
 ```yaml
 __newPlatform:
   plugins:
-    scanDirs: ['./example_plugins']
+    scanDirs: ['../kbn-example-plugins']
 ```
+
+To test this functionality you can clone the [`kbn-example-plugins` repo](https://github.com/elastic/kbn-example-plugins).
+
