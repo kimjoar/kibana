@@ -1,10 +1,10 @@
 import { Observable } from '../Observable';
 
 /**
- *  Creates an Observable from an iterable value, like
- *  Arrays or Generators
- *  @param {Iterable<T>}
- *  @return {Observable<T>}
+ * Creates an Observable from an iterable value, like Arrays or Generators.
+ *
+ * @param {Iterable<T>}
+ * @return {Observable<T>}
  */
 export function $fromIterable<T>(iterable: Iterable<T>): Observable<T> {
   return new Observable(observer => {

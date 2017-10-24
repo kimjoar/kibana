@@ -38,13 +38,13 @@ export function $combineLatest<T>(
 ): Observable<T[]>;
 
 /**
- *  Creates an observable that combines the values by subscribing
- *  to all observables passed and emiting an array with the latest
- *  value from each observable once after each observable has
- *  emitted at least once, and again any time an observable emits
- *  after that.
- *  @param {Observable...}
- *  @return {Observable}
+ * Creates an observable that combines the values by subscribing to all
+ * observables passed and emiting an array with the latest value from each
+ * observable once after each observable has emitted at least once, and again
+ * any time an observable emits after that.
+ *
+ * @param {Observable...}
+ * @return {Observable}
  */
 export function $combineLatest<T>(
   ...observables: ObservableInput<T>[]

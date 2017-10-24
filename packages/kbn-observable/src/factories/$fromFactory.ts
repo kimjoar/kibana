@@ -2,19 +2,19 @@ import { Observable, ObservableInput } from '../Observable';
 import { tryCoerce } from '../lib';
 
 /**
- *  Creates an observable that calls a factory function
- *  when it is subscribed. The observerable will behave
- *  diferently based on the return value of the factory.
+ * Creates an observable that calls a factory function when it is subscribed.
+ * The observerable will behave differently based on the return value of the
+ * factory,
  *
- *   - return undefined:
- *        observable will immediately complete
- *   - return a value compatible with $coerce():
- *        observerable will mirror the coerced value
- *   - anything else:
- *        observable will emit the value and then complete
+ * - return `undefined`:
+ *   observable will immediately complete
+ * - return a value compatible with `$coerce()`:
+ *   observerable will mirror the coerced value
+ * - anything else:
+ *   observable will emit the value and then complete
  *
- *  @param {Function}
- *  @returns {Observable}
+ * @param {Function}
+ * @returns {Observable}
  */
 export function $fromFactory<T>(
   factory: () => T | ObservableInput<T>

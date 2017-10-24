@@ -1,11 +1,11 @@
 import { Observable, Subscription } from '../Observable';
 
 /**
- *  Creates an observable that combines all observables
- *  passed as arguments into a single output observable
- *  by subscribing to them in series.
- *  @param {Observable...}
- *  @return {Observable}
+ * Creates an observable that combines all observables passed as arguments into
+ * a single output observable by subscribing to them in series.
+ *
+ * @param {Observable...}
+ * @return {Observable}
  */
 export function $concat<T>(...observables: Observable<T>[]) {
   return new Observable(observer => {
