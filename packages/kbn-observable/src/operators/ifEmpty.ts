@@ -13,24 +13,23 @@ import { $fromCallback } from '../factories';
 export function ifEmpty<T>(factory: () => T): MonoTypeOperatorFunction<T> {
   return function ifEmptyOperation(source) {
     return new Observable(observer => {
-      let empty = true;
+      let hasReceivedValue = false;
 
       const subs = [
         source.subscribe({
           next(value) {
-            empty = false;
+            hasReceivedValue = true;
             observer.next(value);
           },
           error(error) {
             observer.error(error);
           },
           complete() {
-            if (!empty) {
+            if (hasReceivedValue) {
               observer.complete();
-              return;
+            } else {
+              subs.push($fromCallback(factory).subscribe(observer));
             }
-
-            subs.push($fromCallback(factory).subscribe(observer));
           }
         })
       ];

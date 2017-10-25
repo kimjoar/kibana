@@ -2,14 +2,15 @@ import { Observable, Subscription } from '../Observable';
 
 /**
  * Creates an observable that combines all observables passed as arguments into
- * a single output observable by subscribing to them in series.
+ * a single output observable by subscribing to them in series, i.e. it will
+ * subscribe to the next observable when the previous completes.
  *
  * @param {Observable...}
  * @return {Observable}
  */
 export function $concat<T>(...observables: Observable<T>[]) {
   return new Observable(observer => {
-    let subscription: Subscription;
+    let subscription: Subscription | undefined;
 
     function subscribe(i: number) {
       if (observer.closed) {
@@ -36,7 +37,7 @@ export function $concat<T>(...observables: Observable<T>[]) {
     subscribe(0);
 
     return function() {
-      if (subscription) {
+      if (subscription !== undefined) {
         subscription.unsubscribe();
       }
     };

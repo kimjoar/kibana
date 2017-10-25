@@ -19,7 +19,7 @@ export function $fromCallback<T>(
     const result = factory();
 
     if (isObservable(result)) {
-      result.subscribe(observer);
+      return result.subscribe(observer);
     } else {
       observer.next(result);
       observer.complete();

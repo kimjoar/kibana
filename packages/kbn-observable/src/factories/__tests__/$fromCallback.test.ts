@@ -1,31 +1,20 @@
 import { $from } from '../';
 import { $fromCallback } from '../$fromCallback';
 import { Subject } from '../../Subject';
+import { collect } from '../../lib/collect';
 
-test('returns raw value', () => {
-  const next = jest.fn();
-  const error = jest.fn();
-  const complete = jest.fn();
+test('returns raw value', async () => {
+  const observable = $fromCallback(() => 'foo');
+  const res = collect(observable);
 
-  $fromCallback(() => 'foo').subscribe(next, error, complete);
-
-  expect(next).toHaveBeenCalledTimes(1);
-  expect(next).toHaveBeenCalledWith('foo');
-  expect(error).not.toHaveBeenCalled();
-  expect(complete).toHaveBeenCalledTimes(1);
+  expect(await res).toEqual(['foo', 'C']);
 });
 
-test('returns observable that completes immediately', () => {
-  const next = jest.fn();
-  const error = jest.fn();
-  const complete = jest.fn();
+test('returns observable that completes immediately', async () => {
+  const observable = $fromCallback(() => $from([1, 2, 3]));
+  const res = collect(observable);
 
-  $fromCallback(() => $from([1, 2, 3])).subscribe(next, error, complete);
-
-  expect(next).toHaveBeenCalledTimes(3);
-  expect(next.mock.calls).toEqual([[1], [2], [3]]);
-  expect(error).not.toHaveBeenCalled();
-  expect(complete).toHaveBeenCalledTimes(1);
+  expect(await res).toEqual([1, 2, 3, 'C']);
 });
 
 test('returns observable that completes later', () => {
@@ -49,4 +38,17 @@ test('returns observable that completes later', () => {
   subject.complete();
   expect(error).not.toHaveBeenCalled();
   expect(complete).toHaveBeenCalledTimes(1);
+});
+
+test('handles early unsubscribe', () => {
+  const subject = new Subject();
+
+  const next = () => {};
+  const sub = $fromCallback(() => subject).subscribe(next);
+
+  subject.next('foo');
+
+  expect((subject as any).observers.size).toEqual(1);
+  sub.unsubscribe();
+  expect((subject as any).observers.size).toEqual(0);
 });
