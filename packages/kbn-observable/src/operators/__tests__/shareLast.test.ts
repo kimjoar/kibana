@@ -86,29 +86,30 @@ it('should multicast an error from the source to multiple observers', () => {
   const subject = new BehaviorSubject('a');
   const results: any[] = [];
 
-  const source = k$(subject.asObservable())(shareLast());
+  const source = k$(subject)(shareLast());
 
   source.subscribe({
     error(err) {
-      results.push(1);
+      results.push([1, err]);
     }
   });
 
   source.subscribe({
     error(err) {
-      results.push(2);
+      results.push([2, err]);
     }
   });
 
   source.subscribe({
     error(err) {
-      results.push(3);
+      results.push([3, err]);
     }
   });
 
-  subject.error(new Error('fail'));
+  const error = new Error('fail');
+  subject.error(error);
 
-  expect(results).toEqual([1, 2, 3]);
+  expect(results).toEqual([[1, error], [2, error], [3, error]]);
 });
 
 it('should replay results to subsequent subscriptions if source completes', () => {

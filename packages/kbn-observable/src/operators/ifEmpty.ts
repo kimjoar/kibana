@@ -3,7 +3,7 @@ import { MonoTypeOperatorFunction } from '../interfaces';
 import { $fromCallback } from '../factories';
 
 /**
- * Modifies a stream so that when the source completes without emiting any
+ * Modifies a stream so that when the source completes without emitting any
  * values a new observable is created via `factory()` (see `$fromCallback`) that
  * will be mirrored to completion.
  * 

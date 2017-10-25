@@ -9,24 +9,17 @@ import { MonoTypeOperatorFunction } from '../interfaces';
 export function first<T>(): MonoTypeOperatorFunction<T> {
   return function firstOperation(source) {
     return new Observable(observer => {
-      let hasCompleted = false;
-
       return source.subscribe({
         next(value) {
-          if (!hasCompleted) {
-            observer.next(value);
-            observer.complete();
-          }
+          observer.next(value);
+          observer.complete();
         },
         error(error) {
           observer.error(error);
         },
         complete() {
-          if (!hasCompleted) {
-            observer.error(new EmptyError('first()'));
-          } else {
-            observer.complete();
-          }
+          // The only time we end up here, is if we never received any values.
+          observer.error(new EmptyError('first()'));
         }
       });
     });

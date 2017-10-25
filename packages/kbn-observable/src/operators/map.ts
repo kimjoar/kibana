@@ -20,7 +20,7 @@ export function map<T, R>(
 
       return source.subscribe({
         next(value) {
-          let result: any;
+          let result: R;
           try {
             result = fn(value, i++);
           } catch (e) {

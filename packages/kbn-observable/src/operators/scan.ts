@@ -8,7 +8,7 @@ import { OperatorFunction } from '../interfaces';
  * It's like {@link reduce}, but emits the current accumulation whenever the
  * source emits a value.
  * 
- * @param fn The accumulator function called on each source value.
+ * @param accumulator The accumulator function called on each source value.
  * @param initialValue The initial accumulation value.
  * @return An observable of the accumulated values.
  */

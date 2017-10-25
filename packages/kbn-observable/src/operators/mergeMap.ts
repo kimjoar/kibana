@@ -1,4 +1,4 @@
-import { Observable, ObservableInput, Subscription } from '../Observable';
+import { Observable, ObservableInput } from '../Observable';
 import { OperatorFunction } from '../interfaces';
 import { $from } from '../factories';
 
@@ -16,12 +16,12 @@ export function mergeMap<T, I, R>(
 ): OperatorFunction<T, R>;
 
 /**
- * @param project A function
- * that, when applied to an item emitted by the source Observable, returns an
- * Observable.
+ * @param project A function that, when applied to an item emitted by the source
+ * Observable, returns an Observable.
  * @param resultSelector A function to produce the value on the output
  * Observable based on the values and the indices of the source (outer) emission
  * and the inner Observable emission. The arguments passed to this function are:
+ * 
  * - `outerValue`: the value that came from the source
  * - `innerValue`: the value that came from the projected Observable
  * - `outerIndex`: the "index" of the value that came from the source
@@ -41,7 +41,6 @@ export function mergeMap<T, I, R>(
       let completed = false;
       let active = 0;
       let i = 0;
-      const innerSubscriptions: Subscription[] = [];
 
       source.subscribe({
         next(value) {
@@ -57,10 +56,11 @@ export function mergeMap<T, I, R>(
 
           let innerIndex = 0;
 
-          const innerSubscription = $from(result).subscribe({
+          $from(result).subscribe({
             next(innerValue) {
+              let result: R | I = innerValue;
+
               if (resultSelector !== undefined) {
-                let result: R;
                 try {
                   result = resultSelector(
                     value,
@@ -73,10 +73,9 @@ export function mergeMap<T, I, R>(
                   return;
                 }
                 innerIndex++;
-                destination.next(result);
-              } else {
-                destination.next(innerValue);
               }
+
+              destination.next(result);
             },
             error(err) {
               destination.error(err);
@@ -89,8 +88,6 @@ export function mergeMap<T, I, R>(
               }
             }
           });
-
-          innerSubscriptions.push(innerSubscription);
         },
 
         error(err) {

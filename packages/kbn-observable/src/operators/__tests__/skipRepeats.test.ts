@@ -2,7 +2,7 @@ import { Observable } from '../../Observable';
 import { Subject } from '../../Subject';
 import { k$ } from '../../k$';
 import { $of } from '../../factories';
-import { skipRepeats } from '../../operators';
+import { skipRepeats } from '../';
 
 test('should distinguish between values', async () => {
   const values$ = new Subject<string>();
@@ -83,7 +83,7 @@ test('should emit if source is scalar', () => {
   expect(actual).toEqual(['a']);
 });
 
-test('should raises error if source raises error', () => {
+test('should raise error if source raises error', () => {
   const values$ = new Subject<string>();
 
   const actual: any[] = [];
@@ -105,7 +105,7 @@ test('should raises error if source raises error', () => {
   expect(error).toHaveBeenCalledWith(thrownError);
 });
 
-test('should raises error if source throws', () => {
+test('should raise error if source throws', () => {
   const thrownError = new Error('fail');
 
   const obs = new Observable(observer => {

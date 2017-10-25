@@ -8,7 +8,7 @@ import { OperatorFunction } from '../interfaces';
  * Modify the source stream to apply a function to each value to produce a new
  * value, then only emit the final result of calling `fn(acc, item, i)`.
  * 
- * @param fn
+ * @param accumulator
  * @param initialValue
  */
 export function reduce<T, R>(

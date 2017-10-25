@@ -1,7 +1,7 @@
 import { Observable } from '../../Observable';
 import { k$ } from '../../k$';
 import { $from } from '../../factories';
-import { filter, toArray, toPromise } from '../../operators';
+import { filter, toArray, toPromise } from '../';
 
 const number$ = $from([1, 2, 3]);
 const collect = <T>(source: Observable<T>) =>
