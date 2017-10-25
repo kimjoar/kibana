@@ -1,38 +1,34 @@
-import { Observable, SubscriptionObserver } from '../../Observable';
+import { Observable } from '../../Observable';
 import { k$ } from '../../k$';
-import { switchMap, toArray, toPromise } from '../';
+import { switchMap } from '../';
+import { collect } from '../../lib/collect';
+import { $of } from '../../factories';
+import { Subject } from '../../Subject';
 
-const collect = <T>(source: Observable<T>) =>
-  k$(source)(toArray(), toPromise());
-const number$ = Observable.of(1, 2, 3);
+const number$ = $of(1, 2, 3);
 
 test('returns the modified value', async () => {
-  const expected = ['a1', 'b1', 'c1', 'a2', 'b2', 'c2', 'a3', 'b3', 'c3'];
+  const expected = ['a1', 'b1', 'c1', 'a2', 'b2', 'c2', 'a3', 'b3', 'c3', 'C'];
 
-  const values = await collect(
-    k$(number$)(switchMap(x => Observable.of('a' + x, 'b' + x, 'c' + x)))
+  const observable = k$(number$)(
+    switchMap(x => $of('a' + x, 'b' + x, 'c' + x))
   );
+  const res = collect(observable);
 
-  expect(values).toEqual(expected);
+  expect(await res).toEqual(expected);
 });
 
 test('injects index to map', async () => {
-  const expected = [0, 1, 2];
+  const observable = k$(number$)(switchMap((x, i) => $of(i)));
+  const res = collect(observable);
 
-  const values = await collect(
-    k$(number$)(switchMap((x, i) => Observable.of(i)))
-  );
-
-  expect(values).toEqual(expected);
+  expect(await res).toEqual([0, 1, 2, 'C']);
 });
 
-test('should unsub inner observables', () => {
-  expect.assertions(1);
-
+test('should unsub inner observables', async () => {
   const unsubbed: string[] = [];
-  const obs$ = Observable.of('a', 'b');
 
-  k$(obs$)(
+  const observable = k$($of('a', 'b'))(
     switchMap(
       x =>
         new Observable(observer => {
@@ -42,253 +38,165 @@ test('should unsub inner observables', () => {
           };
         })
     )
-  ).subscribe({
-    complete() {
-      expect(unsubbed).toEqual(['a', 'b']);
-    }
-  });
+  );
+
+  await collect(observable);
+
+  expect(unsubbed).toEqual(['a', 'b']);
 });
 
 test('should switch inner observables', () => {
-  expect.assertions(1);
-
-  let xObserver: SubscriptionObserver<string>;
-  let yObserver: SubscriptionObserver<string>;
-
-  const choose = {
-    x: new Observable(observer => {
-      xObserver = observer;
-    }),
-    y: new Observable(observer => {
-      yObserver = observer;
-    })
+  const outer$ = new Subject<'x' | 'y'>();
+  const inner$ = {
+    x: new Subject(),
+    y: new Subject()
   };
-
-  let outerObserver: SubscriptionObserver<'x' | 'y'>;
-  const obs$ = new Observable<'x' | 'y'>(observer => {
-    outerObserver = observer;
-  });
 
   const actual: any[] = [];
 
-  k$(obs$)(switchMap(x => choose[x])).subscribe({
+  k$(outer$)(switchMap(x => inner$[x])).subscribe({
     next(val) {
       actual.push(val);
     }
   });
 
-  outerObserver!.next('x');
-  xObserver!.next('foo');
-  xObserver!.next('bar');
+  outer$.next('x');
+  inner$.x.next('foo');
+  inner$.x.next('bar');
 
-  outerObserver!.next('y');
-  xObserver!.next('baz');
-  yObserver!.next('quux');
+  outer$.next('y');
+  inner$.x.next('baz');
+  inner$.y.next('quux');
 
-  outerObserver!.complete();
+  outer$.complete();
 
   expect(actual).toEqual(['foo', 'bar', 'quux']);
 });
 
 test('should switch inner empty and empty', () => {
-  expect.assertions(1);
-
-  let xObserver: SubscriptionObserver<string>;
-  let yObserver: SubscriptionObserver<string>;
-
-  const choose = {
-    x: new Observable(observer => {
-      xObserver = observer;
-    }),
-    y: new Observable(observer => {
-      yObserver = observer;
-    })
+  const outer$ = new Subject<'x' | 'y'>();
+  const inner$ = {
+    x: new Subject(),
+    y: new Subject()
   };
-
-  let outerObserver: SubscriptionObserver<'x' | 'y'>;
-  const obs$ = new Observable<'x' | 'y'>(observer => {
-    outerObserver = observer;
-  });
 
   const next = jest.fn();
 
-  k$(obs$)(switchMap(x => choose[x])).subscribe({
-    next
-  });
+  k$(outer$)(switchMap(x => inner$[x])).subscribe(next);
 
-  outerObserver!.next('x');
-  xObserver!.complete();
+  outer$.next('x');
+  inner$.x.complete();
 
-  outerObserver!.next('y');
-  yObserver!.complete();
+  outer$.next('y');
+  inner$.y.complete();
 
-  outerObserver!.complete();
+  outer$.complete();
 
   expect(next).not.toHaveBeenCalled();
 });
 
-test('should switch inner never and throw', () => {
-  let xObserver: SubscriptionObserver<string>;
+test('should switch inner never and throw', async () => {
+  const error = new Error('sad');
 
-  const e = new Error('sad');
-
-  const choose = {
-    x: new Observable(observer => {
-      xObserver = observer;
-    }),
-    y: new Observable(observer => {
-      throw e;
-    })
+  const outer$ = new Subject<'x' | 'y'>();
+  const inner$ = {
+    x: new Subject(),
+    y: new Subject()
   };
 
-  let outerObserver: SubscriptionObserver<'x' | 'y'>;
-  const obs$ = new Observable<'x' | 'y'>(observer => {
-    outerObserver = observer;
-  });
+  inner$.y.error(error);
 
-  const error = jest.fn();
-  const complete = jest.fn();
-  k$(obs$)(switchMap(x => choose[x])).subscribe({
-    error,
-    complete
-  });
+  const observable = k$(outer$)(switchMap(x => inner$[x]));
+  const res = collect(observable);
 
-  outerObserver!.next('x');
-  outerObserver!.next('y');
-  outerObserver!.complete();
+  outer$.next('x');
+  outer$.next('y');
+  outer$.complete();
 
-  expect(error).toHaveBeenCalledTimes(1);
-  expect(error).toHaveBeenCalledWith(e);
-  expect(complete).not.toHaveBeenCalled();
+  expect(await res).toEqual([error]);
 });
 
-test('should handle outer throw', () => {
-  const e = new Error('foo');
-  const obs$ = new Observable<string>(observer => {
-    throw e;
+test('should handle outer throw', async () => {
+  const error = new Error('foo');
+  const outer$ = new Observable<string>(observer => {
+    throw error;
   });
 
-  const error = jest.fn();
-  const complete = jest.fn();
-  k$(obs$)(switchMap(x => Observable.of(x))).subscribe({
-    error,
-    complete
-  });
+  const observable = k$(outer$)(switchMap(x => $of(x)));
+  const res = collect(observable);
 
-  expect(error).toHaveBeenCalledTimes(1);
-  expect(error).toHaveBeenCalledWith(e);
-  expect(complete).not.toHaveBeenCalled();
+  expect(await res).toEqual([error]);
 });
 
-test('should handle outer error', () => {
-  let xObserver: SubscriptionObserver<string>;
-
-  const choose = {
-    x: new Observable(observer => {
-      xObserver = observer;
-    })
+test('should handle outer error', async () => {
+  const outer$ = new Subject<'x'>();
+  const inner$ = {
+    x: new Subject()
   };
 
-  let outerObserver: SubscriptionObserver<'x'>;
-  const obs$ = new Observable<'x'>(observer => {
-    outerObserver = observer;
-  });
+  const observable = k$(outer$)(switchMap(x => inner$[x]));
+  const res = collect(observable);
 
-  const actual: any[] = [];
-  const error = jest.fn();
+  outer$.next('x');
 
-  k$(obs$)(switchMap(x => choose[x])).subscribe({
-    next(val) {
-      actual.push(val);
-    },
-    error
-  });
+  inner$.x.next('a');
+  inner$.x.next('b');
+  inner$.x.next('c');
 
-  outerObserver!.next('x');
+  const error = new Error('foo');
+  outer$.error(error);
 
-  xObserver!.next('a');
-  xObserver!.next('b');
-  xObserver!.next('c');
+  inner$.x.next('d');
+  inner$.x.next('e');
 
-  const e = new Error('foo');
-  outerObserver!.error(e);
-
-  xObserver!.next('d');
-  xObserver!.next('e');
-
-  expect(actual).toEqual(['a', 'b', 'c']);
-  expect(error).toHaveBeenCalledTimes(1);
-  expect(error).toHaveBeenCalledWith(e);
+  expect(await res).toEqual(['a', 'b', 'c', error]);
 });
 
-it('should raise error when projection throws', () => {
-  let outerObserver: SubscriptionObserver<any>;
-  const obs$ = new Observable<any>(observer => {
-    outerObserver = observer;
-  });
+it('should raise error when projection throws', async () => {
+  const outer$ = new Subject<string>();
+  const error = new Error('foo');
 
-  const error = jest.fn();
-  const complete = jest.fn();
-
-  const e = new Error('foo');
-
-  k$(obs$)(
+  const observable = k$(outer$)(
     switchMap(x => {
-      throw e;
+      throw error;
     })
-  ).subscribe({
-    error,
-    complete
-  });
+  );
+  const res = collect(observable);
 
-  outerObserver!.next('x');
+  outer$.next('x');
 
-  expect(error).toHaveBeenCalledTimes(1);
-  expect(error).toHaveBeenCalledWith(e);
-  expect(complete).not.toHaveBeenCalled();
+  expect(await res).toEqual([error]);
 });
 
 test('should switch inner cold observables, outer is unsubscribed early', () => {
-  let xObserver: SubscriptionObserver<string>;
-  let yObserver: SubscriptionObserver<string>;
-
-  const choose = {
-    x: new Observable(observer => {
-      xObserver = observer;
-    }),
-    y: new Observable(observer => {
-      yObserver = observer;
-    })
+  const outer$ = new Subject<'x' | 'y'>();
+  const inner$ = {
+    x: new Subject(),
+    y: new Subject()
   };
 
-  let outerObserver: SubscriptionObserver<'x' | 'y'>;
-  const obs$ = new Observable<'x' | 'y'>(observer => {
-    outerObserver = observer;
-  });
-
   const actual: any[] = [];
-
-  const sub = k$(obs$)(switchMap(x => choose[x])).subscribe({
+  const sub = k$(outer$)(switchMap(x => inner$[x])).subscribe({
     next(val) {
       actual.push(val);
     }
   });
 
-  outerObserver!.next('x');
-  xObserver!.next('foo');
-  xObserver!.next('bar');
+  outer$.next('x');
+  inner$.x.next('foo');
+  inner$.x.next('bar');
 
-  outerObserver!.next('y');
-  yObserver!.next('baz');
-  yObserver!.next('quux');
+  outer$.next('y');
+  inner$.y.next('baz');
+  inner$.y.next('quux');
 
   sub.unsubscribe();
 
-  xObserver!.next('post x');
-  xObserver!.complete();
+  inner$.x.next('post x');
+  inner$.x.complete();
 
-  yObserver!.next('post y');
-  yObserver!.complete();
+  inner$.y.next('post y');
+  inner$.y.complete();
 
   expect(actual).toEqual(['foo', 'bar', 'baz', 'quux']);
 });

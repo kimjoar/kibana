@@ -4,3 +4,4 @@ export { $concat } from './$concat';
 export { $fromCallback } from './$fromCallback';
 export { $fromPromise } from './$fromPromise';
 export { $of } from './$of';
+export { $error } from './$error';

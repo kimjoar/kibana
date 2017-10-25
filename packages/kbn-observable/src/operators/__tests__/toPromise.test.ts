@@ -19,7 +19,7 @@ test('returns the last value', async () => {
 
   expect(resolved).not.toHaveBeenCalled();
   expect(rejected).not.toHaveBeenCalled();
-  
+
   values$.next('bar');
   await tick();
 
@@ -28,7 +28,7 @@ test('returns the last value', async () => {
 
   values$.complete();
   await tick();
-  
+
   expect(resolved).toHaveBeenCalledTimes(1);
   expect(resolved).toHaveBeenCalledWith('bar');
   expect(rejected).not.toHaveBeenCalled();

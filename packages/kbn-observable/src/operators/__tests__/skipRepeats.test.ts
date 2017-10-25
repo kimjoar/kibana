@@ -3,16 +3,13 @@ import { Subject } from '../../Subject';
 import { k$ } from '../../k$';
 import { $of } from '../../factories';
 import { skipRepeats } from '../';
+import { collect } from '../../lib/collect';
 
 test('should distinguish between values', async () => {
   const values$ = new Subject<string>();
 
-  const actual: any[] = [];
-  k$(values$)(skipRepeats()).subscribe({
-    next(v) {
-      actual.push(v);
-    }
-  });
+  const observable = k$(values$)(skipRepeats());
+  const res = collect(observable);
 
   values$.next('a');
   values$.next('a');
@@ -23,7 +20,7 @@ test('should distinguish between values', async () => {
   values$.next('a');
   values$.complete();
 
-  expect(actual).toEqual(['a', 'b', 'a']);
+  expect(await res).toEqual(['a', 'b', 'a', 'C']);
 });
 
 test('should distinguish between values and does not complete', () => {
@@ -83,26 +80,19 @@ test('should emit if source is scalar', () => {
   expect(actual).toEqual(['a']);
 });
 
-test('should raise error if source raises error', () => {
+test('should raise error if source raises error', async () => {
   const values$ = new Subject<string>();
 
-  const actual: any[] = [];
-  const error = jest.fn();
+  const observable = k$(values$)(skipRepeats());
+  const res = collect(observable);
 
-  k$(values$)(skipRepeats()).subscribe({
-    next(v) {
-      actual.push(v);
-    },
-    error
-  });
+  values$.next('a');
+  values$.next('a');
 
   const thrownError = new Error('nope');
-  values$.next('a');
-  values$.next('a');
   values$.error(thrownError);
 
-  expect(actual).toEqual(['a']);
-  expect(error).toHaveBeenCalledWith(thrownError);
+  expect(await res).toEqual(['a', thrownError]);
 });
 
 test('should raise error if source throws', () => {

@@ -2,8 +2,6 @@
 
 exports[`returns error if completing without receiving any value 1`] = `
 Array [
-  Array [
-    [Error: EmptyError: first() requires source stream to emit at least one value.],
-  ],
+  [Error: EmptyError: first() requires source stream to emit at least one value.],
 ]
 `;
