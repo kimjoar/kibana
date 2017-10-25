@@ -1,6 +1,6 @@
 import { Observable, Subscription } from '../Observable';
 import { OperatorFunction } from '../interfaces';
-import { $fromFactory } from '../factories';
+import { $fromCallback } from '../factories';
 
 /**
  * Modify a stream so that when the source completes without emiting any values
@@ -31,7 +31,7 @@ export function ifEmpty<T, R>(factory: () => R): OperatorFunction<T, T | R> {
               return;
             }
 
-            subs.push($fromFactory(factory).subscribe(observer));
+            subs.push($fromCallback(factory).subscribe(observer));
           }
         })
       );

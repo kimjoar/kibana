@@ -27,8 +27,7 @@ declare namespace Observable {
     ): Subscription;
   }
 
-  type SubscribableOrPromise<T> = Subscribable<T> | PromiseLike<T>;
-  type ObservableInput<T> = SubscribableOrPromise<T> | ArrayLike<T>;
+  type ObservableInput<T> = Subscribable<T> | Iterable<T>;
 
   interface SubscriptionObserver<T> {
     // Sends the next value in the sequence
