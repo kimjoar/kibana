@@ -1,10 +1,10 @@
-# k$
+# `k$`
 
 Experiment to see how we might get some of the benefits of a library like RxJS
-using nothing but the native `Observable` object which is proposed by
+using nothing but the native `Observable` object proposed in
 https://github.com/tc39/proposal-observable.
 
-## Example:
+## Example
 
 ```js
 import { $from, k$, map, last } from 'kbn-observable';
@@ -26,14 +26,19 @@ k$(observable)(map(i => 2017 + i), last())
   .subscribe(console.log) // logs 2020
 ```
 
+## Just getting started with Observables?
+
+TODO: Docs, videos, other intros. This needs to be good enough for people to
+easily jump in and understand the basics of observables.
+
 ## Factories
 
 Just like the `k$` function, factories take arguments and produce an
-observable.  Different factories are useful for different things, and many
-behave just like the static functions attached to the Rx.Observable class in
+observable. Different factories are useful for different things, and many
+behave just like the static functions attached to the `Rx.Observable` class in
 RxJS.
 
-See ./src/factories](./src/factories) for more info about each factory.
+See [./src/factories](./src/factories) for more info about each factory.
 
 ## Operators
 
@@ -42,11 +47,26 @@ function. Operators aren't anything fancy, just a function that takes an
 observable and returns a new observable with the requested modifications
 applied.
 
-Multiple operator functions can be passed as the second argument to `k$` and
-will be applied to the input observable before returning the final observable
-with all modifications applied.
+Multiple operator functions can be passed to `k$` and will be applied to the
+input observable before returning the final observable with all modifications
+applied, e.g. like the example above with `map` and `last`.
 
 See [./src/operators](./src/operators) for more info about each operator.
+
+## Why `k$`?
+
+TODO
+
+- We want to expose something minimal, and preferably something close to the
+  [proposed native observables](https://github.com/tc39/proposal-observable).
+- RxJS is great, but a heavy dep to push on all plugins, especially with regards
+  to updates etc.
+
+## Caveats
+
+TODO
+
+Why `k$(source)(...operators)` instead of `k$(source, [...operators])`?
 
 ## Inspiration
 
