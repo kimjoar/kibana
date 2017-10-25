@@ -1,7 +1,6 @@
 import { Observable } from '../Observable';
 import { Subject } from '../Subject';
 import { BehaviorSubject } from '../BehaviorSubject';
-import { ObjectUnsubscribedError } from '../errors';
 
 test('should extend Subject', () => {
   const subject = new BehaviorSubject(null);
@@ -18,14 +17,6 @@ test('should throw if it has received an error and getValue() is called', () => 
   }).toThrowErrorMatchingSnapshot();
 });
 
-test('should throw an ObjectUnsubscribedError if getValue() is called and the BehaviorSubject has been unsubscribed', () => {
-  const subject = new BehaviorSubject('hi there');
-  subject.unsubscribe();
-  expect(() => {
-    subject.getValue();
-  }).toThrow(ObjectUnsubscribedError);
-});
-
 test('should have a getValue() method to retrieve the current value', () => {
   const subject = new BehaviorSubject('foo');
 
@@ -36,24 +27,11 @@ test('should have a getValue() method to retrieve the current value', () => {
   expect(subject.getValue()).toEqual('bar');
 });
 
-test('should not allow you to set `value` directly', () => {
-  const subject = new BehaviorSubject('foo');
-
-  try {
-    (subject as any).value = 'bar';
-  } catch (e) {
-    //noop
-  }
-
-  expect(subject.getValue()).toEqual('foo');
-  expect(subject.value).toEqual('foo');
-});
-
 test('should still allow you to retrieve the value from the value property', () => {
   const subject = new BehaviorSubject('fuzzy');
-  expect(subject.value).toEqual('fuzzy');
+  expect(subject.getValue()).toEqual('fuzzy');
   subject.next('bunny');
-  expect(subject.value).toEqual('bunny');
+  expect(subject.getValue()).toEqual('bunny');
 });
 
 test('should start with an initialization value', done => {
@@ -91,7 +69,7 @@ test('should pump values to multiple subscribers', done => {
     complete: done
   });
 
-  expect(subject.observers.length).toEqual(2);
+  expect((subject as any).observers.size).toEqual(2);
   subject.next('foo');
   subject.next('bar');
   subject.complete();
@@ -127,11 +105,11 @@ test('should clean out unsubscribed subscribers', done => {
     expect(x).toEqual('init');
   });
 
-  expect(subject.observers.length).toEqual(2);
+  expect((subject as any).observers.size).toEqual(2);
   sub1.unsubscribe();
-  expect(subject.observers.length).toEqual(1);
+  expect((subject as any).observers.size).toEqual(1);
   sub2.unsubscribe();
-  expect(subject.observers.length).toEqual(0);
+  expect((subject as any).observers.size).toEqual(0);
   done();
 });
 
@@ -173,9 +151,7 @@ test('should replay the previous value when subscribed', () => {
   expect(s3Actual).toEqual([5]);
 });
 
-// TODO: This has a bug related to the Observer. It gets `complete`d correctly,
-// but later receives a `next`-ed value.
-test.skip('should emit complete when subscribed after completed', () => {
+test('should emit complete when subscribed after completed', () => {
   const source = Observable.of(1, 2, 3, 4, 5);
   const subject = new BehaviorSubject(0);
 

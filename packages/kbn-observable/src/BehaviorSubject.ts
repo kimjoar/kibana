@@ -1,38 +1,28 @@
-import { Observer, Subscription } from './Observable';
+import { SubscriptionObserver } from './Observable';
 import { Subject } from './Subject';
-import { ObjectUnsubscribedError } from './errors';
 
 export class BehaviorSubject<T> extends Subject<T> {
-  constructor(private _value: T) {
+  constructor(private value: T) {
     super();
   }
 
-  protected _subscribe(observer: Observer<T>): Subscription {
-    const subscription = super._subscribe(observer);
-
-    if (subscription && !subscription.closed) {
-      observer.next(this._value);
+  protected registerObserver(observer: SubscriptionObserver<T>) {
+    if (!this.isStopped) {
+      observer.next(this.value);
     }
-
-    return subscription;
+    return super.registerObserver(observer);
   }
 
   getValue() {
-    if (this.hasError) {
+    if (this.thrownError !== undefined) {
       throw this.thrownError;
-    } else if (this.closed) {
-      throw new ObjectUnsubscribedError();
     }
 
-    return this._value;
+    return this.value;
   }
 
-  get value(): T {
-    return this.getValue();
-  }
-
-  next(value: T): void {
-    this._value = value;
-    super.next(value);
+  next(value: T) {
+    this.value = value;
+    return super.next(value);
   }
 }

@@ -1,114 +1,57 @@
-import {
-  Observable,
-  Subscription,
-  PartialObserver,
-  Observer
-} from './Observable';
-import { ObjectUnsubscribedError } from './errors';
+import { Observable, SubscriptionObserver } from './Observable';
 
-const noop = () => {};
-
-export class Subject<T> extends Observable<T> implements Subscription {
-  observers: Observer<T>[] = [];
-  closed: boolean = false;
-  isStopped: boolean = false;
-  hasError: boolean = false;
-  thrownError: Error;
+export class Subject<T> extends Observable<T> {
+  protected observers: Set<SubscriptionObserver<T>> = new Set();
+  protected isStopped = false;
+  protected thrownError?: Error;
 
   constructor() {
-    super(() => {});
+    super(observer => this.registerObserver(observer));
+  }
+
+  protected registerObserver(observer: SubscriptionObserver<T>) {
+    if (this.isStopped) {
+      if (this.thrownError !== undefined) {
+        observer.error(this.thrownError);
+      } else {
+        observer.complete();
+      }
+    } else {
+      this.observers.add(observer);
+      return () => this.observers.delete(observer);
+    }
   }
 
   next(value: T) {
-    if (this.closed) {
-      throw new ObjectUnsubscribedError();
-    }
-
-    if (this.isStopped) {
-      return;
-    }
-
     for (const observer of this.observers) {
-      observer.next!(value);
+      observer.next(value);
     }
   }
 
-  error(err: any) {
-    if (this.closed) {
-      throw new ObjectUnsubscribedError();
-    }
-
-    this.hasError = true;
-    this.thrownError = err;
+  error(error: Error) {
+    this.thrownError = error;
     this.isStopped = true;
 
     for (const observer of this.observers) {
-      observer.error!(err);
+      observer.error(error);
     }
-    this.observers.length = 0;
+
+    this.observers.clear();
   }
 
   complete() {
-    if (this.closed) {
-      throw new ObjectUnsubscribedError();
-    }
-
     this.isStopped = true;
 
     for (const observer of this.observers) {
-      observer.complete!();
-    }
-    this.observers.length = 0;
-  }
-
-  // Subscribes to the sequence with an observer
-  subscribe(): Subscription;
-  subscribe(observer: PartialObserver<T>): Subscription;
-
-  // Subscribes to the sequence with callbacks
-  subscribe(
-    onNext: (val: T) => void,
-    onError?: (err: Error) => void,
-    onComplete?: () => void
-  ): Subscription;
-
-  subscribe(
-    observerOrOnNext?: PartialObserver<T> | ((value: T) => void),
-    onError?: (err: Error) => void,
-    onComplete?: () => void
-  ): Subscription {
-    const observer = toSubscriber(observerOrOnNext, onError, onComplete);
-    return this._subscribe(observer);
-  }
-
-  protected _subscribe(observer: Observer<T>): Subscription {
-    if (this.closed) {
-      throw new ObjectUnsubscribedError();
+      observer.complete();
     }
 
-    if (this.hasError) {
-      observer.error!(this.thrownError);
-      return SubjectSubscription.EMPTY;
-    }
-
-    if (this.isStopped) {
-      observer.complete!();
-      return SubjectSubscription.EMPTY;
-    }
-
-    this.observers.push(observer);
-
-    return new SubjectSubscription(() => {
-      this.observers.splice(this.observers.indexOf(observer), 1);
-    });
+    this.observers.clear();
   }
 
-  unsubscribe() {
-    this.isStopped = true;
-    this.closed = true;
-    this.observers.length = 0;
-  }
-
+  /**
+   * Returns an observable, so the observer methods are hidden.
+   */
   asObservable(): Observable<T> {
     return new Observable(observer => {
       return this.subscribe({
@@ -124,47 +67,4 @@ export class Subject<T> extends Observable<T> implements Subscription {
       });
     });
   }
-}
-
-class SubjectSubscription implements Subscription {
-  closed: boolean = false;
-
-  static EMPTY = new SubjectSubscription(noop);
-
-  constructor(private unsubscribeFn: () => void) {}
-
-  unsubscribe() {
-    this.unsubscribeFn();
-  }
-}
-
-function toSubscriber<T>(
-  observerOrOnNext?: PartialObserver<T> | ((value: T) => void),
-  onError?: (err: Error) => void,
-  onComplete?: () => void
-): Observer<T> {
-  if (typeof observerOrOnNext === 'function') {
-    return {
-      start: noop,
-      next: observerOrOnNext,
-      error: onError || noop,
-      complete: onComplete || noop
-    };
-  }
-
-  if (typeof observerOrOnNext !== 'object') {
-    return {
-      start: noop,
-      next: noop,
-      error: noop,
-      complete: noop
-    };
-  }
-
-  return {
-    start: observerOrOnNext.start || noop,
-    next: observerOrOnNext.next || noop,
-    error: observerOrOnNext.error || noop,
-    complete: observerOrOnNext.complete || noop
-  };
 }

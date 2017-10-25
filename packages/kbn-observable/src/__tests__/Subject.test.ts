@@ -1,8 +1,7 @@
 import { Observable } from '../Observable';
 import { Subject } from '../Subject';
-import { ObjectUnsubscribedError } from '../errors';
 import { k$ } from '../k$';
-import { delay } from '../operators';
+import { delay, first } from '../operators';
 
 const noop = () => {};
 
@@ -33,7 +32,7 @@ test('should pump values to multiple subscribers', () => {
     actual.push(`2-${x}`);
   });
 
-  expect(subject.observers.length).toEqual(2);
+  expect((subject as any).observers.size).toEqual(2);
   subject.next('foo');
   subject.next('bar');
   subject.complete();
@@ -296,89 +295,19 @@ test('should handle subscribers that arrive and leave at different times, subjec
   expect(results3).toEqual(['C']);
 });
 
-test('should disallow new subscriber once subject has been disposed', () => {
-  const subject = new Subject();
-  const results1: any[] = [];
-  const results2: any[] = [];
-  const results3: any[] = [];
-
-  const subscription1 = subject.subscribe(
-    x => {
-      results1.push(x);
-    },
-    e => {
-      results1.push('E');
-    },
-    () => {
-      results1.push('C');
-    }
-  );
-
-  subject.next(1);
-  subject.next(2);
-
-  const subscription2 = subject.subscribe(
-    x => {
-      results2.push(x);
-    },
-    e => {
-      results2.push('E');
-    },
-    () => {
-      results2.push('C');
-    }
-  );
-
-  subject.next(3);
-  subject.next(4);
-  subject.next(5);
-
-  subscription1.unsubscribe();
-  subscription2.unsubscribe();
-  subject.unsubscribe();
-
-  expect(() => {
-    subject.subscribe(
-      x => {
-        results3.push(x);
-      },
-      e => {
-        expect(false).toEqual('should not throw error: ' + e.toString());
-      }
-    );
-  }).toThrow(ObjectUnsubscribedError);
-
-  expect(results1).toEqual([1, 2, 3, 4, 5]);
-  expect(results2).toEqual([3, 4, 5]);
-  expect(results3).toEqual([]);
-});
-
-test('should not allow values to be nexted after it is unsubscribed', () => {
-  const subject = new Subject();
-
-  subject.subscribe(x => {
-    expect(x).toEqual('foo');
-  });
-
-  subject.next('foo');
-  subject.unsubscribe();
-
-  expect(() => subject.next('bar')).toThrow(ObjectUnsubscribedError);
-});
-
 test('should clean out unsubscribed subscribers', () => {
   const subject = new Subject();
 
   const sub1 = subject.subscribe(noop);
   const sub2 = subject.subscribe(noop);
 
-  expect(subject.observers.length).toBe(2);
+  expect((subject as any).observers.size).toBe(2);
 
   sub1.unsubscribe();
-  expect(subject.observers.length).toBe(1);
+  expect((subject as any).observers.size).toBe(1);
 
   sub2.unsubscribe();
-  expect(subject.observers.length).toBe(0);
+  expect((subject as any).observers.size).toBe(0);
 });
 
 test('should be an Observer which can be given to Observable.subscribe', () => {
@@ -426,21 +355,25 @@ test('should be usable as an Observer of a finite delayed Observable', done => {
   k$(source)(delay(10)).subscribe(subject);
 });
 
-test('should throw ObjectUnsubscribedError when emit after unsubscribed', () => {
-  const subject = new Subject<string>();
-  subject.unsubscribe();
+test('can use subject in $k', async () => {
+  const values$ = new Subject();
 
-  expect(() => {
-    subject.next('foo');
-  }).toThrow(ObjectUnsubscribedError);
+  const next = jest.fn();
+  const complete = jest.fn();
+  const error = jest.fn();
 
-  expect(() => {
-    subject.error('bar');
-  }).toThrow(ObjectUnsubscribedError);
+  k$(values$)(first()).subscribe({
+    next,
+    error,
+    complete
+  });
 
-  expect(() => {
-    subject.complete();
-  }).toThrow(ObjectUnsubscribedError);
+  values$.next('test');
+
+  expect(next).toHaveBeenCalledTimes(1);
+  expect(next).toHaveBeenCalledWith('test');
+  expect(error).not.toHaveBeenCalled();
+  expect(complete).toHaveBeenCalled();
 });
 
 test('should not next after completed', () => {
