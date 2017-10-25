@@ -3,8 +3,8 @@ import { EmptyError } from '../errors';
 import { MonoTypeOperatorFunction } from '../interfaces';
 
 /**
- * Emits only the first value (or the first value that meets some condition)
- * emitted by the source Observable.
+ * Emits the first value emitted by the source Observable, then immediately
+ * completes.
  */
 export function first<T>(): MonoTypeOperatorFunction<T> {
   return function firstOperation(source) {

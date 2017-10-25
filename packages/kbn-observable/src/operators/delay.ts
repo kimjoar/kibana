@@ -2,7 +2,7 @@ import { Observable } from '../Observable';
 import { MonoTypeOperatorFunction } from '../interfaces';
 
 /**
- * Modifier that applies a delay of `ms` to each item of source observable
+ * Operator that applies a delay of `ms` to each item of source observable
  * before mirroring them. Errors are not delayed, but complete will be delayed
  * until all values have been mirrored.
  * 

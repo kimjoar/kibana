@@ -7,6 +7,4 @@ export type OperatorFunction<T, R> = UnaryFunction<
   Observable<R>
 >;
 
-export type FactoryOrValue<T> = T | (() => T);
-
 export type MonoTypeOperatorFunction<T> = OperatorFunction<T, T>;
