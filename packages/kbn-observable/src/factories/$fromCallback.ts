@@ -1,4 +1,5 @@
 import { Observable } from '../Observable';
+import { isObservable } from '../lib/isObservable';
 
 /**
  * Creates an observable that calls the specified function with no arguments
@@ -11,18 +12,17 @@ import { Observable } from '../Observable';
  * @param {Function}
  * @returns {Observable}
  */
-export function $fromCallback<T>(factory: () => T): Observable<T> {
+export function $fromCallback<T>(
+  factory: () => T | Observable<T>
+): Observable<T> {
   return new Observable(observer => {
     const result = factory();
 
-    // empty stream
-    if (result === undefined) {
+    if (isObservable(result)) {
+      result.subscribe(observer);
+    } else {
+      observer.next(result);
       observer.complete();
-      return;
     }
-
-    // result is just a value
-    observer.next(result as T);
-    observer.complete();
   });
 }
