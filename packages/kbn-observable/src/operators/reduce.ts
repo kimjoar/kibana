@@ -18,8 +18,8 @@ export function reduce<T, R>(
   return function reduceOperation(source) {
     return pipe(
       scan(accumulator, initialValue),
-      last(),
-      ifEmpty(() => initialValue)
+      ifEmpty(() => initialValue),
+      last()
     )(source);
   };
 }
