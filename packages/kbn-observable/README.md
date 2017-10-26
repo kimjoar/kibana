@@ -1,28 +1,28 @@
 # `k$`
 
-Experiment to see how we might get some of the benefits of a library like RxJS
-using nothing but the native `Observable` object proposed in
-https://github.com/tc39/proposal-observable.
+k$ is an observable library based on "native observables", aka the `Observable`
+functionality proposed in https://github.com/tc39/proposal-observable.
+
+Where all other observable libraries put operators and other methods on their
+own implementation of a base `Observable`, we want to use the proposed
+`Observable` without adding anything to its `prototype`. By doing this, any
+operator will always return an instance of the "native" observable.
+
+The reason we want this is that we don't want to expose "heavy" observables
+with lots of functionality in our plugin apis, but rather expose "native"
+observables.
 
 ## Example
 
 ```js
-import { $from, k$, map, last } from 'kbn-observable';
+import { Observable, k$, map, last } from 'kbn-observable';
 
-// Calling $from will attempt to cast the input value
-// to an observable:
-// 
-// - native observable: returns input value
-// - non-native observable: wraps in a native observable
-// - promise: observable that produces a single value or error
-// - iterable (except strings): emits all items from iterable
-// 
-const observable = $from(1, 2, 3);
+const source = Observable.from(1, 2, 3);
 
-// The first argument to `k$` is the source observable, and the rest are
-// "operators" that modify the input value and return an observable that
-// reflects all of the modifications.
-k$(observable)(map(i => 2017 + i), last())
+// When `k$` is called with the source observable it returns a function that
+// can be called with "operators" that modify the input value and return an
+// observable that reflects all of the modifications.
+k$(source)(map(i => 2017 + i), last())
   .subscribe(console.log) // logs 2020
 ```
 
@@ -31,12 +31,15 @@ k$(observable)(map(i => 2017 + i), last())
 TODO: Docs, videos, other intros. This needs to be good enough for people to
 easily jump in and understand the basics of observables.
 
+If you are just getting started with observables, a great place to start is with
+Andre Staltz' [The introduction to Reactive Programming you've been missing](https://gist.github.com/staltz/868e7e9bc2a7b8c1f754),
+which is a great introduction to the ideas and concepts.
+
 ## Factories
 
-Just like the `k$` function, factories take arguments and produce an
-observable. Different factories are useful for different things, and many
-behave just like the static functions attached to the `Rx.Observable` class in
-RxJS.
+Just like the `k$` function, factories take arguments and produce an observable.
+Different factories are useful for different things, and many behave just like
+the static functions attached to the `Rx.Observable` class in RxJS.
 
 See [./src/factories](./src/factories) for more info about each factory.
 
@@ -45,7 +48,19 @@ See [./src/factories](./src/factories) for more info about each factory.
 Operators are functions that take some arguments and produce an operator
 function. Operators aren't anything fancy, just a function that takes an
 observable and returns a new observable with the requested modifications
-applied.
+applied. When using `k$` you don't even have to think much about it being an
+observable in many cases, as it's just a pure function that receives a value as
+an argument and returns a value, e.g.
+
+```js
+map(i => 2017 + i);
+
+filter(i => i % 2 === 0)
+
+reduce((acc, val) => {
+  return acc + val;
+}, 0);
+```
 
 Multiple operator functions can be passed to `k$` and will be applied to the
 input observable before returning the final observable with all modifications
@@ -67,6 +82,10 @@ TODO
 TODO
 
 Why `k$(source)(...operators)` instead of `k$(source, [...operators])`?
+
+## More advanced topics
+
+TODO: Hot/cold. Multicasting.
 
 ## Inspiration
 
