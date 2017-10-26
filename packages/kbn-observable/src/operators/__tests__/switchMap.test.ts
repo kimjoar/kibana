@@ -25,10 +25,60 @@ test('injects index to map', async () => {
   expect(await res).toEqual([0, 1, 2, 'C']);
 });
 
-test('should unsub inner observables', async () => {
+test('should unsubscribe inner observable when source observable emits new value', async () => {
   const unsubbed: string[] = [];
+  const subject = new Subject<string>();
 
-  const observable = k$($of('a', 'b'))(
+  k$(subject)(
+    switchMap(
+      x =>
+        new Observable(observer => {
+          return () => {
+            unsubbed.push(x);
+          };
+        })
+    )
+  ).subscribe();
+
+  subject.next('a');
+  expect(unsubbed).toEqual([]);
+
+  subject.next('b');
+  expect(unsubbed).toEqual(['a']);
+
+  subject.next('c');
+  expect(unsubbed).toEqual(['a', 'b']);
+
+  subject.complete();
+  expect(unsubbed).toEqual(['a', 'b', 'c']);
+});
+
+test('should unsubscribe inner observable when source observable errors', async () => {
+  const unsubbed: string[] = [];
+  const subject = new Subject<string>();
+
+  k$(subject)(
+    switchMap(
+      x =>
+        new Observable(observer => {
+          return () => {
+            unsubbed.push(x);
+          };
+        })
+    )
+  ).subscribe();
+
+  subject.next('a');
+  subject.error(new Error('fail'));
+
+  expect(unsubbed).toEqual(['a']);
+});
+
+test('should unsubscribe inner observables if inner observer completes', async () => {
+  const unsubbed: string[] = [];
+  const subject = new Subject<string>();
+
+  k$(subject)(
     switchMap(
       x =>
         new Observable(observer => {
@@ -38,11 +88,44 @@ test('should unsub inner observables', async () => {
           };
         })
     )
-  );
+  ).subscribe();
 
-  await collect(observable);
+  subject.next('a');
+  expect(unsubbed).toEqual(['a']);
 
+  subject.next('b');
   expect(unsubbed).toEqual(['a', 'b']);
+
+  subject.complete();
+  expect(unsubbed).toEqual(['a', 'b']);
+});
+
+test('should unsubscribe inner observables if inner observer errors', async () => {
+  const unsubbed: string[] = [];
+  const subject = new Subject<string>();
+
+  const error = jest.fn();
+  const thrownError = new Error('fail');
+
+  k$(subject)(
+    switchMap(
+      x =>
+        new Observable(observer => {
+          observer.error(thrownError);
+          return () => {
+            unsubbed.push(x);
+          };
+        })
+    )
+  ).subscribe({
+    error
+  });
+
+  subject.next('a');
+  expect(unsubbed).toEqual(['a']);
+
+  expect(error).toHaveBeenCalledTimes(1);
+  expect(error).toHaveBeenCalledWith(thrownError);
 });
 
 test('should switch inner observables', () => {

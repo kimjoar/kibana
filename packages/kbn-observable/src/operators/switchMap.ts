@@ -53,7 +53,7 @@ export function switchMap<T, R>(
   project: (value: T, index: number) => Observable<R>
 ): OperatorFunction<T, R> {
   return function switchMapOperation(source) {
-    return new Observable(destination => {
+    return new Observable(observer => {
       let i = 0;
       let innerSubscription: Subscription | undefined = undefined;
 
@@ -63,7 +63,7 @@ export function switchMap<T, R>(
           try {
             result = project(value, i++);
           } catch (error) {
-            destination.error(error);
+            observer.error(error);
             return;
           }
 
@@ -73,24 +73,28 @@ export function switchMap<T, R>(
 
           innerSubscription = result.subscribe({
             next(innerVal) {
-              destination.next(innerVal);
+              observer.next(innerVal);
             },
             error(err) {
-              innerSubscription!.unsubscribe();
-              destination.error(err);
-            },
-            complete() {
-              innerSubscription!.unsubscribe();
+              observer.error(err);
             }
           });
         },
         error(err) {
-          destination.error(err);
-          innerSubscription = undefined;
+          if (innerSubscription !== undefined) {
+            innerSubscription.unsubscribe();
+            innerSubscription = undefined;
+          }
+
+          observer.error(err);
         },
         complete() {
-          destination.complete();
-          innerSubscription = undefined;
+          if (innerSubscription !== undefined) {
+            innerSubscription.unsubscribe();
+            innerSubscription = undefined;
+          }
+
+          observer.complete();
         }
       });
     });
