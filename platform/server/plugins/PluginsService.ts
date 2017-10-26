@@ -8,9 +8,10 @@ import {
   mergeMap,
   filter,
   toArray,
-  toPromise
+  toPromise,
+  $bindNodeCallback,
+  $fromPromise
 } from 'kbn-observable';
-import { promisify } from 'util';
 
 import { Plugin } from './Plugin';
 import { PluginName } from './types';
@@ -20,8 +21,8 @@ import { Logger, LoggerFactory } from '../../logging';
 import { CoreService } from '../../types/CoreService';
 import { ConfigService } from '../../config';
 
-const fsReadDirAsync = promisify(readdir);
-const fsStatAsync = promisify(stat);
+const fsReadDir$ = $bindNodeCallback(readdir);
+const fsStat$ = $bindNodeCallback(stat);
 
 export class PluginsService implements CoreService {
   private readonly log: Logger;
@@ -38,7 +39,7 @@ export class PluginsService implements CoreService {
   async start() {
     const plugins = await k$(this.getAllPlugins())(
       mergeMap(
-        plugin => this.isPluginEnabled(plugin),
+        plugin => $fromPromise(this.isPluginEnabled(plugin)),
         (plugin, isEnabled) => ({ plugin, isEnabled })
       ),
       filter(obj => {
@@ -72,7 +73,7 @@ export class PluginsService implements CoreService {
       first(),
       mergeMap(config => config.scanDirs),
       mergeMap(
-        dir => fsReadDirAsync(dir),
+        dir => fsReadDir$(dir),
         (dir, pluginNames) =>
           pluginNames.map(pluginName => ({
             name: pluginName,
@@ -81,7 +82,7 @@ export class PluginsService implements CoreService {
       ),
       mergeMap(plugins => plugins),
       mergeMap(
-        plugin => fsStatAsync(plugin.path),
+        plugin => fsStat$(plugin.path),
         (plugin, stat) => ({ ...plugin, isDir: stat.isDirectory() })
       ),
       filter(plugin => plugin.isDir),
