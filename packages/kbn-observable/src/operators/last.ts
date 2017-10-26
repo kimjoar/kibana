@@ -3,7 +3,13 @@ import { EmptyError } from '../errors';
 import { MonoTypeOperatorFunction } from '../interfaces';
 
 /**
- * Operator that drops all but the last event from its source observable.
+ * Emits the last value emitted by the source Observable, then immediately
+ * completes.
+ * 
+ * @throws {EmptyError} Delivers an EmptyError to the Observer's `error`
+ * callback if the Observable completes before any `next` notification was sent.
+ * 
+ * @returns An Observable of the last item received.
  */
 export function last<T>(): MonoTypeOperatorFunction<T> {
   return function lastOperation(source) {

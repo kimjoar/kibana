@@ -16,6 +16,53 @@ export function mergeMap<T, I, R>(
 ): OperatorFunction<T, R>;
 
 /**
+ * Projects each source value to an Observable which is merged in the output
+ * Observable.
+ * 
+ * Example:
+ * 
+ * ```js
+ * const source = Observable.from([1, 2, 3]);
+ * const observable = k$(source)(
+ *   mergeMap(x => Observable.of('a', x + 1))
+ * );
+ * ```
+ * 
+ * Results in the following items emitted:
+ * - a
+ * - 2
+ * - a
+ * - 3
+ * - a
+ * - 4
+ * 
+ * As you can see it merges the returned observable and emits every value from
+ * that observable. You can think of it as being the same as `flatMap` on an
+ * array, just that you return an Observable instead of an array.
+ *
+ * You can also specify a `resultSelector` that will receive both the value
+ * emitted from the `source` observable and the value returned from the provided
+ * `project` function, e.g.
+ * 
+ * ```js
+ * mergeMap(
+ *  pluginName => readPluginConfig$(pluginName),
+ *  (pluginName, pluginConfig) => {
+ *    return { pluginName, pluginConfig }
+ *  }
+ * )
+ * ```
+ * 
+ * In the `resultSelector` you receive both `pluginName`, which was the value
+ * emitted by the source observable, and `pluginConfig`, which was the value
+ * emitted by `readPluginConfig$`.
+ * 
+ * More "formally" described: Returns an Observable that emits items based on
+ * applying a function that you supply (the `resultSelector`) to each item
+ * emitted by the source Observable, where that function returns an Observable,
+ * and then merging those resulting Observables and emitting the results of
+ * this merger.
+ *
  * @param project A function that, when applied to an item emitted by the source
  * Observable, returns an Observable.
  * @param resultSelector A function to produce the value on the output

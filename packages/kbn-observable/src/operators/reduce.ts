@@ -5,11 +5,18 @@ import { pipe } from '../lib';
 import { OperatorFunction } from '../interfaces';
 
 /**
- * Modify the source stream to apply a function to each value to produce a new
- * value, then only emit the final result of calling `fn(acc, item, i)`.
+ * Applies the accumulator function to every value in the source observable and
+ * emits the return value when the source completes.
  * 
- * @param accumulator
- * @param initialValue
+ * It's like {@link scan}, but only emits when the source observable completes,
+ * not the current accumulation whenever the source emits a value.
+ * 
+ * If no values are emitted, the `initialValue` will be emitted.
+ * 
+ * @param accumulator The accumulator function called on each source value.
+ * @param initialValue The initial accumulation value.
+ * @return An Observable that emits a single value that is the result of
+ * accumulating the values emitted by the source Observable.
  */
 export function reduce<T, R>(
   accumulator: (acc: R, value: T, index: number) => R,
