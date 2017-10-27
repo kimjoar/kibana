@@ -1,22 +1,32 @@
 import { Observable } from '../../Observable';
 import { k$ } from '../../k$';
 import { Subject } from '../../Subject';
-import { mergeMap, delay } from '../';
+import { mergeMap, map } from '../';
 import { $of, $concat, $error } from '../../factories';
 import { collect } from '../../lib/collect';
 
+const tickMs = ms => new Promise(resolve => setTimeout(resolve, ms));
+
 it('should mergeMap many outer values to many inner values', async () => {
-  const source = Observable.from([1, 2, 3, 4]);
-  const project = (value: number, index: number) =>
-    $concat(
-      k$($of(`${value}-a`))(delay(20)),
-      k$($of(`${value}-b`))(delay(40)),
-      k$($of(`${value}-c`))(delay(60))
-    );
+  const inner$ = new Subject();
 
-  const observable = k$(source)(mergeMap(project));
+  const outer$ = Observable.from([1, 2, 3, 4]);
+  const project = (value: number) => k$(inner$)(map(x => `${value}-${x}`));
 
+  const observable = k$(outer$)(mergeMap(project));
   const res = collect(observable);
+
+  await tickMs(10);
+  inner$.next('a');
+
+  await tickMs(10);
+  inner$.next('b');
+
+  await tickMs(10);
+  inner$.next('c');
+
+  inner$.complete();
+
   expect(await res).toEqual([
     '1-a',
     '2-a',
@@ -35,23 +45,31 @@ it('should mergeMap many outer values to many inner values', async () => {
 });
 
 it('should mergeMap many outer values to many inner values, early complete', async () => {
-  const source = new Subject();
-  const project = (value: number, index: number) =>
-    $concat(
-      k$($of(`${value}-a`))(delay(20)),
-      k$($of(`${value}-b`))(delay(40)),
-      k$($of(`${value}-c`))(delay(60))
-    );
+  const outer$ = new Subject();
+  const inner$ = new Subject();
 
-  const observable = k$(source)(mergeMap(project));
+  const project = (value: number) => k$(inner$)(map(x => `${value}-${x}`));
+
+  const observable = k$(outer$)(mergeMap(project));
   const res = collect(observable);
 
-  source.next(1);
-  source.next(2);
-  source.complete();
+  outer$.next(1);
+  outer$.next(2);
+  outer$.complete();
 
-  // This shouldn't end up in the results
-  source.next(3);
+  // This shouldn't end up in the results because `outer$` has completed.
+  outer$.next(3);
+
+  await tickMs(5);
+  inner$.next('a');
+
+  await tickMs(5);
+  inner$.next('b');
+
+  await tickMs(5);
+  inner$.next('c');
+
+  inner$.complete();
 
   expect(await res).toEqual(['1-a', '2-a', '1-b', '2-b', '1-c', '2-c', 'C']);
 });
@@ -70,26 +88,31 @@ it('should mergeMap many outer to many inner, and inner throws', async () => {
 });
 
 it('should mergeMap many outer to many inner, and outer throws', async () => {
-  const source = new Subject();
-  const project = (value: number, index: number) =>
-    $concat(
-      k$($of(`${value}-a`))(delay(20)),
-      k$($of(`${value}-b`))(delay(40)),
-      k$($of(`${value}-c`))(delay(60))
-    );
+  const outer$ = new Subject();
+  const inner$ = new Subject();
 
-  const observable = k$(source)(mergeMap(project));
+  const project = (value: number) => k$(inner$)(map(x => `${value}-${x}`));
+
+  const observable = k$(outer$)(mergeMap(project));
   const res = collect(observable);
 
-  source.next(1);
-  source.next(2);
+  outer$.next(1);
+  outer$.next(2);
 
   const error = new Error('outer fails');
-  setTimeout(() => {
-    source.error(error);
-    // This shouldn't end up in the results
-    source.next(3);
-  }, 70);
+
+  await tickMs(5);
+  inner$.next('a');
+
+  await tickMs(5);
+  inner$.next('b');
+
+  outer$.error(error);
+  // This shouldn't end up in the results because `outer$` has failed
+  outer$.next(3);
+
+  await tickMs(5);
+  inner$.next('c');
 
   expect(await res).toEqual(['1-a', '2-a', '1-b', '2-b', error]);
 });

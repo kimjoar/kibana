@@ -1,7 +1,7 @@
 import { Observable } from '../Observable';
 import { Subject } from '../Subject';
 import { k$ } from '../k$';
-import { delay, first } from '../operators';
+import { first } from '../operators';
 
 const noop = () => {};
 
@@ -331,28 +331,6 @@ test('should be an Observer which can be given to Observable.subscribe', () => {
   expect(actual).toEqual([1, 2, 3, 4, 5]);
   expect(err).not.toHaveBeenCalled();
   expect(complete).toHaveBeenCalledTimes(1);
-});
-
-test('should be usable as an Observer of a finite delayed Observable', done => {
-  const source = Observable.of(1, 2, 3);
-  const subject = new Subject<number>();
-
-  const actual: number[] = [];
-
-  subject.subscribe(
-    x => {
-      actual.push(x);
-    },
-    x => {
-      done(new Error('should not be called'));
-    },
-    () => {
-      expect(actual).toEqual([1, 2, 3]);
-      done();
-    }
-  );
-
-  k$(source)(delay(10)).subscribe(subject);
 });
 
 test('can use subject in $k', async () => {

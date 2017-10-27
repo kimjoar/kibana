@@ -1,4 +1,3 @@
-export { delay } from './delay';
 export { ifEmpty } from './ifEmpty';
 export { last } from './last';
 export { first } from './first';
