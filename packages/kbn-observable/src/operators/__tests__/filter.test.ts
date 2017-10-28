@@ -12,7 +12,7 @@ test('returns the filtered values', async () => {
   expect(await res).toEqual([2, 3, 'C']);
 });
 
-it('sends the index as arg 2', async () => {
+test('sends the index as arg 2', async () => {
   const filter$ = k$(number$)(filter((n, i) => i > 1));
 
   const res = collect(filter$);

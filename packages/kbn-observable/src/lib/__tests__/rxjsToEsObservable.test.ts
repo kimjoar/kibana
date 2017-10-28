@@ -1,55 +1,53 @@
 import { Observable } from 'rxjs';
 import { rxjsToEsObservable } from '../';
 
-describe('with rxjs observable transformed to ES observable', () => {
-  it('passes through all values', () => {
-    const observable = Observable.from([1, 2, 3]);
-    const esObservable = rxjsToEsObservable(observable);
+test('passes through all values', () => {
+  const observable = Observable.from([1, 2, 3]);
+  const esObservable = rxjsToEsObservable(observable);
 
-    const arr: number[] = [];
-    esObservable.subscribe(val => {
-      arr.push(val);
-    });
-
-    expect(arr).toEqual([1, 2, 3]);
+  const arr: number[] = [];
+  esObservable.subscribe(val => {
+    arr.push(val);
   });
 
-  it('handles completed', () => {
-    const observable = Observable.empty();
-    const esObservable = rxjsToEsObservable(observable);
+  expect(arr).toEqual([1, 2, 3]);
+});
 
-    let completed = false;
-    esObservable.subscribe({
-      complete: () => {
-        completed = true;
-      }
-    });
+test('handles completed', () => {
+  const observable = Observable.empty();
+  const esObservable = rxjsToEsObservable(observable);
 
-    expect(completed).toBe(true);
+  let completed = false;
+  esObservable.subscribe({
+    complete: () => {
+      completed = true;
+    }
   });
 
-  it('handles error', () => {
-    const err = new Error('err');
-    const observable = Observable.throw(err);
+  expect(completed).toBe(true);
+});
 
-    const esObservable = rxjsToEsObservable(observable);
+test('handles error', () => {
+  const err = new Error('err');
+  const observable = Observable.throw(err);
 
-    let receivedError = undefined;
-    esObservable.subscribe({
-      error: err => {
-        receivedError = err;
-      }
-    });
+  const esObservable = rxjsToEsObservable(observable);
 
-    expect(receivedError).toBe(err);
+  let receivedError = undefined;
+  esObservable.subscribe({
+    error: err => {
+      receivedError = err;
+    }
   });
 
-  it('can transform to new rxjs observable', async () => {
-    const observable = Observable.from([1, 2, 3]);
-    const rxObservable = Observable.from(rxjsToEsObservable(observable));
+  expect(receivedError).toBe(err);
+});
 
-    const arr = await rxObservable.toArray().toPromise();
+test('can transform to new rxjs observable', async () => {
+  const observable = Observable.from([1, 2, 3]);
+  const rxObservable = Observable.from(rxjsToEsObservable(observable));
 
-    expect(arr).toEqual([1, 2, 3]);
-  });
+  const arr = await rxObservable.toArray().toPromise();
+
+  expect(arr).toEqual([1, 2, 3]);
 });

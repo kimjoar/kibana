@@ -235,7 +235,7 @@ test('should handle outer error', async () => {
   expect(await res).toEqual(['a', 'b', 'c', error]);
 });
 
-it('should raise error when projection throws', async () => {
+test('should raise error when projection throws', async () => {
   const outer$ = new Subject<string>();
   const error = new Error('foo');
 

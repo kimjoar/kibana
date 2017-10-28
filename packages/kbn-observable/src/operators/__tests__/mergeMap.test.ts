@@ -7,7 +7,7 @@ import { collect } from '../../lib/collect';
 
 const tickMs = ms => new Promise(resolve => setTimeout(resolve, ms));
 
-it('should mergeMap many outer values to many inner values', async () => {
+test('should mergeMap many outer values to many inner values', async () => {
   const inner$ = new Subject();
 
   const outer$ = Observable.from([1, 2, 3, 4]);
@@ -44,7 +44,7 @@ it('should mergeMap many outer values to many inner values', async () => {
   ]);
 });
 
-it('should mergeMap many outer values to many inner values, early complete', async () => {
+test('should mergeMap many outer values to many inner values, early complete', async () => {
   const outer$ = new Subject();
   const inner$ = new Subject();
 
@@ -74,7 +74,7 @@ it('should mergeMap many outer values to many inner values, early complete', asy
   expect(await res).toEqual(['1-a', '2-a', '1-b', '2-b', '1-c', '2-c', 'C']);
 });
 
-it('should mergeMap many outer to many inner, and inner throws', async () => {
+test('should mergeMap many outer to many inner, and inner throws', async () => {
   const source = Observable.from([1, 2, 3, 4]);
   const error = new Error('fail');
 
@@ -87,7 +87,7 @@ it('should mergeMap many outer to many inner, and inner throws', async () => {
   expect(await res).toEqual([1, 2, error]);
 });
 
-it('should mergeMap many outer to many inner, and outer throws', async () => {
+test('should mergeMap many outer to many inner, and outer throws', async () => {
   const outer$ = new Subject();
   const inner$ = new Subject();
 
@@ -117,7 +117,7 @@ it('should mergeMap many outer to many inner, and outer throws', async () => {
   expect(await res).toEqual(['1-a', '2-a', '1-b', '2-b', error]);
 });
 
-it('should mergeMap many outer to an array for each value', async () => {
+test('should mergeMap many outer to an array for each value', async () => {
   const source = Observable.from([1, 2, 3]);
 
   const observable = k$(source)(mergeMap(() => $of('a', 'b', 'c')));
@@ -126,7 +126,7 @@ it('should mergeMap many outer to an array for each value', async () => {
   expect(await res).toEqual(['a', 'b', 'c', 'a', 'b', 'c', 'a', 'b', 'c', 'C']);
 });
 
-it('should mergeMap many outer to inner arrays, using resultSelector', async () => {
+test('should mergeMap many outer to inner arrays, using resultSelector', async () => {
   expect.assertions(1);
 
   const source = Observable.from([1, 2, 3]);

@@ -3,7 +3,7 @@ import { BehaviorSubject } from '../../BehaviorSubject';
 import { k$ } from '../../k$';
 import { shareLast } from '../';
 
-it('should mirror a simple source Observable', done => {
+test('should mirror a simple source Observable', async () => {
   expect.assertions(1);
 
   const source = Observable.from([4, 3, 2, 1]);
@@ -23,7 +23,7 @@ it('should mirror a simple source Observable', done => {
   });
 });
 
-it('should do nothing if result is not subscribed', () => {
+test('should do nothing if result is not subscribed', () => {
   let subscribed = false;
   const source = new Observable(() => {
     subscribed = true;
@@ -32,7 +32,7 @@ it('should do nothing if result is not subscribed', () => {
   expect(subscribed).toBe(false);
 });
 
-it('should multicast the same values to multiple observers', () => {
+test('should multicast the same values to multiple observers', () => {
   let subscriptions = 0;
   let observer: SubscriptionObserver<string>;
 
@@ -80,7 +80,7 @@ it('should multicast the same values to multiple observers', () => {
   ]);
 });
 
-it('should multicast an error from the source to multiple observers', () => {
+test('should multicast an error from the source to multiple observers', () => {
   expect.assertions(1);
 
   const subject = new BehaviorSubject('a');
@@ -112,7 +112,7 @@ it('should multicast an error from the source to multiple observers', () => {
   expect(results).toEqual([[1, error], [2, error], [3, error]]);
 });
 
-it('should replay results to subsequent subscriptions if source completes', () => {
+test('should replay results to subsequent subscriptions if source completes', () => {
   let subscriptions = 0;
   let observer: SubscriptionObserver<string>;
 
@@ -146,7 +146,7 @@ it('should replay results to subsequent subscriptions if source completes', () =
   expect(results).toEqual(['1/a', '1/b', '1/c', '2/c', '3/c']);
 });
 
-it('should completely restart for subsequent subscriptions if source errors', () => {
+test('should completely restart for subsequent subscriptions if source errors', () => {
   let subscriptions = 0;
   let observer: SubscriptionObserver<string>;
 
@@ -180,7 +180,7 @@ it('should completely restart for subsequent subscriptions if source errors', ()
   expect(results).toEqual(['1/a', '1/b', '1/c', '2/a', '3/a']);
 });
 
-it('restarts if refCount hits 0 due to unsubscriptions', () => {
+test('restarts if refCount hits 0 due to unsubscriptions', () => {
   let subscriptions = 0;
   let observer: SubscriptionObserver<string>;
 
