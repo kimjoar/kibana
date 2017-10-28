@@ -2,25 +2,15 @@ import { Observable, SubscriptionObserver } from '../../Observable';
 import { BehaviorSubject } from '../../BehaviorSubject';
 import { k$ } from '../../k$';
 import { shareLast } from '../';
+import { collect } from '../../lib/collect';
 
 test('should mirror a simple source Observable', async () => {
-  expect.assertions(1);
-
   const source = Observable.from([4, 3, 2, 1]);
-  const results: any[] = [];
 
-  k$(source)(shareLast()).subscribe({
-    next(x) {
-      results.push(x);
-    },
-    error(err) {
-      done(err);
-    },
-    complete() {
-      expect(results).toEqual([4, 3, 2, 1]);
-      done();
-    }
-  });
+  const observable = k$(source)(shareLast());
+  const res = collect(observable);
+
+  expect(await res).toEqual([4, 3, 2, 1, 'C']);
 });
 
 test('should do nothing if result is not subscribed', () => {
@@ -28,7 +18,9 @@ test('should do nothing if result is not subscribed', () => {
   const source = new Observable(() => {
     subscribed = true;
   });
+
   k$(source)(shareLast());
+
   expect(subscribed).toBe(false);
 });
 
