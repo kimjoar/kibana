@@ -7,9 +7,9 @@ const isStrictlyEqual = (a: any, b: any) => a === b;
  * Returns an Observable that emits all items emitted by the source Observable
  * that are not equal to the previous item.
  * 
- * @param equals Comparison function called to test if an item is equal to the
- * previous item in the source. Should return `true` if equal. By default
- * compares using `===`.
+ * @param [equals] Optional comparison function called to test if an item is
+ * equal to the previous item in the source. Should return `true` if equal,
+ * otherwise `false`. By default compares using reference equality, aka `===`.
  * @return An Observable that emits items from the source Observable with
  * distinct values.
  */
