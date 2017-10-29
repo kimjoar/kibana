@@ -1,6 +1,9 @@
 import { SubscriptionObserver } from './Observable';
 import { Subject } from './Subject';
 
+/**
+ * TODO link to Subject, then explain what a BehaviorSubject is.
+ */
 export class BehaviorSubject<T> extends Subject<T> {
   constructor(private value: T) {
     super();
