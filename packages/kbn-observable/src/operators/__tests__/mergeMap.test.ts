@@ -2,10 +2,10 @@ import { Observable } from '../../Observable';
 import { k$ } from '../../k$';
 import { Subject } from '../../Subject';
 import { mergeMap, map } from '../';
-import { $of, $concat, $error } from '../../factories';
+import { $of, $error } from '../../factories';
 import { collect } from '../../lib/collect';
 
-const tickMs = ms => new Promise(resolve => setTimeout(resolve, ms));
+const tickMs = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
 test('should mergeMap many outer values to many inner values', async () => {
   const inner$ = new Subject();

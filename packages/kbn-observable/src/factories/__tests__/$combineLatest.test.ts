@@ -1,9 +1,8 @@
-import { k$ } from '../../k$';
-import { $of, $concat, $combineLatest } from '../../factories';
+import { $of, $combineLatest } from '../../factories';
 import { collect } from '../../lib/collect';
 import { Subject } from '../../Subject';
 
-const tickMs = ms => new Promise(resolve => setTimeout(resolve, ms));
+const tickMs = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
 test('emits once for each combination of items', async () => {
   const foo$ = new Subject();
