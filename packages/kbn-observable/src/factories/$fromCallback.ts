@@ -7,6 +7,7 @@ import { isObservable } from '../lib/isObservable';
  * return value of the factory:
  *
  * - return `undefined`: observable will immediately complete
+ * - returns observable: observerable will mirror the returned value
  * - otherwise: observable will emit the value and then complete
  *
  * @param {Function}
