@@ -14,9 +14,9 @@ import { Observable, SubscriptionObserver } from './Observable';
  * perspective of the Observer, it cannot tell whether the Observable execution
  * is coming from a plain unicast Observable or a Subject.
  *
- * Internally to the Subject, subscribe does not invoke a new execution that
+ * Internally to the Subject, `subscribe` does not invoke a new execution that
  * delivers values. It simply registers the given Observer in a list of
- * Observers, similarly to how addListener usually works in other libraries
+ * Observers, similarly to how `addListener` usually works in other libraries
  * and languages.
  *
  * Every Subject is an Observer. It is an object with the methods `next(v)`,
@@ -25,7 +25,6 @@ import { Observable, SubscriptionObserver } from './Observable';
  * listen to the Subject.
  */
 export class Subject<T> extends Observable<T> {
-
   protected observers: Set<SubscriptionObserver<T>> = new Set();
   protected isStopped = false;
   protected thrownError?: Error;
@@ -47,12 +46,20 @@ export class Subject<T> extends Observable<T> {
     }
   }
 
+  /**
+   * @param value The value that will be forwarded to every observer subscribed
+   * to this subject.
+   */
   next(value: T) {
     for (const observer of this.observers) {
       observer.next(value);
     }
   }
 
+  /**
+   * @param error The error that will be forwarded to every observer subscribed
+   * to this subject.
+   */
   error(error: Error) {
     this.thrownError = error;
     this.isStopped = true;
@@ -64,6 +71,9 @@ export class Subject<T> extends Observable<T> {
     this.observers.clear();
   }
 
+  /**
+   * Completes all the subscribed observers, then clears the list of observers.
+   */
   complete() {
     this.isStopped = true;
 
