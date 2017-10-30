@@ -10,6 +10,20 @@ test('returns raw value', async () => {
   expect(await res).toEqual(['foo', 'C']);
 });
 
+test('if undefined is returned, completes immediatley', async () => {
+  const observable = $fromCallback(() => undefined);
+  const res = collect(observable);
+
+  expect(await res).toEqual(['C']);
+});
+
+test('if null is returned, forwards it', async () => {
+  const observable = $fromCallback(() => null);
+  const res = collect(observable);
+
+  expect(await res).toEqual([null, 'C']);
+});
+
 test('returns observable that completes immediately', async () => {
   const observable = $fromCallback(() => $from([1, 2, 3]));
   const res = collect(observable);

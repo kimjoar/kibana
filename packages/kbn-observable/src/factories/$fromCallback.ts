@@ -19,7 +19,9 @@ export function $fromCallback<T>(
   return new Observable(observer => {
     const result = factory();
 
-    if (isObservable(result)) {
+    if (result === undefined) {
+      observer.complete();
+    } else if (isObservable(result)) {
       return result.subscribe(observer);
     } else {
       observer.next(result);
