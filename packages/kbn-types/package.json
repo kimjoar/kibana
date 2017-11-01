@@ -4,10 +4,12 @@
   "main": "./lib.js",
   "types": "./types/packages/kbn-types/index.d.ts",
   "scripts": {
+    "prepare": "tsc",
     "build": "tsc",
     "start": "tsc --watch"
   },
   "devDependencies": {
+    "@elastic/platform": "0.0.1",
     "typescript": "2.5.1"
   }
 }

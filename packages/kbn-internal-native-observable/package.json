@@ -4,7 +4,9 @@
   "main": "./target/index.js",
   "types": "./index.d.ts",
   "scripts": {
-    "build": "webpack"
+    "prepare": "webpack",
+    "build": "webpack",
+    "start": "webpack --watch"
   },
   "dependencies": {
     "symbol-observable": "1.0.4"

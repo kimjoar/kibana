@@ -1,0 +1,12 @@
+{
+  "name": "@elastic/platform",
+  "version": "0.0.1",
+  "scripts": {
+    "prepare": "tsc",
+    "build": "tsc",
+    "start": "tsc --watch"
+  },
+  "dependencies": {
+    "@elastic/kbn-observable": "0.0.1"
+  }
+}

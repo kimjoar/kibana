@@ -3,6 +3,7 @@
   "npmClient": "yarn",
   "packages": [
     ".",
+    "platform/",
     "core_plugins/*",
     "packages/*",
     "../kbn-example-plugins/plugins/*",

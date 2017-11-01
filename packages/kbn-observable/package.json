@@ -4,7 +4,9 @@
   "main": "target/tsc/index.js",
   "types": "./target/tsc-types/index.d.ts",
   "scripts": {
-    "build": "tsc"
+    "prepare": "tsc",
+    "build": "tsc",
+    "start": "tsc --watch"
   },
   "dependencies": {
     "@elastic/kbn-internal-native-observable": "0.0.1",
