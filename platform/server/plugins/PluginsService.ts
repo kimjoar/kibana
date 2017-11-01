@@ -2,7 +2,6 @@ import { readdir, stat } from 'fs';
 import { resolve } from 'path';
 import {
   Observable,
-  k$,
   first,
   map,
   mergeMap,
@@ -37,7 +36,7 @@ export class PluginsService implements CoreService {
   }
 
   async start() {
-    const plugins = await k$(this.getAllPlugins())(
+    const plugins = await this.getAllPlugins().pipe(
       mergeMap(
         plugin => $fromPromise(this.isPluginEnabled(plugin)),
         (plugin, isEnabled) => ({ plugin, isEnabled })
@@ -69,7 +68,7 @@ export class PluginsService implements CoreService {
   }
 
   private getAllPlugins() {
-    return k$(this.pluginsConfig$)(
+    return this.pluginsConfig$.pipe(
       first(),
       mergeMap(config => config.scanDirs),
       mergeMap(

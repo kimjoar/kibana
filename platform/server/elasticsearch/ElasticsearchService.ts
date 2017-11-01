@@ -1,7 +1,6 @@
 import {
   Observable,
   Subscription,
-  k$,
   map,
   filter,
   switchMap,
@@ -26,7 +25,7 @@ export class ElasticsearchService implements CoreService {
   ) {
     const log = logger.get('elasticsearch');
 
-    this.clusters$ = k$(config$)(
+    this.clusters$ = config$.pipe(
       filter(() => {
         if (this.subscription !== undefined) {
           log.error('clusters cannot be changed after they are created');
@@ -75,6 +74,6 @@ export class ElasticsearchService implements CoreService {
   }
 
   getClusterOfType$(type: ElasticsearchClusterType) {
-    return k$(this.clusters$)(map(clusters => clusters[type]));
+    return this.clusters$.pipe(map(clusters => clusters[type]));
   }
 }

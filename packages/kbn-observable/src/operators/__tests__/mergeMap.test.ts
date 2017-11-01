@@ -1,5 +1,4 @@
 import { Observable } from '../../Observable';
-import { k$ } from '../../k$';
 import { Subject } from '../../Subject';
 import { mergeMap, map } from '../';
 import { $of, $error } from '../../factories';
@@ -11,9 +10,9 @@ test('should mergeMap many outer values to many inner values', async () => {
   const inner$ = new Subject();
 
   const outer$ = Observable.from([1, 2, 3, 4]);
-  const project = (value: number) => k$(inner$)(map(x => `${value}-${x}`));
+  const project = (value: number) => inner$.pipe(map(x => `${value}-${x}`));
 
-  const observable = k$(outer$)(mergeMap(project));
+  const observable = outer$.pipe(mergeMap(project));
   const res = collect(observable);
 
   await tickMs(10);
@@ -48,9 +47,9 @@ test('should mergeMap many outer values to many inner values, early complete', a
   const outer$ = new Subject();
   const inner$ = new Subject();
 
-  const project = (value: number) => k$(inner$)(map(x => `${value}-${x}`));
+  const project = (value: number) => inner$.pipe(map(x => `${value}-${x}`));
 
-  const observable = k$(outer$)(mergeMap(project));
+  const observable = outer$.pipe(mergeMap(project));
   const res = collect(observable);
 
   outer$.next(1);
@@ -81,7 +80,7 @@ test('should mergeMap many outer to many inner, and inner throws', async () => {
   const project = (value: number, index: number) =>
     index > 1 ? $error(error) : $of(value);
 
-  const observable = k$(source)(mergeMap(project));
+  const observable = source.pipe(mergeMap(project));
   const res = collect(observable);
 
   expect(await res).toEqual([1, 2, error]);
@@ -91,9 +90,9 @@ test('should mergeMap many outer to many inner, and outer throws', async () => {
   const outer$ = new Subject();
   const inner$ = new Subject();
 
-  const project = (value: number) => k$(inner$)(map(x => `${value}-${x}`));
+  const project = (value: number) => inner$.pipe(map(x => `${value}-${x}`));
 
-  const observable = k$(outer$)(mergeMap(project));
+  const observable = outer$.pipe(mergeMap(project));
   const res = collect(observable);
 
   outer$.next(1);
@@ -120,7 +119,7 @@ test('should mergeMap many outer to many inner, and outer throws', async () => {
 test('should mergeMap many outer to an array for each value', async () => {
   const source = Observable.from([1, 2, 3]);
 
-  const observable = k$(source)(mergeMap(() => $of('a', 'b', 'c')));
+  const observable = source.pipe(mergeMap(() => $of('a', 'b', 'c')));
   const res = collect(observable);
 
   expect(await res).toEqual(['a', 'b', 'c', 'a', 'b', 'c', 'a', 'b', 'c', 'C']);
@@ -132,7 +131,7 @@ test('should mergeMap many outer to inner arrays, using resultSelector', async (
   const source = Observable.from([1, 2, 3]);
   const project = (num: number, str: string) => `${num}/${str}`;
 
-  const observable = k$(source)(mergeMap(() => $of('a', 'b', 'c'), project));
+  const observable = source.pipe(mergeMap(() => $of('a', 'b', 'c'), project));
   const res = collect(observable);
 
   expect(await res).toEqual([
