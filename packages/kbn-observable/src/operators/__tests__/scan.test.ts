@@ -1,4 +1,3 @@
-import { k$ } from '../../k$';
 import { scan } from '../';
 import { Subject } from '../../Subject';
 import { collect } from '../../lib/collect';
@@ -6,7 +5,7 @@ import { collect } from '../../lib/collect';
 test('completes when source completes', async () => {
   const subject = new Subject<string>();
 
-  const observable = k$(subject)(
+  const observable = subject.pipe(
     scan((acc, val) => {
       return acc + val;
     }, 'foo')
@@ -23,7 +22,7 @@ test('completes when source completes', async () => {
 test('injects index', async () => {
   const subject = new Subject<string>();
 
-  const observable = k$(subject)(
+  const observable = subject.pipe(
     scan((acc, val, index) => {
       return acc + index;
     }, 'foo')
@@ -40,7 +39,7 @@ test('injects index', async () => {
 test('completes if no values received', async () => {
   const subject = new Subject<string>();
 
-  const observable = k$(subject)(
+  const observable = subject.pipe(
     scan((acc, val, index) => {
       return acc + val;
     }, 'foo')

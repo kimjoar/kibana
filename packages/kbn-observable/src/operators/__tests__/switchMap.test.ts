@@ -1,5 +1,4 @@
 import { Observable } from '../../Observable';
-import { k$ } from '../../k$';
 import { switchMap } from '../';
 import { collect } from '../../lib/collect';
 import { $of } from '../../factories';
@@ -10,7 +9,7 @@ const number$ = $of(1, 2, 3);
 test('returns the modified value', async () => {
   const expected = ['a1', 'b1', 'c1', 'a2', 'b2', 'c2', 'a3', 'b3', 'c3', 'C'];
 
-  const observable = k$(number$)(
+  const observable = number$.pipe(
     switchMap(x => $of('a' + x, 'b' + x, 'c' + x))
   );
   const res = collect(observable);
@@ -19,7 +18,7 @@ test('returns the modified value', async () => {
 });
 
 test('injects index to map', async () => {
-  const observable = k$(number$)(switchMap((x, i) => $of(i)));
+  const observable = number$.pipe(switchMap((x, i) => $of(i)));
   const res = collect(observable);
 
   expect(await res).toEqual([0, 1, 2, 'C']);
@@ -29,16 +28,18 @@ test('should unsubscribe inner observable when source observable emits new value
   const unsubbed: string[] = [];
   const subject = new Subject<string>();
 
-  k$(subject)(
-    switchMap(
-      x =>
-        new Observable(observer => {
-          return () => {
-            unsubbed.push(x);
-          };
-        })
+  subject
+    .pipe(
+      switchMap(
+        x =>
+          new Observable(observer => {
+            return () => {
+              unsubbed.push(x);
+            };
+          })
+      )
     )
-  ).subscribe();
+    .subscribe();
 
   subject.next('a');
   expect(unsubbed).toEqual([]);
@@ -57,16 +58,18 @@ test('should unsubscribe inner observable when source observable errors', async 
   const unsubbed: string[] = [];
   const subject = new Subject<string>();
 
-  k$(subject)(
-    switchMap(
-      x =>
-        new Observable(observer => {
-          return () => {
-            unsubbed.push(x);
-          };
-        })
+  subject
+    .pipe(
+      switchMap(
+        x =>
+          new Observable(observer => {
+            return () => {
+              unsubbed.push(x);
+            };
+          })
+      )
     )
-  ).subscribe();
+    .subscribe();
 
   subject.next('a');
   subject.error(new Error('fail'));
@@ -78,17 +81,19 @@ test('should unsubscribe inner observables if inner observer completes', async (
   const unsubbed: string[] = [];
   const subject = new Subject<string>();
 
-  k$(subject)(
-    switchMap(
-      x =>
-        new Observable(observer => {
-          observer.complete();
-          return () => {
-            unsubbed.push(x);
-          };
-        })
+  subject
+    .pipe(
+      switchMap(
+        x =>
+          new Observable(observer => {
+            observer.complete();
+            return () => {
+              unsubbed.push(x);
+            };
+          })
+      )
     )
-  ).subscribe();
+    .subscribe();
 
   subject.next('a');
   expect(unsubbed).toEqual(['a']);
@@ -107,19 +112,21 @@ test('should unsubscribe inner observables if inner observer errors', async () =
   const error = jest.fn();
   const thrownError = new Error('fail');
 
-  k$(subject)(
-    switchMap(
-      x =>
-        new Observable(observer => {
-          observer.error(thrownError);
-          return () => {
-            unsubbed.push(x);
-          };
-        })
+  subject
+    .pipe(
+      switchMap(
+        x =>
+          new Observable(observer => {
+            observer.error(thrownError);
+            return () => {
+              unsubbed.push(x);
+            };
+          })
+      )
     )
-  ).subscribe({
-    error
-  });
+    .subscribe({
+      error
+    });
 
   subject.next('a');
   expect(unsubbed).toEqual(['a']);
@@ -137,7 +144,7 @@ test('should switch inner observables', () => {
 
   const actual: any[] = [];
 
-  k$(outer$)(switchMap(x => inner$[x])).subscribe({
+  outer$.pipe(switchMap(x => inner$[x])).subscribe({
     next(val) {
       actual.push(val);
     }
@@ -165,7 +172,7 @@ test('should switch inner empty and empty', () => {
 
   const next = jest.fn();
 
-  k$(outer$)(switchMap(x => inner$[x])).subscribe(next);
+  outer$.pipe(switchMap(x => inner$[x])).subscribe(next);
 
   outer$.next('x');
   inner$.x.complete();
@@ -189,7 +196,7 @@ test('should switch inner never and throw', async () => {
 
   inner$.y.error(error);
 
-  const observable = k$(outer$)(switchMap(x => inner$[x]));
+  const observable = outer$.pipe(switchMap(x => inner$[x]));
   const res = collect(observable);
 
   outer$.next('x');
@@ -205,7 +212,7 @@ test('should handle outer throw', async () => {
     throw error;
   });
 
-  const observable = k$(outer$)(switchMap(x => $of(x)));
+  const observable = outer$.pipe(switchMap(x => $of(x)));
   const res = collect(observable);
 
   expect(await res).toEqual([error]);
@@ -217,7 +224,7 @@ test('should handle outer error', async () => {
     x: new Subject()
   };
 
-  const observable = k$(outer$)(switchMap(x => inner$[x]));
+  const observable = outer$.pipe(switchMap(x => inner$[x]));
   const res = collect(observable);
 
   outer$.next('x');
@@ -239,7 +246,7 @@ test('should raise error when projection throws', async () => {
   const outer$ = new Subject<string>();
   const error = new Error('foo');
 
-  const observable = k$(outer$)(
+  const observable = outer$.pipe(
     switchMap(x => {
       throw error;
     })
@@ -259,7 +266,7 @@ test('should switch inner cold observables, outer is unsubscribed early', () => 
   };
 
   const actual: any[] = [];
-  const sub = k$(outer$)(switchMap(x => inner$[x])).subscribe({
+  const sub = outer$.pipe(switchMap(x => inner$[x])).subscribe({
     next(val) {
       actual.push(val);
     }

@@ -1,6 +1,5 @@
 import { Observable } from '../Observable';
 import { Subject } from '../Subject';
-import { k$ } from '../k$';
 import { first } from '../operators';
 
 const noop = () => {};
@@ -340,7 +339,7 @@ test('can use subject in $k', async () => {
   const complete = jest.fn();
   const error = jest.fn();
 
-  k$(values$)(first()).subscribe({
+  values$.pipe(first()).subscribe({
     next,
     error,
     complete

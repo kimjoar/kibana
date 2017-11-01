@@ -1,4 +1,3 @@
-import { k$ } from '../../k$';
 import { Subject } from '../../Subject';
 import { last } from '../';
 
@@ -9,7 +8,7 @@ test('returns the last value', async () => {
   const error = jest.fn();
   const complete = jest.fn();
 
-  k$(values$)(last()).subscribe(next, error, complete);
+  values$.pipe(last()).subscribe(next, error, complete);
 
   values$.next('foo');
   expect(next).not.toHaveBeenCalled();
@@ -30,7 +29,7 @@ test('returns error if completing without receiving any value', async () => {
 
   const error = jest.fn();
 
-  k$(values$)(last()).subscribe({
+  values$.pipe(last()).subscribe({
     error
   });
 

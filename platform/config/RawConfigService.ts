@@ -1,5 +1,4 @@
 import {
-  k$,
   BehaviorSubject,
   Observable,
   map,
@@ -65,7 +64,7 @@ export class RawConfigService {
   private readonly config$: Observable<RawConfig>;
 
   constructor(readonly configFile: string) {
-    this.config$ = k$(this.rawConfigFromFile$)(
+    this.config$ = this.rawConfigFromFile$.pipe(
       filter(rawConfig => rawConfig !== notRead),
       map(rawConfig => {
         // If the raw config is null, e.g. if empty config file, we default to

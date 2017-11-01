@@ -1,11 +1,4 @@
-import {
-  Observable,
-  k$,
-  map,
-  first,
-  skipRepeats,
-  toPromise
-} from 'kbn-observable';
+import { Observable, map, first, skipRepeats, toPromise } from 'kbn-observable';
 import { isEqual } from 'lodash';
 
 import { Env } from './Env';
@@ -56,7 +49,7 @@ export class ConfigService {
     path: ConfigPath,
     ConfigClass: ConfigWithSchema<Schema, Config>
   ) {
-    return k$(this.getDistinctRawConfig(path))(
+    return this.getDistinctRawConfig(path).pipe(
       map(rawConfig => this.createConfig(path, rawConfig, ConfigClass))
     );
   }
@@ -71,7 +64,7 @@ export class ConfigService {
     path: ConfigPath,
     ConfigClass: ConfigWithSchema<Schema, Config>
   ) {
-    return k$(this.getDistinctRawConfig(path))(
+    return this.getDistinctRawConfig(path).pipe(
       map(
         rawConfig =>
           rawConfig === undefined
@@ -84,7 +77,7 @@ export class ConfigService {
   async isEnabledAtPath(path: ConfigPath) {
     const enabledPath = createPluginEnabledPath(path);
 
-    const config = await k$(this.config$)(first(), toPromise());
+    const config = await this.config$.pipe(first(), toPromise());
 
     if (!config.has(enabledPath)) {
       return true;
@@ -123,7 +116,7 @@ export class ConfigService {
   private getDistinctRawConfig(path: ConfigPath) {
     this.markAsHandled(path);
 
-    return k$(this.config$)(
+    return this.config$.pipe(
       map(config => config.get(path)),
       skipRepeats(isEqual)
     );
@@ -134,7 +127,7 @@ export class ConfigService {
   }
 
   async getUnusedPaths(): Promise<string[]> {
-    const config = await k$(this.config$)(first(), toPromise());
+    const config = await this.config$.pipe(first(), toPromise());
     const handledPaths = this.handledPaths.map(pathToString);
 
     return config

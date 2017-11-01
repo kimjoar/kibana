@@ -255,6 +255,14 @@ export class Observable {
     
     return new Subscription(observer, this._subscriber);
   }
+
+  pipe(...operations) {
+    if (operations.length === 0) {
+      return this;
+    }
+
+    return operations.reduce((prev, fn) => fn(prev), this);
+  }
   
   [symbolObservable]() { return this }
   

@@ -6,6 +6,8 @@ declare global {
   }
 }
 
+type UnaryFunction<T, R> = (source: T) => R;
+
 // These types are based on the Observable proposal readme, see
 // https://github.com/tc39/proposal-observable#api, with the addition of using
 // generics to define the type of the `value`.
@@ -108,6 +110,70 @@ declare namespace Observable {
       onError?: (err: Error) => void,
       onComplete?: () => void
     ): Subscription;
+
+    // pipe
+    pipe(): Observable<T>;
+    pipe<A>(op1: UnaryFunction<Observable<T>, A>): A;
+    pipe<A, B>(
+      op1: UnaryFunction<Observable<T>, Observable<A>>,
+      op2: UnaryFunction<Observable<A>, B>
+    ): B;
+    pipe<A, B, C>(
+      op1: UnaryFunction<Observable<T>, Observable<A>>,
+      op2: UnaryFunction<Observable<A>, Observable<B>>,
+      op3: UnaryFunction<Observable<B>, C>
+    ): C;
+    pipe<A, B, C, D>(
+      op1: UnaryFunction<Observable<T>, Observable<A>>,
+      op2: UnaryFunction<Observable<A>, Observable<B>>,
+      op3: UnaryFunction<Observable<B>, Observable<C>>,
+      op4: UnaryFunction<Observable<C>, D>
+    ): D;
+    pipe<A, B, C, D, E>(
+      op1: UnaryFunction<Observable<T>, Observable<A>>,
+      op2: UnaryFunction<Observable<A>, Observable<B>>,
+      op3: UnaryFunction<Observable<B>, Observable<C>>,
+      op4: UnaryFunction<Observable<C>, Observable<D>>,
+      op5: UnaryFunction<Observable<D>, E>
+    ): E;
+    pipe<A, B, C, D, E, F>(
+      op1: UnaryFunction<Observable<T>, Observable<A>>,
+      op2: UnaryFunction<Observable<A>, Observable<B>>,
+      op3: UnaryFunction<Observable<B>, Observable<C>>,
+      op4: UnaryFunction<Observable<C>, Observable<D>>,
+      op5: UnaryFunction<Observable<D>, Observable<E>>,
+      op6: UnaryFunction<Observable<E>, F>
+    ): F;
+    pipe<A, B, C, D, E, F, G>(
+      op1: UnaryFunction<Observable<T>, Observable<A>>,
+      op2: UnaryFunction<Observable<A>, Observable<B>>,
+      op3: UnaryFunction<Observable<B>, Observable<C>>,
+      op4: UnaryFunction<Observable<C>, Observable<D>>,
+      op5: UnaryFunction<Observable<D>, Observable<E>>,
+      op6: UnaryFunction<Observable<E>, Observable<F>>,
+      op7: UnaryFunction<Observable<F>, G>
+    ): G;
+    pipe<A, B, C, D, E, F, G, H>(
+      op1: UnaryFunction<Observable<T>, Observable<A>>,
+      op2: UnaryFunction<Observable<A>, Observable<B>>,
+      op3: UnaryFunction<Observable<B>, Observable<C>>,
+      op4: UnaryFunction<Observable<C>, Observable<D>>,
+      op5: UnaryFunction<Observable<D>, Observable<E>>,
+      op6: UnaryFunction<Observable<E>, Observable<F>>,
+      op7: UnaryFunction<Observable<F>, Observable<G>>,
+      op8: UnaryFunction<Observable<G>, H>
+    ): H;
+    pipe<A, B, C, D, E, F, G, H, I>(
+      op1: UnaryFunction<Observable<T>, Observable<A>>,
+      op2: UnaryFunction<Observable<A>, Observable<B>>,
+      op3: UnaryFunction<Observable<B>, Observable<C>>,
+      op4: UnaryFunction<Observable<C>, Observable<D>>,
+      op5: UnaryFunction<Observable<D>, Observable<E>>,
+      op6: UnaryFunction<Observable<E>, Observable<F>>,
+      op7: UnaryFunction<Observable<F>, Observable<G>>,
+      op8: UnaryFunction<Observable<G>, Observable<H>>,
+      op9: UnaryFunction<Observable<H>, I>
+    ): I;
 
     // Returns itself
     [Symbol.observable](): Observable<T>;
