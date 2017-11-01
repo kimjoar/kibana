@@ -1,6 +1,6 @@
 // TODO Fix build system so we can switch these to `import`s
 const yargs = require('yargs');
-import { map } from 'kbn-observable';
+import { map } from '@elastic/kbn-observable';
 
 import * as args from './args';
 import { version } from './version';

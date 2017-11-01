@@ -4,7 +4,7 @@ import {
   map,
   filter,
   skipRepeats
-} from 'kbn-observable';
+} from '@elastic/kbn-observable';
 import { get, has, isEqual, isPlainObject, set } from 'lodash';
 import typeDetect from 'type-detect';
 

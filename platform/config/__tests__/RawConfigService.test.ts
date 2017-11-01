@@ -4,7 +4,7 @@ jest.mock('../readConfig', () => ({
   getConfigFromFile: mockGetConfigFromFile
 }));
 
-import { first, toPromise } from 'kbn-observable';
+import { first, toPromise } from '@elastic/kbn-observable';
 import { RawConfigService } from '../RawConfigService';
 
 const configFile = '/config/kibana.yml';

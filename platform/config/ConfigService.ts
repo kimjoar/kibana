@@ -1,4 +1,4 @@
-import { Observable, map, first, skipRepeats, toPromise } from 'kbn-observable';
+import { Observable, map, first, skipRepeats, toPromise } from '@elastic/kbn-observable';
 import { isEqual } from 'lodash';
 
 import { Env } from './Env';

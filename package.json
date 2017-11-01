@@ -75,6 +75,7 @@
     "url": "https://github.com/elastic/kibana.git"
   },
   "dependencies": {
+    "@elastic/kbn-observable": "0.0.1",
     "@elastic/datemath": "2.3.0",
     "@elastic/filesaver": "1.1.2",
     "@elastic/numeral": "2.2.1",
@@ -146,7 +147,6 @@
     "json-loader": "0.5.3",
     "json-stringify-safe": "5.0.1",
     "jstimezonedetect": "1.0.5",
-    "kbn-observable": "file:packages/kbn-observable",
     "leaflet": "1.0.3",
     "leaflet-draw": "0.4.10",
     "leaflet-responsive-popup": "0.2.0",

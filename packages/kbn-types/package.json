@@ -1,10 +1,9 @@
 {
-  "name": "kbn-types",
+  "name": "@elastic/kbn-types",
   "version": "0.0.1",
-  "main": "./lib",
+  "main": "./lib.js",
   "types": "./types/packages/kbn-types/index.d.ts",
   "scripts": {
-    "prepare": "npm run build",
     "build": "tsc",
     "start": "tsc --watch"
   },
