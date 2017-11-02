@@ -23,7 +23,7 @@ export function mergeMap<T, I, R>(
  * 
  * ```js
  * const source = Observable.from([1, 2, 3]);
- * const observable = k$(source)(
+ * const observable = source.pipe(
  *   mergeMap(x => Observable.of('a', x + 1))
  * );
  * ```
