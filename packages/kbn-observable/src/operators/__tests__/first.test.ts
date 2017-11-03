@@ -1,4 +1,3 @@
-import { k$ } from '../../k$';
 import { first } from '../';
 import { Subject } from '../../Subject';
 import { collect } from '../../lib/collect';
@@ -6,7 +5,7 @@ import { collect } from '../../lib/collect';
 test('returns the first value, then completes', async () => {
   const values$ = new Subject();
 
-  const observable = k$(values$)(first());
+  const observable = values$.pipe(first());
   const res = collect(observable);
 
   values$.next('foo');
@@ -18,7 +17,7 @@ test('returns the first value, then completes', async () => {
 test('handles source completing after receiving value', async () => {
   const values$ = new Subject();
 
-  const observable = k$(values$)(first());
+  const observable = values$.pipe(first());
   const res = collect(observable);
 
   values$.next('foo');
@@ -31,7 +30,7 @@ test('handles source completing after receiving value', async () => {
 test('returns error if completing without receiving any value', async () => {
   const values$ = new Subject();
 
-  const observable = k$(values$)(first());
+  const observable = values$.pipe(first());
   const res = collect(observable);
 
   values$.complete();

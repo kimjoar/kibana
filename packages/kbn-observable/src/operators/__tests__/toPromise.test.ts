@@ -1,4 +1,3 @@
-import { k$ } from '../../k$';
 import { Subject } from '../../Subject';
 import { toPromise } from '../';
 
@@ -12,7 +11,7 @@ test('returns the last value', async () => {
   const resolved = jest.fn();
   const rejected = jest.fn();
 
-  k$(values$)(toPromise()).then(resolved, rejected);
+  values$.pipe(toPromise()).then(resolved, rejected);
 
   values$.next('foo');
   await tick();
@@ -40,7 +39,7 @@ test('resolves even if no values received', async () => {
   const resolved = jest.fn();
   const rejected = jest.fn();
 
-  k$(values$)(toPromise()).then(resolved, rejected);
+  values$.pipe(toPromise()).then(resolved, rejected);
 
   values$.complete();
   await tick();
@@ -55,7 +54,7 @@ test('rejects if error received', async () => {
   const resolved = jest.fn();
   const rejected = jest.fn();
 
-  k$(values$)(toPromise()).then(resolved, rejected);
+  values$.pipe(toPromise()).then(resolved, rejected);
 
   values$.error(new Error('fail'));
   await tick();

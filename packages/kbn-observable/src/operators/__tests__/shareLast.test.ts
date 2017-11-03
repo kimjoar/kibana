@@ -1,13 +1,12 @@
 import { Observable, SubscriptionObserver } from '../../Observable';
 import { BehaviorSubject } from '../../BehaviorSubject';
-import { k$ } from '../../k$';
 import { shareLast } from '../';
 import { collect } from '../../lib/collect';
 
 test('should mirror a simple source Observable', async () => {
   const source = Observable.from([4, 3, 2, 1]);
 
-  const observable = k$(source)(shareLast());
+  const observable = source.pipe(shareLast());
   const res = collect(observable);
 
   expect(await res).toEqual([4, 3, 2, 1, 'C']);
@@ -19,7 +18,7 @@ test('should do nothing if result is not subscribed', () => {
     subscribed = true;
   });
 
-  k$(source)(shareLast());
+  source.pipe(shareLast());
 
   expect(subscribed).toBe(false);
 });
@@ -34,7 +33,7 @@ test('should multicast the same values to multiple observers', () => {
   });
 
   const results: any[] = [];
-  const source = k$(subject)(shareLast());
+  const source = subject.pipe(shareLast());
 
   source.subscribe(x => {
     results.push(`1/${x}`);
@@ -78,7 +77,7 @@ test('should multicast an error from the source to multiple observers', () => {
   const subject = new BehaviorSubject('a');
   const results: any[] = [];
 
-  const source = k$(subject)(shareLast());
+  const source = subject.pipe(shareLast());
 
   source.subscribe({
     error(err) {
@@ -116,7 +115,7 @@ test('should replay results to subsequent subscriptions if source completes', ()
 
   const results: any[] = [];
 
-  const source = k$(observable)(shareLast());
+  const source = observable.pipe(shareLast());
 
   source.subscribe(x => {
     results.push(`1/${x}`);
@@ -150,7 +149,7 @@ test('should completely restart for subsequent subscriptions if source errors', 
 
   const results: any[] = [];
 
-  const source = k$(observable)(shareLast());
+  const source = observable.pipe(shareLast());
 
   source.subscribe(x => {
     results.push(`1/${x}`);
@@ -184,7 +183,7 @@ test('restarts if refCount hits 0 due to unsubscriptions', () => {
 
   const results: any[] = [];
 
-  const source = k$(observable)(shareLast());
+  const source = observable.pipe(shareLast());
 
   const sub1 = source.subscribe(x => {
     results.push(`1/${x}`);
