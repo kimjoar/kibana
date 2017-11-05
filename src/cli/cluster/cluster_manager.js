@@ -101,6 +101,7 @@ export default class ClusterManager {
       fromRoot('src/ui'),
       fromRoot('src/utils'),
       fromRoot('config'),
+      fromRoot('platform/target/tsc'),
       ...extraPaths
     ].map(path => resolve(path));
 

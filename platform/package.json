@@ -1,6 +1,7 @@
 {
   "name": "@elastic/platform",
   "version": "0.0.1",
+  "main": "./target/tsc/",
   "scripts": {
     "prepare": "tsc",
     "build": "tsc",

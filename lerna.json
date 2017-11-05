@@ -1,13 +1,12 @@
 {
   "lerna": "2.4.0",
-  "npmClient": "yarn",
+  "npmClient": "npm",
   "packages": [
     ".",
     "platform/",
     "core_plugins/*",
     "packages/*",
     "../kbn-example-plugins/plugins/*",
-    "../x-pack-kibana/plugins/*",
     "../does-not-exist/plugins/*"
   ],
   "version": "0.0.0"
