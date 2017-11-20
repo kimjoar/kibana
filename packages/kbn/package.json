@@ -1,0 +1,41 @@
+{
+  "name": "kbn",
+  "version": "0.0.5",
+  "main": "target/index.js",
+  "license": "Apache-2.0",
+  "bin": {
+    "kbn": "./bin/kbn.js"
+  },
+  "scripts": {
+    "build": "babel src --out-dir target",
+    "clean": "rm -rf target",
+    "start": "npm run build -- --watch",
+    "test": "jest",
+    "prettier": "prettier --write './src/**/*.js'",
+    "prepublishOnly": "npm run clean && npm run build"
+  },
+  "dependencies": {
+    "bluebird": "^3.5.1",
+    "cmd-shim": "^2.0.2",
+    "dedent": "^0.7.0",
+    "del": "^3.0.0",
+    "execa": "^0.8.0",
+    "getopts": "^2.0.0",
+    "glob": "^7.1.2",
+    "indent-string": "^3.2.0",
+    "listr": "^0.13.0",
+    "load-json-file": "^4.0.0",
+    "mkdirp": "^0.5.1",
+    "read-cmd-shim": "^1.0.1",
+    "read-pkg": "^3.0.0",
+    "semver": "^5.4.1",
+    "write-pkg": "^3.1.0"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-preset-env": "^1.6.1",
+    "babel-preset-stage-3": "^6.24.1",
+    "jest": "^21.2.1",
+    "prettier": "^1.8.2"
+  }
+}
