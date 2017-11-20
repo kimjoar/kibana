@@ -84,7 +84,7 @@ export async function run(argv) {
 
       The version in the config file must match the version of 'kbn'.
 
-      If you're temporarily need an older version of 'kbn', you can use 'npx' to
+      If you temporarily need an older version of 'kbn', you can use 'npx' to
       run the required version, e.g.:
 
          npx kbn@${config.version} ${argv.join(' ')}
