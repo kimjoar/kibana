@@ -29,6 +29,7 @@
     "read-cmd-shim": "^1.0.1",
     "read-pkg": "^3.0.0",
     "semver": "^5.4.1",
+    "wrap-ansi": "3.0.1",
     "write-pkg": "^3.1.0"
   },
   "devDependencies": {

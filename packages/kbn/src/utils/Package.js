@@ -60,23 +60,33 @@ export class Package {
     const relativePathToPkg = path.relative(this.path, pkg.path);
     const expectedVersion = `link:${relativePathToPkg}`;
 
+    const expectedValue = `"${pkg.name}": "${expectedVersion}"`;
+    const actualValue = `"${pkg.name}": "${version}"`;
+
     const meta = {
       package: `${this.name} (${this.packageJsonLocation})`,
-      dependsOn: pkg.name,
-      expectedVersion,
-      actualVersion: version
+      expected: expectedValue,
+      actual: actualValue
     };
+
+    const updateMsg = "Update it's package.json to the expected value below.";
 
     if (version.startsWith("link:")) {
       if (version !== expectedVersion) {
         throw new CliError(
-          `[${this.name}] depends on [${pkg.name}] using 'link:' but the location does not match.\nChange the actual version below to the expected version in the package.json.`,
+          `[${this.name}] depends on [${
+            pkg.name
+          }] using 'link:', but it doesn't have the expected value. ${
+            updateMsg
+          }`,
           meta
         );
       }
     } else {
       throw new CliError(
-        `[${this.name}] depends on [${pkg.name}], but it's not using the local package.\nChange the actual version below to the expected version in the package.json.`,
+        `[${this.name}] depends on [${
+          pkg.name
+        }], but it's not using the local package. ${updateMsg}`,
         meta
       );
     }

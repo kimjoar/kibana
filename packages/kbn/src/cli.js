@@ -4,6 +4,7 @@ import loadJsonFile from "load-json-file";
 import readPkg from "read-pkg";
 import dedent from "dedent";
 import indentString from "indent-string";
+import wrapAnsi from "wrap-ansi";
 
 import * as commands from "./";
 import { CliError } from "./utils/errors";
@@ -87,7 +88,7 @@ export async function run(argv) {
       If you temporarily need an older version of 'kbn', you can use 'npx' to
       run the required version, e.g.:
 
-         npx kbn@${config.version} ${argv.join(' ')}
+         npx kbn@${config.version} ${argv.join(" ")}
 
       However, if you want to install this version of 'kbn', run:
 
@@ -120,7 +121,7 @@ export async function run(argv) {
     await command.run(commandOptions);
   } catch (e) {
     if (e instanceof CliError) {
-      console.error(`CliError: ${e.message}\n`);
+      console.error(wrapAnsi(`CliError: ${e.message}\n`, 80));
 
       const keys = Object.keys(e.meta);
       if (keys.length > 0) {
@@ -129,6 +130,7 @@ export async function run(argv) {
           return `${key}: ${value}`;
         });
 
+        console.log("Additional debugging info:\n");
         console.log(indentString(metaOutput.join("\n"), 3));
       }
     } else {
