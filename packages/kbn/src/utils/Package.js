@@ -70,13 +70,13 @@ export class Package {
     if (version.startsWith("link:")) {
       if (version !== expectedVersion) {
         throw new CliError(
-          `[${this.name}] depends on another package using 'link:' but location does not match`,
+          `[${this.name}] depends on [${pkg.name}] using 'link:' but the location does not match.\nChange the actual version below to the expected version in the package.json.`,
           meta
         );
       }
     } else {
       throw new CliError(
-        `[${this.name}] depends on another package, but not using 'link:' type dependency`,
+        `[${this.name}] depends on [${pkg.name}], but it's not using the local package.\nChange the actual version below to the expected version in the package.json.`,
         meta
       );
     }
