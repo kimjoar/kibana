@@ -15,6 +15,7 @@ export class Package {
     this._json = packageJson;
     this.path = packageDir;
 
+    this.packageJsonLocation = path.resolve(this.path, "package.json");
     this.nodeModulesLocation = path.resolve(this.path, "node_modules");
     this.targetLocation = path.resolve(this.path, "target");
   }
@@ -60,7 +61,7 @@ export class Package {
     const expectedVersion = `link:${relativePathToPkg}`;
 
     const meta = {
-      package: `${this.name} (${this.path})`,
+      package: `${this.name} (${this.packageJsonLocation})`,
       dependsOn: pkg.name,
       expectedVersion,
       actualVersion: version
@@ -69,13 +70,13 @@ export class Package {
     if (version.startsWith("link:")) {
       if (version !== expectedVersion) {
         throw new CliError(
-          `Depends on another package using 'link:' but location does not match`,
+          `[${this.name}] depends on another package using 'link:' but location does not match`,
           meta
         );
       }
     } else {
       throw new CliError(
-        `Depends on another package, but not using 'link:' type dependency`,
+        `[${this.name}] depends on another package, but not using 'link:' type dependency`,
         meta
       );
     }
