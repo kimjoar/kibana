@@ -64,39 +64,6 @@ export async function run(argv) {
     return;
   }
 
-  if (config.version !== pkgJson.version) {
-    if (config.version === undefined) {
-      console.log(dedent`
-        The config file does not contain a 'version' field. This field is required,
-        and specifies the required version of 'kbn'.
-
-           Config file: ${configFile}
-           kbn version: ${pkgJson.version}
-      `);
-      return;
-    }
-
-    console.log(dedent`
-      The 'version' field in the config does not match the version of 'kbn':
-
-         Config file: ${configFile}
-         Version in config: ${config.version}
-         kbn version: ${pkgJson.version}
-
-      The version in the config file must match the version of 'kbn'.
-
-      If you temporarily need an older version of 'kbn', you can use 'npx' to
-      run the required version, e.g.:
-
-         npx kbn@${config.version} ${argv.join(" ")}
-
-      However, if you want to install this version of 'kbn', run:
-
-         yarn global add kbn@${config.version}
-    `);
-    return;
-  }
-
   const commandNames = options._;
 
   const count = commandNames.length;
