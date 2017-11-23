@@ -1,8 +1,8 @@
 import execa from "execa";
 
-export function exec(command, args, opts = {}) {
+export function spawn(command, args, opts = {}) {
   return execa(command, args, {
     ...opts,
-    stdio: "pipe"
+    stdio: "inherit"
   });
 }

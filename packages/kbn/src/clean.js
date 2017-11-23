@@ -1,39 +1,13 @@
-import Listr from "listr";
 import del from "del";
+import chalk from "chalk";
+import { relative } from "path";
 
 import {
   getPackages,
   getInvalidPackageNames,
-  topologicallyBatchPackages,
-  getDependenciesToInstall
+  topologicallyBatchPackages
 } from "./utils/packages";
-import { batchedTasks } from "./utils/tasks";
-
-const tasks = new Listr([
-  {
-    title: "Find packages",
-    task: async (ctx, task) => {
-      const { config } = ctx;
-
-      ctx.packages = await getPackages(config.rootPath, config.packagesPaths);
-      task.title = `${task.title} (${ctx.packages.size} packages found)`;
-    }
-  },
-  {
-    title: "Cleaning up packages",
-    task: async (ctx, task) => {
-      const batchedPackages = topologicallyBatchPackages(ctx.packages);
-      const tasks = batchedTasks(batchedPackages, pkg =>
-        del([pkg.nodeModulesLocation, pkg.targetLocation], {
-          // Because we have packages that live outside the root directory
-          force: true
-        })
-      );
-
-      return new Listr(tasks);
-    }
-  }
-]);
+import { isDirectory } from "./utils/fs";
 
 export const name = "clean";
 export const description =
@@ -43,7 +17,37 @@ export async function run(config) {
   const rootPath = config.rootPath;
   const packagesPaths = config.packages;
 
-  await tasks.run({
-    config: { rootPath, packagesPaths }
-  });
+  console.log(
+    chalk.bold(
+      `Running [${chalk.green("clean")}] from [${chalk.yellow(rootPath)}]:\n`
+    )
+  );
+
+  const packages = await getPackages(rootPath, packagesPaths);
+
+  console.log(chalk.bold(`Found [${chalk.green(packages.size)}] packages:\n`));
+  for (const pkg of packages.values()) {
+    console.log(`- ${pkg.name} (${relative(process.cwd(), pkg.path)})`);
+  }
+
+  const directoriesToDelete = [];
+  for (const pkg of packages.values()) {
+    if (await isDirectory(pkg.nodeModulesLocation)) {
+      directoriesToDelete.push(pkg.nodeModulesLocation);
+    }
+
+    if (await isDirectory(pkg.targetLocation)) {
+      directoriesToDelete.push(pkg.targetLocation);
+    }
+  }
+
+  if (directoriesToDelete.length === 0) {
+    console.log(chalk.bold.green("\n\nNo directories to delete"));
+  } else {
+    console.log(chalk.bold.red("\n\nDeleting folders:\n"));
+    for (const dir of directoriesToDelete) {
+      console.log(`- ${relative(process.cwd(), dir)}`);
+      await del(dir, { force: true });
+    }
+  }
 }

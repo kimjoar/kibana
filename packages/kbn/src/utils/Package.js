@@ -1,5 +1,6 @@
 import path from "path";
 import semver from "semver";
+import chalk from "chalk";
 
 import { runScriptInDir, installInDir } from "./npm";
 import { readPackageJson } from "./packageJson";
@@ -121,11 +122,23 @@ export class Package {
    */
   async runScript(script) {
     if (this.hasScript(script)) {
+      console.log(
+        chalk.bold(
+          `\n\nRunning npm script [${chalk.yellow(script)}] in [${chalk.green(
+            this.name
+          )}]:`
+        )
+      );
       await runScriptInDir(script, [], this.path);
     }
   }
 
   installDependencies() {
+    console.log(
+      chalk.bold(
+        `\n\nInstalling dependencies in [${chalk.green(this.name)}]:\n`
+      )
+    );
     return installInDir(this.path);
   }
 }
