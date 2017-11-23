@@ -3,9 +3,7 @@
   "version": "0.0.7",
   "license": "Apache-2.0",
   "private": true,
-  "bin": {
-    "kbn": "./bin/kbn.js"
-  },
+  "main": "./cli.js",
   "scripts": {
     "build": "webpack",
     "prettier": "prettier --write './src/**/*.js'"
