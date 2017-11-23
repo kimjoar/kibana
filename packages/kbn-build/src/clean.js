@@ -2,11 +2,7 @@ import del from "del";
 import chalk from "chalk";
 import { relative } from "path";
 
-import {
-  getPackages,
-  getInvalidPackageNames,
-  topologicallyBatchPackages
-} from "./utils/packages";
+import { getPackages } from "./utils/packages";
 import { isDirectory } from "./utils/fs";
 
 export const name = "clean";
@@ -21,7 +17,7 @@ export async function run(config) {
 
   console.log(chalk.bold(`Found [${chalk.green(packages.size)}] packages:\n`));
   for (const pkg of packages.values()) {
-    console.log(`- ${pkg.name} (${relative(process.cwd(), pkg.path)})`);
+    console.log(`- ${pkg.name} (${relative(rootPath, pkg.path)})`);
   }
 
   const directoriesToDelete = [];
@@ -40,7 +36,7 @@ export async function run(config) {
   } else {
     console.log(chalk.bold.red("\n\nDeleting folders:\n"));
     for (const dir of directoriesToDelete) {
-      console.log(`- ${relative(process.cwd(), dir)}`);
+      console.log(`- ${relative(rootPath, dir)}`);
       await del(dir, { force: true });
     }
   }
