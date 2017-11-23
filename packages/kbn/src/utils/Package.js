@@ -2,7 +2,11 @@ import path from "path";
 import semver from "semver";
 import chalk from "chalk";
 
-import { runScriptInDir, installInDir } from "./npm";
+import {
+  runScriptInDir,
+  runScriptInPackageStreaming,
+  installInDir
+} from "./npm";
 import { readPackageJson } from "./packageJson";
 import { CliError } from "./errors";
 
@@ -131,6 +135,10 @@ export class Package {
       );
       await runScriptInDir(script, [], this.path);
     }
+  }
+
+  runScriptStreaming(script) {
+    return runScriptInPackageStreaming(script, [], this);
   }
 
   installDependencies() {
