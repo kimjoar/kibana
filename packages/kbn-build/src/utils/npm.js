@@ -3,12 +3,10 @@ import writePkg from "write-pkg";
 
 import { spawn, spawnStreaming } from "./childProcess";
 
-export async function runScriptInDir(script, args, directory) {
-  const execOpts = {
+export function runScriptInDir(script, args, directory) {
+  return spawn("npm", ["run", script, ...args], {
     cwd: directory
-  };
-
-  await spawn("npm", ["run", script, ...args], execOpts);
+  });
 }
 
 export function runScriptInPackageStreaming(script, args, pkg) {
@@ -16,12 +14,9 @@ export function runScriptInPackageStreaming(script, args, pkg) {
     cwd: pkg.path
   };
 
-  const stream = spawnStreaming(
-    "npm",
-    ["run", script, ...args],
-    execOpts,
-    pkg.name
-  );
+  const stream = spawnStreaming("npm", ["run", script, ...args], execOpts, {
+    prefix: pkg.name
+  });
 
   // TODO Add a timeout that triggers in case we're not able to see a
   // completion trigger.
@@ -48,15 +43,7 @@ export function runScriptInPackageStreaming(script, args, pkg) {
 }
 
 export function installInDir(directory) {
-  return execInstall(directory);
-}
-
-function execInstall(directory) {
-  const cmd = "yarn";
-  const args = ["install", "--non-interactive"];
-  const opts = {
+  return spawn("yarn", ["install", "--non-interactive"], {
     cwd: directory
-  };
-
-  return spawn(cmd, args, opts);
+  });
 }

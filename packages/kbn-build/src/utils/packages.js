@@ -1,9 +1,8 @@
 import _glob from "glob";
 import path from "path";
 import { promisify } from "bluebird";
-import dedent from "dedent";
-import { CliError } from "./errors";
 
+import { CliError } from "./errors";
 import { Package } from "./Package";
 
 const glob = promisify(_glob);

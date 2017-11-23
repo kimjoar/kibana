@@ -16,30 +16,11 @@ export function spawn(command, args, opts) {
   });
 }
 
-function _spawn(command, args, opts) {
-  children++;
-
-  const res = execa(command, args, opts);
-
-  res.then(
-    val => {
-      children--;
-      return val;
-    },
-    err => {
-      children--;
-      throw err;
-    }
-  );
-
-  return res;
-}
-
-export function spawnStreaming(command, args, opts, prefix) {
+export function spawnStreaming(command, args, opts, { prefix }) {
   const colorName = colorWheel[children % NUM_COLORS];
   const color = chalk[colorName];
 
-  const spawned = _spawn(command, args, {
+  const spawned = spawnWithTracking(command, args, {
     ...opts,
     stdio: ["ignore", "pipe", "pipe"]
   });
@@ -58,6 +39,19 @@ export function spawnStreaming(command, args, opts, prefix) {
 
   spawned.stdout.pipe(prefixedStdout).pipe(process.stdout);
   spawned.stderr.pipe(prefixedStderr).pipe(process.stderr);
+
+  return spawned;
+}
+
+function spawnWithTracking(command, args, opts) {
+  children++;
+
+  function done() {
+    children--;
+  }
+
+  const spawned = execa(command, args, opts);
+  spawned.then(done, done);
 
   return spawned;
 }
