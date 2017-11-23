@@ -5,6 +5,7 @@ import readPkg from "read-pkg";
 import dedent from "dedent";
 import indentString from "indent-string";
 import wrapAnsi from "wrap-ansi";
+import chalk from "chalk";
 
 import * as commands from "./";
 import { CliError } from "./utils/errors";
@@ -85,6 +86,14 @@ export async function run(argv) {
   }
 
   try {
+    console.log(
+      chalk.bold(
+        `Running [${chalk.green(commandName)}] from [${chalk.yellow(
+          commandOptions.rootPath
+        )}]:\n`
+      )
+    );
+
     await command.run(commandOptions);
   } catch (e) {
     if (e instanceof CliError) {

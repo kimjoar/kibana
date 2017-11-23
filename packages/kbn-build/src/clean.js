@@ -17,12 +17,6 @@ export async function run(config) {
   const rootPath = config.rootPath;
   const packagesPaths = config.packages;
 
-  console.log(
-    chalk.bold(
-      `Running [${chalk.green("clean")}] from [${chalk.yellow(rootPath)}]:\n`
-    )
-  );
-
   const packages = await getPackages(rootPath, packagesPaths);
 
   console.log(chalk.bold(`Found [${chalk.green(packages.size)}] packages:\n`));
