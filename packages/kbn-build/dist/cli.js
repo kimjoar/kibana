@@ -23731,12 +23731,6 @@ let run = exports.run = (() => {
         yield pkg.installDependencies();
       }
     }
-
-    for (const batch of batchedPackages) {
-      for (const pkg of batch) {
-        yield pkg.runScript("prepare");
-      }
-    }
   });
 
   return function run(_x) {

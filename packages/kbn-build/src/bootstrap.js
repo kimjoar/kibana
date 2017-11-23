@@ -30,10 +30,4 @@ export async function run(config) {
       await pkg.installDependencies();
     }
   }
-
-  for (const batch of batchedPackages) {
-    for (const pkg of batch) {
-      await pkg.runScript("prepare");
-    }
-  }
 }
