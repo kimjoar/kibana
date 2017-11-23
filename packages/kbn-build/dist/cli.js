@@ -6641,7 +6641,8 @@ function topologicallyBatchPackages(packagesToBatch) {
     // Get all packages that have no remaining dependencies within the repo
     // that haven't yet been picked.
     const batch = packages.filter(pkg => {
-      return packageGraph.get(pkg.name).filter(dep => refCounts[dep.name] > 0).length === 0;
+      const packageDeps = packageGraph.get(pkg.name);
+      return packageDeps.filter(dep => refCounts[dep.name] > 0).length === 0;
     });
 
     // If we weren't able to find a package with no remaining dependencies,
@@ -30187,7 +30188,9 @@ function runScriptInPackageStreaming(script, args, pkg) {
     cwd: pkg.path
   };
 
-  const stream = (0, _childProcess.spawnStreaming)("npm", ["run", script, ...args], execOpts, { prefix: pkg.name });
+  const stream = (0, _childProcess.spawnStreaming)("npm", ["run", script, ...args], execOpts, {
+    prefix: pkg.name
+  });
 
   // TODO Add a timeout that triggers in case we're not able to see a
   // completion trigger.
@@ -36749,7 +36752,7 @@ let run = exports.run = (() => {
 
     console.log(_chalk2.default.bold(`Found [${_chalk2.default.green(packages.size)}] packages:\n`));
     for (const pkg of packages.values()) {
-      console.log(`- ${pkg.name} (${(0, _path.relative)(process.cwd(), pkg.path)})`);
+      console.log(`- ${pkg.name} (${(0, _path.relative)(rootPath, pkg.path)})`);
     }
 
     const directoriesToDelete = [];
@@ -36768,7 +36771,7 @@ let run = exports.run = (() => {
     } else {
       console.log(_chalk2.default.bold.red("\n\nDeleting folders:\n"));
       for (const dir of directoriesToDelete) {
-        console.log(`- ${(0, _path.relative)(process.cwd(), dir)}`);
+        console.log(`- ${(0, _path.relative)(rootPath, dir)}`);
         yield (0, _del2.default)(dir, { force: true });
       }
     }
