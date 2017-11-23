@@ -27905,8 +27905,6 @@ let run = exports.run = (() => {
     const rootPath = config.rootPath;
     const packagesPaths = config.packages;
 
-    console.log(_chalk2.default.bold(`Running [${_chalk2.default.green("bootstrap")}] from [${_chalk2.default.yellow(rootPath)}]:\n`));
-
     const packages = yield (0, _packages.getPackages)(rootPath, packagesPaths);
 
     console.log(_chalk2.default.bold(`Found [${_chalk2.default.green(packages.size)}] packages:\n`));
