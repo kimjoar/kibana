@@ -1,7 +1,6 @@
 import { resolve } from "path";
 import getopts from "getopts";
 import loadJsonFile from "load-json-file";
-import readPkg from "read-pkg";
 import dedent from "dedent";
 import indentString from "indent-string";
 import wrapAnsi from "wrap-ansi";
@@ -20,27 +19,19 @@ function help(options) {
 
     Available commands:
 
-        ${availableCommands.join("\n        ")}
+       ${availableCommands.join("\n       ")}
   `);
 }
 
 export async function run(argv) {
   const options = getopts(argv, {
     alias: {
-      h: "help",
-      v: "version"
+      h: "help"
     }
   });
 
-  const pkgJson = await readPkg(resolve(__dirname, "..", "package.json"));
-
   if (options.help) {
     help();
-    return;
-  }
-
-  if (options.version) {
-    console.log(pkgJson.version);
     return;
   }
 

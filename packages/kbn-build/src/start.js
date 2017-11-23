@@ -6,8 +6,8 @@ import {
   topologicallyBatchPackages
 } from "./utils/packages";
 
-export const name = "run";
-export const description = "Run all packages";
+export const name = "start";
+export const description = "Start Kibana and watch packages";
 
 export async function run(config) {
   const rootPath = config.rootPath;
