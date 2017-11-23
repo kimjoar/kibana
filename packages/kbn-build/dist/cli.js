@@ -6557,11 +6557,6 @@ let getPackages = exports.getPackages = (() => {
       }
     }
 
-    // Adding the package graph
-    for (const pkg of packages.values()) {
-      pkg.buildPackageGraph(packages);
-    }
-
     return packages;
   });
 
@@ -6602,14 +6597,41 @@ function normalize(dir) {
   return _path2.default.normalize(dir);
 }
 
+function buildPackageGraph(packages) {
+  const packageGraph = new Map();
+
+  for (const pkg of packages.values()) {
+    const packageDeps = [];
+    const dependencies = pkg.allDependencies;
+
+    for (const depName of Object.keys(dependencies)) {
+      const depVersion = dependencies[depName];
+
+      if (packages.has(depName)) {
+        const dep = packages.get(depName);
+
+        pkg.ensureValidPackageVersion(dep, depVersion);
+
+        packageDeps.push(dep);
+      }
+    }
+
+    packageGraph.set(pkg.name, packageDeps);
+  }
+
+  return packageGraph;
+}
+
 function topologicallyBatchPackages(packagesToBatch) {
+  const packageGraph = buildPackageGraph(packagesToBatch);
+
   // We're going to be chopping stuff out of this array, so copy it.
   const packages = [...packagesToBatch.values()];
 
   // This maps package names to the number of packages that depend on them.
   // As packages are completed their names will be removed from this object.
   const refCounts = {};
-  packages.forEach(pkg => pkg.dependsOn.forEach(dep => {
+  packages.forEach(pkg => packageGraph.get(pkg.name).forEach(dep => {
     if (!refCounts[dep.name]) refCounts[dep.name] = 0;
     refCounts[dep.name]++;
   }));
@@ -6619,7 +6641,7 @@ function topologicallyBatchPackages(packagesToBatch) {
     // Get all packages that have no remaining dependencies within the repo
     // that haven't yet been picked.
     const batch = packages.filter(pkg => {
-      return pkg.dependsOn.filter(dep => refCounts[dep.name] > 0).length === 0;
+      return packageGraph.get(pkg.name).filter(dep => refCounts[dep.name] > 0).length === 0;
     });
 
     // If we weren't able to find a package with no remaining dependencies,
@@ -30074,11 +30096,6 @@ class Package {
     return this._json.scripts || {};
   }
 
-  // Which packages this package depends on
-  get dependsOn() {
-    return this._dependsOn || [];
-  }
-
   ensureValidPackageVersion(pkg, version) {
     const relativePathToPkg = _path2.default.relative(this.path, pkg.path);
     const expectedVersion = `link:${relativePathToPkg}`;
@@ -30101,25 +30118,6 @@ class Package {
     } else {
       throw new _errors.CliError(`[${this.name}] depends on [${pkg.name}], but it's not using the local package. ${updateMsg}`, meta);
     }
-  }
-
-  buildPackageGraph(packages) {
-    const pkgs = [];
-    const dependencies = this.allDependencies;
-
-    for (const depName of Object.keys(dependencies)) {
-      const depVersion = dependencies[depName];
-
-      if (packages.has(depName)) {
-        const pkg = packages.get(depName);
-
-        this.ensureValidPackageVersion(pkg, depVersion);
-
-        pkgs.push(pkg);
-      }
-    }
-
-    this._dependsOn = pkgs;
   }
 
   hasScript(script) {

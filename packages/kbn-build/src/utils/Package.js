@@ -56,11 +56,6 @@ export class Package {
     return this._json.scripts || {};
   }
 
-  // Which packages this package depends on
-  get dependsOn() {
-    return this._dependsOn || [];
-  }
-
   ensureValidPackageVersion(pkg, version) {
     const relativePathToPkg = path.relative(this.path, pkg.path);
     const expectedVersion = `link:${relativePathToPkg}`;
@@ -95,25 +90,6 @@ export class Package {
         meta
       );
     }
-  }
-
-  buildPackageGraph(packages) {
-    const pkgs = [];
-    const dependencies = this.allDependencies;
-
-    for (const depName of Object.keys(dependencies)) {
-      const depVersion = dependencies[depName];
-
-      if (packages.has(depName)) {
-        const pkg = packages.get(depName);
-
-        this.ensureValidPackageVersion(pkg, depVersion);
-
-        pkgs.push(pkg);
-      }
-    }
-
-    this._dependsOn = pkgs;
   }
 
   hasScript(script) {

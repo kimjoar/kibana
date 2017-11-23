@@ -27,11 +27,6 @@ export async function getPackages(rootPath, packagesPaths) {
     }
   }
 
-  // Adding the package graph
-  for (const pkg of packages.values()) {
-    pkg.buildPackageGraph(packages);
-  }
-
   return packages;
 }
 
@@ -42,7 +37,34 @@ function normalize(dir) {
   return path.normalize(dir);
 }
 
+function buildPackageGraph(packages) {
+  const packageGraph = new Map();
+
+  for (const pkg of packages.values()) {
+    const packageDeps = [];
+    const dependencies = pkg.allDependencies;
+
+    for (const depName of Object.keys(dependencies)) {
+      const depVersion = dependencies[depName];
+
+      if (packages.has(depName)) {
+        const dep = packages.get(depName);
+
+        pkg.ensureValidPackageVersion(dep, depVersion);
+
+        packageDeps.push(dep);
+      }
+    }
+
+    packageGraph.set(pkg.name, packageDeps);
+  }
+
+  return packageGraph;
+}
+
 export function topologicallyBatchPackages(packagesToBatch) {
+  const packageGraph = buildPackageGraph(packagesToBatch);
+
   // We're going to be chopping stuff out of this array, so copy it.
   const packages = [...packagesToBatch.values()];
 
@@ -50,7 +72,7 @@ export function topologicallyBatchPackages(packagesToBatch) {
   // As packages are completed their names will be removed from this object.
   const refCounts = {};
   packages.forEach(pkg =>
-    pkg.dependsOn.forEach(dep => {
+    packageGraph.get(pkg.name).forEach(dep => {
       if (!refCounts[dep.name]) refCounts[dep.name] = 0;
       refCounts[dep.name]++;
     })
@@ -61,7 +83,8 @@ export function topologicallyBatchPackages(packagesToBatch) {
     // Get all packages that have no remaining dependencies within the repo
     // that haven't yet been picked.
     const batch = packages.filter(pkg => {
-      return pkg.dependsOn.filter(dep => refCounts[dep.name] > 0).length === 0;
+      const packageDeps = packageGraph.get(pkg.name);
+      return packageDeps.filter(dep => refCounts[dep.name] > 0).length === 0;
     });
 
     // If we weren't able to find a package with no remaining dependencies,
