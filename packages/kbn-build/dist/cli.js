@@ -5740,7 +5740,7 @@ function buildPackageGraph(packages) {
 
   for (const pkg of packages.values()) {
     const packageDeps = [];
-    const dependencies = pkg.allDependencies;
+    const dependencies = pkg.getAllDependencies();
 
     for (const depName of Object.keys(dependencies)) {
       const depVersion = dependencies[depName];
@@ -22916,16 +22916,8 @@ class Package {
     return this._json.version;
   }
 
-  get dependencies() {
-    return this._json.dependencies || {};
-  }
-
-  get devDependencies() {
-    return this._json.devDependencies || {};
-  }
-
-  get allDependencies() {
-    return _extends({}, this.devDependencies, this.dependencies);
+  getAllDependencies() {
+    return _extends({}, this._json.devDependencies || {}, this._json.dependencies || {});
   }
 
   get scripts() {

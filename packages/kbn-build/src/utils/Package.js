@@ -32,18 +32,10 @@ export class Package {
     return this._json.version;
   }
 
-  get dependencies() {
-    return this._json.dependencies || {};
-  }
-
-  get devDependencies() {
-    return this._json.devDependencies || {};
-  }
-
-  get allDependencies() {
+  getAllDependencies() {
     return {
-      ...this.devDependencies,
-      ...this.dependencies
+      ...this._json.devDependencies || {},
+      ...this._json.dependencies || {}
     };
   }
 

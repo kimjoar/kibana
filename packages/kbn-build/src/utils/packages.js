@@ -52,7 +52,7 @@ function buildPackageGraph(packages) {
 
   for (const pkg of packages.values()) {
     const packageDeps = [];
-    const dependencies = pkg.allDependencies;
+    const dependencies = pkg.getAllDependencies();
 
     for (const depName of Object.keys(dependencies)) {
       const depVersion = dependencies[depName];
