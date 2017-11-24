@@ -4997,6 +4997,129 @@ module.exports = require("util");
 
 "use strict";
 
+var escapeStringRegexp = __webpack_require__(176);
+var ansiStyles = __webpack_require__(177);
+var stripAnsi = __webpack_require__(178);
+var hasAnsi = __webpack_require__(179);
+var supportsColor = __webpack_require__(180);
+var defineProps = Object.defineProperties;
+var isSimpleWindowsTerm = process.platform === 'win32' && !/^xterm/i.test(process.env.TERM);
+
+function Chalk(options) {
+	// detect mode if not set manually
+	this.enabled = !options || options.enabled === undefined ? supportsColor : options.enabled;
+}
+
+// use bright blue on Windows as the normal blue color is illegible
+if (isSimpleWindowsTerm) {
+	ansiStyles.blue.open = '\u001b[94m';
+}
+
+var styles = (function () {
+	var ret = {};
+
+	Object.keys(ansiStyles).forEach(function (key) {
+		ansiStyles[key].closeRe = new RegExp(escapeStringRegexp(ansiStyles[key].close), 'g');
+
+		ret[key] = {
+			get: function () {
+				return build.call(this, this._styles.concat(key));
+			}
+		};
+	});
+
+	return ret;
+})();
+
+var proto = defineProps(function chalk() {}, styles);
+
+function build(_styles) {
+	var builder = function () {
+		return applyStyle.apply(builder, arguments);
+	};
+
+	builder._styles = _styles;
+	builder.enabled = this.enabled;
+	// __proto__ is used because we must return a function, but there is
+	// no way to create a function with a different prototype.
+	/* eslint-disable no-proto */
+	builder.__proto__ = proto;
+
+	return builder;
+}
+
+function applyStyle() {
+	// support varags, but simply cast to string in case there's only one arg
+	var args = arguments;
+	var argsLen = args.length;
+	var str = argsLen !== 0 && String(arguments[0]);
+
+	if (argsLen > 1) {
+		// don't slice `arguments`, it prevents v8 optimizations
+		for (var a = 1; a < argsLen; a++) {
+			str += ' ' + args[a];
+		}
+	}
+
+	if (!this.enabled || !str) {
+		return str;
+	}
+
+	var nestedStyles = this._styles;
+	var i = nestedStyles.length;
+
+	// Turns out that on Windows dimmed gray text becomes invisible in cmd.exe,
+	// see https://github.com/chalk/chalk/issues/58
+	// If we're on Windows and we're dealing with a gray color, temporarily make 'dim' a noop.
+	var originalDim = ansiStyles.dim.open;
+	if (isSimpleWindowsTerm && (nestedStyles.indexOf('gray') !== -1 || nestedStyles.indexOf('grey') !== -1)) {
+		ansiStyles.dim.open = '';
+	}
+
+	while (i--) {
+		var code = ansiStyles[nestedStyles[i]];
+
+		// Replace any instances already present with a re-opening code
+		// otherwise only the part of the string until said closing code
+		// will be colored, and the rest will simply be 'plain'.
+		str = code.open + str.replace(code.closeRe, code.open) + code.close;
+	}
+
+	// Reset the original 'dim' if we changed it to work around the Windows dimmed gray issue.
+	ansiStyles.dim.open = originalDim;
+
+	return str;
+}
+
+function init() {
+	var ret = {};
+
+	Object.keys(styles).forEach(function (name) {
+		ret[name] = {
+			get: function () {
+				return build.call(this, [name]);
+			}
+		};
+	});
+
+	return ret;
+}
+
+defineProps(Chalk.prototype, init());
+
+module.exports = new Chalk();
+module.exports.styles = ansiStyles;
+module.exports.hasColor = hasAnsi;
+module.exports.stripColor = stripAnsi;
+module.exports.supportsColor = supportsColor;
+
+
+/***/ }),
+/* 6 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
 var es5 = __webpack_require__(8);
 var Objectfreeze = es5.freeze;
 var util = __webpack_require__(2);
@@ -5115,133 +5238,10 @@ module.exports = {
 
 
 /***/ }),
-/* 6 */
+/* 7 */
 /***/ (function(module, exports) {
 
 module.exports = require("stream");
-
-/***/ }),
-/* 7 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-var escapeStringRegexp = __webpack_require__(176);
-var ansiStyles = __webpack_require__(177);
-var stripAnsi = __webpack_require__(178);
-var hasAnsi = __webpack_require__(179);
-var supportsColor = __webpack_require__(180);
-var defineProps = Object.defineProperties;
-var isSimpleWindowsTerm = process.platform === 'win32' && !/^xterm/i.test(process.env.TERM);
-
-function Chalk(options) {
-	// detect mode if not set manually
-	this.enabled = !options || options.enabled === undefined ? supportsColor : options.enabled;
-}
-
-// use bright blue on Windows as the normal blue color is illegible
-if (isSimpleWindowsTerm) {
-	ansiStyles.blue.open = '\u001b[94m';
-}
-
-var styles = (function () {
-	var ret = {};
-
-	Object.keys(ansiStyles).forEach(function (key) {
-		ansiStyles[key].closeRe = new RegExp(escapeStringRegexp(ansiStyles[key].close), 'g');
-
-		ret[key] = {
-			get: function () {
-				return build.call(this, this._styles.concat(key));
-			}
-		};
-	});
-
-	return ret;
-})();
-
-var proto = defineProps(function chalk() {}, styles);
-
-function build(_styles) {
-	var builder = function () {
-		return applyStyle.apply(builder, arguments);
-	};
-
-	builder._styles = _styles;
-	builder.enabled = this.enabled;
-	// __proto__ is used because we must return a function, but there is
-	// no way to create a function with a different prototype.
-	/* eslint-disable no-proto */
-	builder.__proto__ = proto;
-
-	return builder;
-}
-
-function applyStyle() {
-	// support varags, but simply cast to string in case there's only one arg
-	var args = arguments;
-	var argsLen = args.length;
-	var str = argsLen !== 0 && String(arguments[0]);
-
-	if (argsLen > 1) {
-		// don't slice `arguments`, it prevents v8 optimizations
-		for (var a = 1; a < argsLen; a++) {
-			str += ' ' + args[a];
-		}
-	}
-
-	if (!this.enabled || !str) {
-		return str;
-	}
-
-	var nestedStyles = this._styles;
-	var i = nestedStyles.length;
-
-	// Turns out that on Windows dimmed gray text becomes invisible in cmd.exe,
-	// see https://github.com/chalk/chalk/issues/58
-	// If we're on Windows and we're dealing with a gray color, temporarily make 'dim' a noop.
-	var originalDim = ansiStyles.dim.open;
-	if (isSimpleWindowsTerm && (nestedStyles.indexOf('gray') !== -1 || nestedStyles.indexOf('grey') !== -1)) {
-		ansiStyles.dim.open = '';
-	}
-
-	while (i--) {
-		var code = ansiStyles[nestedStyles[i]];
-
-		// Replace any instances already present with a re-opening code
-		// otherwise only the part of the string until said closing code
-		// will be colored, and the rest will simply be 'plain'.
-		str = code.open + str.replace(code.closeRe, code.open) + code.close;
-	}
-
-	// Reset the original 'dim' if we changed it to work around the Windows dimmed gray issue.
-	ansiStyles.dim.open = originalDim;
-
-	return str;
-}
-
-function init() {
-	var ret = {};
-
-	Object.keys(styles).forEach(function (name) {
-		ret[name] = {
-			get: function () {
-				return build.call(this, [name]);
-			}
-		};
-	});
-
-	return ret;
-}
-
-defineProps(Chalk.prototype, init());
-
-module.exports = new Chalk();
-module.exports.styles = ansiStyles;
-module.exports.hasColor = hasAnsi;
-module.exports.stripColor = stripAnsi;
-module.exports.supportsColor = supportsColor;
-
 
 /***/ }),
 /* 8 */
@@ -5473,16 +5473,16 @@ module.exports = (obj, opts) => {
 module.exports = glob
 
 var fs = __webpack_require__(3)
-var rp = __webpack_require__(23)
+var rp = __webpack_require__(24)
 var minimatch = __webpack_require__(16)
 var Minimatch = minimatch.Minimatch
 var inherits = __webpack_require__(187)
-var EE = __webpack_require__(24).EventEmitter
+var EE = __webpack_require__(25).EventEmitter
 var path = __webpack_require__(1)
 var assert = __webpack_require__(9)
 var isAbsolute = __webpack_require__(17)
 var globSync = __webpack_require__(189)
-var common = __webpack_require__(25)
+var common = __webpack_require__(26)
 var alphasort = common.alphasort
 var alphasorti = common.alphasorti
 var setopts = common.setopts
@@ -5492,7 +5492,7 @@ var util = __webpack_require__(4)
 var childrenIgnored = common.childrenIgnored
 var isIgnored = common.isIgnored
 
-var once = __webpack_require__(27)
+var once = __webpack_require__(28)
 
 function glob (pattern, options, cb) {
   if (typeof options === 'function') cb = options, options = {}
@@ -6258,7 +6258,7 @@ if (/\bgfs4\b/i.test(process.env.NODE_DEBUG || '')) {
   })
 }
 
-module.exports = patch(__webpack_require__(20))
+module.exports = patch(__webpack_require__(21))
 if (process.env.TEST_GRACEFUL_FS_GLOBAL_PATCH) {
   module.exports = patch(fs)
 }
@@ -6581,7 +6581,7 @@ var _path = __webpack_require__(1);
 
 var _path2 = _interopRequireDefault(_path);
 
-var _bluebird = __webpack_require__(28);
+var _bluebird = __webpack_require__(29);
 
 var _errors = __webpack_require__(18);
 
@@ -7666,6 +7666,169 @@ exports.CliError = CliError;
 /* 19 */
 /***/ (function(module, exports, __webpack_require__) {
 
+// Note: since nyc uses this module to output coverage, any lines
+// that are in the direct sync flow of nyc's outputCoverage are
+// ignored, since we can never get coverage for them.
+var assert = __webpack_require__(9)
+var signals = __webpack_require__(227)
+
+var EE = __webpack_require__(25)
+/* istanbul ignore if */
+if (typeof EE !== 'function') {
+  EE = EE.EventEmitter
+}
+
+var emitter
+if (process.__signal_exit_emitter__) {
+  emitter = process.__signal_exit_emitter__
+} else {
+  emitter = process.__signal_exit_emitter__ = new EE()
+  emitter.count = 0
+  emitter.emitted = {}
+}
+
+// Because this emitter is a global, we have to check to see if a
+// previous version of this library failed to enable infinite listeners.
+// I know what you're about to say.  But literally everything about
+// signal-exit is a compromise with evil.  Get used to it.
+if (!emitter.infinite) {
+  emitter.setMaxListeners(Infinity)
+  emitter.infinite = true
+}
+
+module.exports = function (cb, opts) {
+  assert.equal(typeof cb, 'function', 'a callback must be provided for exit handler')
+
+  if (loaded === false) {
+    load()
+  }
+
+  var ev = 'exit'
+  if (opts && opts.alwaysLast) {
+    ev = 'afterexit'
+  }
+
+  var remove = function () {
+    emitter.removeListener(ev, cb)
+    if (emitter.listeners('exit').length === 0 &&
+        emitter.listeners('afterexit').length === 0) {
+      unload()
+    }
+  }
+  emitter.on(ev, cb)
+
+  return remove
+}
+
+module.exports.unload = unload
+function unload () {
+  if (!loaded) {
+    return
+  }
+  loaded = false
+
+  signals.forEach(function (sig) {
+    try {
+      process.removeListener(sig, sigListeners[sig])
+    } catch (er) {}
+  })
+  process.emit = originalProcessEmit
+  process.reallyExit = originalProcessReallyExit
+  emitter.count -= 1
+}
+
+function emit (event, code, signal) {
+  if (emitter.emitted[event]) {
+    return
+  }
+  emitter.emitted[event] = true
+  emitter.emit(event, code, signal)
+}
+
+// { <signal>: <listener fn>, ... }
+var sigListeners = {}
+signals.forEach(function (sig) {
+  sigListeners[sig] = function listener () {
+    // If there are no other listeners, an exit is coming!
+    // Simplest way: remove us and then re-send the signal.
+    // We know that this will kill the process, so we can
+    // safely emit now.
+    var listeners = process.listeners(sig)
+    if (listeners.length === emitter.count) {
+      unload()
+      emit('exit', null, sig)
+      /* istanbul ignore next */
+      emit('afterexit', null, sig)
+      /* istanbul ignore next */
+      process.kill(process.pid, sig)
+    }
+  }
+})
+
+module.exports.signals = function () {
+  return signals
+}
+
+module.exports.load = load
+
+var loaded = false
+
+function load () {
+  if (loaded) {
+    return
+  }
+  loaded = true
+
+  // This is the number of onSignalExit's that are in play.
+  // It's important so that we can count the correct number of
+  // listeners on signals, and don't wait for the other one to
+  // handle it instead of us.
+  emitter.count += 1
+
+  signals = signals.filter(function (sig) {
+    try {
+      process.on(sig, sigListeners[sig])
+      return true
+    } catch (er) {
+      return false
+    }
+  })
+
+  process.emit = processEmit
+  process.reallyExit = processReallyExit
+}
+
+var originalProcessReallyExit = process.reallyExit
+function processReallyExit (code) {
+  process.exitCode = code || 0
+  emit('exit', process.exitCode, null)
+  /* istanbul ignore next */
+  emit('afterexit', process.exitCode, null)
+  /* istanbul ignore next */
+  originalProcessReallyExit.call(process, process.exitCode)
+}
+
+var originalProcessEmit = process.emit
+function processEmit (ev, arg) {
+  if (ev === 'exit') {
+    if (arg !== undefined) {
+      process.exitCode = arg
+    }
+    var ret = originalProcessEmit.apply(this, arguments)
+    emit('exit', process.exitCode, null)
+    /* istanbul ignore next */
+    emit('afterexit', process.exitCode, null)
+    return ret
+  } else {
+    return originalProcessEmit.apply(this, arguments)
+  }
+}
+
+
+/***/ }),
+/* 20 */
+/***/ (function(module, exports, __webpack_require__) {
+
 "use strict";
 
 const path = __webpack_require__(1);
@@ -7681,7 +7844,7 @@ module.exports.sync = fp => parse(fs.readFileSync(fp, 'utf8'), fp);
 
 
 /***/ }),
-/* 20 */
+/* 21 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -7709,7 +7872,7 @@ function clone (obj) {
 
 
 /***/ }),
-/* 21 */
+/* 22 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -7720,7 +7883,7 @@ module.exports = input => typeof input === 'string' ? input.replace(ansiRegex(),
 
 
 /***/ }),
-/* 22 */
+/* 23 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -7731,7 +7894,7 @@ module.exports = function () {
 
 
 /***/ }),
-/* 23 */
+/* 24 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = realpath
@@ -7803,13 +7966,13 @@ function unmonkeypatch () {
 
 
 /***/ }),
-/* 24 */
+/* 25 */
 /***/ (function(module, exports) {
 
 module.exports = require("events");
 
 /***/ }),
-/* 25 */
+/* 26 */
 /***/ (function(module, exports, __webpack_require__) {
 
 exports.alphasort = alphasort
@@ -8055,7 +8218,7 @@ function childrenIgnored (self, path) {
 
 
 /***/ }),
-/* 26 */
+/* 27 */
 /***/ (function(module, exports) {
 
 // Returns a wrapper function that returns a wrapped callback
@@ -8094,10 +8257,10 @@ function wrappy (fn, cb) {
 
 
 /***/ }),
-/* 27 */
+/* 28 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var wrappy = __webpack_require__(26)
+var wrappy = __webpack_require__(27)
 module.exports = wrappy(once)
 module.exports.strict = wrappy(onceStrict)
 
@@ -8142,7 +8305,7 @@ function onceStrict (fn) {
 
 
 /***/ }),
-/* 28 */
+/* 29 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -8160,7 +8323,7 @@ module.exports = bluebird;
 
 
 /***/ }),
-/* 29 */
+/* 30 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -8209,14 +8372,14 @@ return catchFilter;
 
 
 /***/ }),
-/* 30 */
+/* 31 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 var util = __webpack_require__(2);
 var maybeWrapAsError = util.maybeWrapAsError;
-var errors = __webpack_require__(5);
+var errors = __webpack_require__(6);
 var OperationalError = errors.OperationalError;
 var es5 = __webpack_require__(8);
 
@@ -8267,7 +8430,7 @@ module.exports = nodebackForPromise;
 
 
 /***/ }),
-/* 31 */
+/* 32 */
 /***/ (function(module, exports) {
 
 exports = module.exports = SemVer;
@@ -9569,169 +9732,6 @@ function intersects(r1, r2, loose) {
 
 
 /***/ }),
-/* 32 */
-/***/ (function(module, exports, __webpack_require__) {
-
-// Note: since nyc uses this module to output coverage, any lines
-// that are in the direct sync flow of nyc's outputCoverage are
-// ignored, since we can never get coverage for them.
-var assert = __webpack_require__(9)
-var signals = __webpack_require__(227)
-
-var EE = __webpack_require__(24)
-/* istanbul ignore if */
-if (typeof EE !== 'function') {
-  EE = EE.EventEmitter
-}
-
-var emitter
-if (process.__signal_exit_emitter__) {
-  emitter = process.__signal_exit_emitter__
-} else {
-  emitter = process.__signal_exit_emitter__ = new EE()
-  emitter.count = 0
-  emitter.emitted = {}
-}
-
-// Because this emitter is a global, we have to check to see if a
-// previous version of this library failed to enable infinite listeners.
-// I know what you're about to say.  But literally everything about
-// signal-exit is a compromise with evil.  Get used to it.
-if (!emitter.infinite) {
-  emitter.setMaxListeners(Infinity)
-  emitter.infinite = true
-}
-
-module.exports = function (cb, opts) {
-  assert.equal(typeof cb, 'function', 'a callback must be provided for exit handler')
-
-  if (loaded === false) {
-    load()
-  }
-
-  var ev = 'exit'
-  if (opts && opts.alwaysLast) {
-    ev = 'afterexit'
-  }
-
-  var remove = function () {
-    emitter.removeListener(ev, cb)
-    if (emitter.listeners('exit').length === 0 &&
-        emitter.listeners('afterexit').length === 0) {
-      unload()
-    }
-  }
-  emitter.on(ev, cb)
-
-  return remove
-}
-
-module.exports.unload = unload
-function unload () {
-  if (!loaded) {
-    return
-  }
-  loaded = false
-
-  signals.forEach(function (sig) {
-    try {
-      process.removeListener(sig, sigListeners[sig])
-    } catch (er) {}
-  })
-  process.emit = originalProcessEmit
-  process.reallyExit = originalProcessReallyExit
-  emitter.count -= 1
-}
-
-function emit (event, code, signal) {
-  if (emitter.emitted[event]) {
-    return
-  }
-  emitter.emitted[event] = true
-  emitter.emit(event, code, signal)
-}
-
-// { <signal>: <listener fn>, ... }
-var sigListeners = {}
-signals.forEach(function (sig) {
-  sigListeners[sig] = function listener () {
-    // If there are no other listeners, an exit is coming!
-    // Simplest way: remove us and then re-send the signal.
-    // We know that this will kill the process, so we can
-    // safely emit now.
-    var listeners = process.listeners(sig)
-    if (listeners.length === emitter.count) {
-      unload()
-      emit('exit', null, sig)
-      /* istanbul ignore next */
-      emit('afterexit', null, sig)
-      /* istanbul ignore next */
-      process.kill(process.pid, sig)
-    }
-  }
-})
-
-module.exports.signals = function () {
-  return signals
-}
-
-module.exports.load = load
-
-var loaded = false
-
-function load () {
-  if (loaded) {
-    return
-  }
-  loaded = true
-
-  // This is the number of onSignalExit's that are in play.
-  // It's important so that we can count the correct number of
-  // listeners on signals, and don't wait for the other one to
-  // handle it instead of us.
-  emitter.count += 1
-
-  signals = signals.filter(function (sig) {
-    try {
-      process.on(sig, sigListeners[sig])
-      return true
-    } catch (er) {
-      return false
-    }
-  })
-
-  process.emit = processEmit
-  process.reallyExit = processReallyExit
-}
-
-var originalProcessReallyExit = process.reallyExit
-function processReallyExit (code) {
-  process.exitCode = code || 0
-  emit('exit', process.exitCode, null)
-  /* istanbul ignore next */
-  emit('afterexit', process.exitCode, null)
-  /* istanbul ignore next */
-  originalProcessReallyExit.call(process, process.exitCode)
-}
-
-var originalProcessEmit = process.emit
-function processEmit (ev, arg) {
-  if (ev === 'exit') {
-    if (arg !== undefined) {
-      process.exitCode = arg
-    }
-    var ret = originalProcessEmit.apply(this, arguments)
-    emit('exit', process.exitCode, null)
-    /* istanbul ignore next */
-    emit('afterexit', process.exitCode, null)
-    return ret
-  } else {
-    return originalProcessEmit.apply(this, arguments)
-  }
-}
-
-
-/***/ }),
 /* 33 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -10360,7 +10360,7 @@ module.exports = require("os");
 
 
 
-var stream = __webpack_require__(6);
+var stream = __webpack_require__(7);
 var util = __webpack_require__(4);
 var fs = __webpack_require__(3);
 
@@ -22166,7 +22166,7 @@ var _getopts = __webpack_require__(161);
 
 var _getopts2 = _interopRequireDefault(_getopts);
 
-var _loadJsonFile = __webpack_require__(19);
+var _loadJsonFile = __webpack_require__(20);
 
 var _loadJsonFile2 = _interopRequireDefault(_loadJsonFile);
 
@@ -22182,7 +22182,7 @@ var _wrapAnsi = __webpack_require__(172);
 
 var _wrapAnsi2 = _interopRequireDefault(_wrapAnsi);
 
-var _chalk = __webpack_require__(7);
+var _chalk = __webpack_require__(5);
 
 var _chalk2 = _interopRequireDefault(_chalk);
 
@@ -22382,7 +22382,7 @@ module.exports = function(argv, opts) {
 /* 162 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var fs = __webpack_require__(20)
+var fs = __webpack_require__(21)
 var constants = __webpack_require__(163)
 
 var origCwd = process.cwd
@@ -22724,7 +22724,7 @@ module.exports = require("constants");
 /* 164 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var Stream = __webpack_require__(6).Stream
+var Stream = __webpack_require__(7).Stream
 
 module.exports = legacy
 
@@ -23208,7 +23208,7 @@ module.exports = (str, count, opts) => {
 "use strict";
 
 const stringWidth = __webpack_require__(173);
-const stripAnsi = __webpack_require__(21);
+const stripAnsi = __webpack_require__(22);
 
 const ESCAPES = new Set([
 	'\u001B',
@@ -23407,7 +23407,7 @@ module.exports = (str, cols, opts) => {
 
 "use strict";
 
-const stripAnsi = __webpack_require__(21);
+const stripAnsi = __webpack_require__(22);
 const isFullwidthCodePoint = __webpack_require__(175);
 
 module.exports = str => {
@@ -23611,7 +23611,7 @@ Object.defineProperty(module, 'exports', {
 
 "use strict";
 
-var ansiRegex = __webpack_require__(22)();
+var ansiRegex = __webpack_require__(23)();
 
 module.exports = function (str) {
 	return typeof str === 'string' ? str.replace(ansiRegex, '') : str;
@@ -23624,7 +23624,7 @@ module.exports = function (str) {
 
 "use strict";
 
-var ansiRegex = __webpack_require__(22);
+var ansiRegex = __webpack_require__(23);
 var re = new RegExp(ansiRegex().source); // remove the `g` flag
 module.exports = re.test.bind(re);
 
@@ -23706,7 +23706,7 @@ var _clean = __webpack_require__(287);
 
 var clean = _interopRequireWildcard(_clean);
 
-var _start = __webpack_require__(303);
+var _start = __webpack_require__(311);
 
 var start = _interopRequireWildcard(_start);
 
@@ -23757,7 +23757,7 @@ let run = exports.run = (() => {
   };
 })();
 
-var _chalk = __webpack_require__(7);
+var _chalk = __webpack_require__(5);
 
 var _chalk2 = _interopRequireDefault(_chalk);
 
@@ -24421,7 +24421,7 @@ module.exports = globSync
 globSync.GlobSync = GlobSync
 
 var fs = __webpack_require__(3)
-var rp = __webpack_require__(23)
+var rp = __webpack_require__(24)
 var minimatch = __webpack_require__(16)
 var Minimatch = minimatch.Minimatch
 var Glob = __webpack_require__(11).Glob
@@ -24429,7 +24429,7 @@ var util = __webpack_require__(4)
 var path = __webpack_require__(1)
 var assert = __webpack_require__(9)
 var isAbsolute = __webpack_require__(17)
-var common = __webpack_require__(25)
+var common = __webpack_require__(26)
 var alphasort = common.alphasort
 var alphasorti = common.alphasorti
 var setopts = common.setopts
@@ -24909,9 +24909,9 @@ GlobSync.prototype._makeAbs = function (f) {
 /* 190 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var wrappy = __webpack_require__(26)
+var wrappy = __webpack_require__(27)
 var reqs = Object.create(null)
-var once = __webpack_require__(27)
+var once = __webpack_require__(28)
 
 module.exports = wrappy(inflight)
 
@@ -25003,7 +25003,7 @@ var es5 = __webpack_require__(8);
 var Async = __webpack_require__(192);
 var async = new Async();
 es5.defineProperty(Promise, "_async", {value: async});
-var errors = __webpack_require__(5);
+var errors = __webpack_require__(6);
 var TypeError = Promise.TypeError = errors.TypeError;
 Promise.RangeError = errors.RangeError;
 var CancellationError = Promise.CancellationError = errors.CancellationError;
@@ -25025,8 +25025,8 @@ var debug = __webpack_require__(198)(Promise, Context);
 var CapturedTrace = debug.CapturedTrace;
 var PassThroughHandlerContext =
     __webpack_require__(199)(Promise, tryConvertToPromise, NEXT_FILTER);
-var catchFilter = __webpack_require__(29)(NEXT_FILTER);
-var nodebackForPromise = __webpack_require__(30);
+var catchFilter = __webpack_require__(30)(NEXT_FILTER);
+var nodebackForPromise = __webpack_require__(31);
 var errorObj = util.errorObj;
 var tryCatch = util.tryCatch;
 function check(self, executor) {
@@ -26433,7 +26433,7 @@ return Context;
 module.exports = function(Promise, Context) {
 var getDomain = Promise._getDomain;
 var async = Promise._async;
-var Warning = __webpack_require__(5).Warning;
+var Warning = __webpack_require__(6).Warning;
 var util = __webpack_require__(2);
 var canAttachTrace = util.canAttachTrace;
 var unhandledRejectionHandled;
@@ -27360,7 +27360,7 @@ module.exports = function(Promise, tryConvertToPromise, NEXT_FILTER) {
 var util = __webpack_require__(2);
 var CancellationError = Promise.CancellationError;
 var errorObj = util.errorObj;
-var catchFilter = __webpack_require__(29)(NEXT_FILTER);
+var catchFilter = __webpack_require__(30)(NEXT_FILTER);
 
 function PassThroughHandlerContext(promise, type, handler) {
     this.promise = promise;
@@ -28427,7 +28427,7 @@ Promise.prototype.get = function (propertyName) {
 module.exports = function (Promise, apiRejection, tryConvertToPromise,
     createContext, INTERNAL, debug) {
     var util = __webpack_require__(2);
-    var TypeError = __webpack_require__(5).TypeError;
+    var TypeError = __webpack_require__(6).TypeError;
     var inherits = __webpack_require__(2).inherits;
     var errorObj = util.errorObj;
     var tryCatch = util.tryCatch;
@@ -28763,7 +28763,7 @@ module.exports = function(Promise,
                           tryConvertToPromise,
                           Proxyable,
                           debug) {
-var errors = __webpack_require__(5);
+var errors = __webpack_require__(6);
 var TypeError = errors.TypeError;
 var util = __webpack_require__(2);
 var errorObj = util.errorObj;
@@ -29055,11 +29055,11 @@ Promise.prototype.asCallback = Promise.prototype.nodeify = function (nodeback,
 module.exports = function(Promise, INTERNAL) {
 var THIS = {};
 var util = __webpack_require__(2);
-var nodebackForPromise = __webpack_require__(30);
+var nodebackForPromise = __webpack_require__(31);
 var withAppended = util.withAppended;
 var maybeWrapAsError = util.maybeWrapAsError;
 var canEvaluate = util.canEvaluate;
-var TypeError = __webpack_require__(5).TypeError;
+var TypeError = __webpack_require__(6).TypeError;
 var defaultSuffix = "Async";
 var defaultPromisified = {__isPromisified__: true};
 var noCopyProps = [
@@ -29786,8 +29786,8 @@ Promise.prototype.settle = function () {
 module.exports =
 function(Promise, PromiseArray, apiRejection) {
 var util = __webpack_require__(2);
-var RangeError = __webpack_require__(5).RangeError;
-var AggregateError = __webpack_require__(5).AggregateError;
+var RangeError = __webpack_require__(6).RangeError;
+var AggregateError = __webpack_require__(6).AggregateError;
 var isArray = util.isArray;
 var CANCELLATION = {};
 
@@ -30034,11 +30034,11 @@ var _path = __webpack_require__(1);
 
 var _path2 = _interopRequireDefault(_path);
 
-var _semver = __webpack_require__(31);
+var _semver = __webpack_require__(32);
 
 var _semver2 = _interopRequireDefault(_semver);
 
-var _chalk = __webpack_require__(7);
+var _chalk = __webpack_require__(5);
 
 var _chalk2 = _interopRequireDefault(_chalk);
 
@@ -30377,7 +30377,7 @@ module.exports._cleanupOnExit = cleanupOnExit
 
 var fs = __webpack_require__(13)
 var MurmurHash3 = __webpack_require__(226)
-var onExit = __webpack_require__(32)
+var onExit = __webpack_require__(19)
 var path = __webpack_require__(1)
 var activeFiles = {}
 
@@ -31027,7 +31027,7 @@ var _execa = __webpack_require__(232);
 
 var _execa2 = _interopRequireDefault(_execa);
 
-var _chalk = __webpack_require__(7);
+var _chalk = __webpack_require__(5);
 
 var _chalk2 = _interopRequireDefault(_chalk);
 
@@ -31103,7 +31103,7 @@ const npmRunPath = __webpack_require__(253);
 const isStream = __webpack_require__(255);
 const _getStream = __webpack_require__(256);
 const pFinally = __webpack_require__(258);
-const onExit = __webpack_require__(32);
+const onExit = __webpack_require__(19);
 const errname = __webpack_require__(259);
 const stdio = __webpack_require__(260);
 
@@ -33037,7 +33037,7 @@ module.exports.array = (stream, opts) => getStream(stream, Object.assign({}, opt
 
 "use strict";
 
-const PassThrough = __webpack_require__(6).PassThrough;
+const PassThrough = __webpack_require__(7).PassThrough;
 
 module.exports = opts => {
 	opts = Object.assign({}, opts);
@@ -33240,7 +33240,7 @@ module.exports.cli = __webpack_require__(267);
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 // IN THE SOFTWARE.
 
-var stream = __webpack_require__(6),
+var stream = __webpack_require__(7),
     util = __webpack_require__(4),
     timers = __webpack_require__(263);
 
@@ -33387,7 +33387,7 @@ module.exports = require("timers");
 /* 264 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var Stream = __webpack_require__(6)
+var Stream = __webpack_require__(7)
 
 // through
 //
@@ -33501,7 +33501,7 @@ function through (write, end, opts) {
 /* 265 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var Stream = __webpack_require__(6)
+var Stream = __webpack_require__(7)
 var writeMethods = ["write", "end", "destroy"]
 var readMethods = ["resume", "pause"]
 var readEvents = ["data", "close"]
@@ -34156,7 +34156,7 @@ function readPackageJson(dir, depName = "") {
 "use strict";
 
 const path = __webpack_require__(1);
-const loadJsonFile = __webpack_require__(19);
+const loadJsonFile = __webpack_require__(20);
 const pathType = __webpack_require__(272);
 
 module.exports = (fp, opts) => {
@@ -34256,7 +34256,7 @@ exports.symlinkSync = typeSync.bind(null, 'lstatSync', 'isSymbolicLink');
 /* 273 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var semver = __webpack_require__(31)
+var semver = __webpack_require__(32)
 var validateLicense = __webpack_require__(274);
 var hostedGitInfo = __webpack_require__(279)
 var isBuiltinModule = __webpack_require__(281)
@@ -36772,9 +36772,11 @@ let run = exports.run = (() => {
       console.log(_chalk2.default.bold.green("\n\nNo directories to delete"));
     } else {
       console.log(_chalk2.default.bold.red("\n\nDeleting folders:\n"));
+
       for (const dir of directoriesToDelete) {
-        console.log(`- ${(0, _path.relative)(rootPath, dir)}`);
-        yield (0, _del2.default)(dir, { force: true });
+        const deleting = (0, _del2.default)(dir, { force: true });
+        _ora2.default.promise(deleting, (0, _path.relative)(rootPath, dir));
+        yield deleting;
       }
     }
   });
@@ -36788,15 +36790,19 @@ var _del = __webpack_require__(288);
 
 var _del2 = _interopRequireDefault(_del);
 
-var _chalk = __webpack_require__(7);
+var _chalk = __webpack_require__(5);
 
 var _chalk2 = _interopRequireDefault(_chalk);
 
 var _path = __webpack_require__(1);
 
+var _ora = __webpack_require__(302);
+
+var _ora2 = _interopRequireDefault(_ora);
+
 var _packages = __webpack_require__(15);
 
-var _fs = __webpack_require__(302);
+var _fs = __webpack_require__(310);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -38072,6 +38078,319 @@ module.exports = (iterable, mapper, opts) => new Promise((resolve, reject) => {
 
 "use strict";
 
+const chalk = __webpack_require__(5);
+const cliCursor = __webpack_require__(303);
+const cliSpinners = __webpack_require__(307);
+const logSymbols = __webpack_require__(309);
+
+class Ora {
+	constructor(options) {
+		if (typeof options === 'string') {
+			options = {
+				text: options
+			};
+		}
+
+		this.options = Object.assign({
+			text: '',
+			color: 'cyan',
+			stream: process.stderr
+		}, options);
+
+		const sp = this.options.spinner;
+		this.spinner = typeof sp === 'object' ? sp : (process.platform === 'win32' ? cliSpinners.line : (cliSpinners[sp] || cliSpinners.dots)); // eslint-disable-line no-nested-ternary
+
+		if (this.spinner.frames === undefined) {
+			throw new Error('Spinner must define `frames`');
+		}
+
+		this.text = this.options.text;
+		this.color = this.options.color;
+		this.interval = this.options.interval || this.spinner.interval || 100;
+		this.stream = this.options.stream;
+		this.id = null;
+		this.frameIndex = 0;
+		this.enabled = typeof this.options.enabled === 'boolean' ? this.options.enabled : ((this.stream && this.stream.isTTY) && !process.env.CI);
+	}
+	frame() {
+		const frames = this.spinner.frames;
+		let frame = frames[this.frameIndex];
+
+		if (this.color) {
+			frame = chalk[this.color](frame);
+		}
+
+		this.frameIndex = ++this.frameIndex % frames.length;
+
+		return frame + ' ' + this.text;
+	}
+	clear() {
+		if (!this.enabled) {
+			return this;
+		}
+
+		this.stream.clearLine();
+		this.stream.cursorTo(0);
+
+		return this;
+	}
+	render() {
+		this.clear();
+		this.stream.write(this.frame());
+
+		return this;
+	}
+	start(text) {
+		if (text) {
+			this.text = text;
+		}
+
+		if (!this.enabled || this.id) {
+			return this;
+		}
+
+		cliCursor.hide(this.stream);
+		this.render();
+		this.id = setInterval(this.render.bind(this), this.interval);
+
+		return this;
+	}
+	stop() {
+		if (!this.enabled) {
+			return this;
+		}
+
+		clearInterval(this.id);
+		this.id = null;
+		this.frameIndex = 0;
+		this.clear();
+		cliCursor.show(this.stream);
+
+		return this;
+	}
+	succeed(text) {
+		return this.stopAndPersist({symbol: logSymbols.success, text});
+	}
+	fail(text) {
+		return this.stopAndPersist({symbol: logSymbols.error, text});
+	}
+	warn(text) {
+		return this.stopAndPersist({symbol: logSymbols.warning, text});
+	}
+	info(text) {
+		return this.stopAndPersist({symbol: logSymbols.info, text});
+	}
+	stopAndPersist(options) {
+		// Legacy argument
+		// TODO: Deprecate sometime in the future
+		if (typeof options === 'string') {
+			options = {
+				symbol: options
+			};
+		}
+
+		options = options || {};
+
+		this.stop();
+		this.stream.write(`${options.symbol || ' '} ${options.text || this.text}\n`);
+
+		return this;
+	}
+}
+
+module.exports = function (opts) {
+	return new Ora(opts);
+};
+
+module.exports.promise = (action, options) => {
+	if (typeof action.then !== 'function') {
+		throw new TypeError('Parameter `action` must be a Promise');
+	}
+
+	const spinner = new Ora(options);
+	spinner.start();
+
+	action.then(
+		() => {
+			spinner.succeed();
+		},
+		() => {
+			spinner.fail();
+		}
+	);
+
+	return spinner;
+};
+
+
+/***/ }),
+/* 303 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+const restoreCursor = __webpack_require__(304);
+
+let hidden = false;
+
+exports.show = stream => {
+	const s = stream || process.stderr;
+
+	if (!s.isTTY) {
+		return;
+	}
+
+	hidden = false;
+	s.write('\u001b[?25h');
+};
+
+exports.hide = stream => {
+	const s = stream || process.stderr;
+
+	if (!s.isTTY) {
+		return;
+	}
+
+	restoreCursor();
+	hidden = true;
+	s.write('\u001b[?25l');
+};
+
+exports.toggle = (force, stream) => {
+	if (force !== undefined) {
+		hidden = force;
+	}
+
+	if (hidden) {
+		exports.show(stream);
+	} else {
+		exports.hide(stream);
+	}
+};
+
+
+/***/ }),
+/* 304 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+const onetime = __webpack_require__(305);
+const signalExit = __webpack_require__(19);
+
+module.exports = onetime(() => {
+	signalExit(() => {
+		process.stderr.write('\u001b[?25h');
+	}, {alwaysLast: true});
+});
+
+
+/***/ }),
+/* 305 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+const mimicFn = __webpack_require__(306);
+
+module.exports = (fn, opts) => {
+	// TODO: Remove this in v3
+	if (opts === true) {
+		throw new TypeError('The second argument is now an options object');
+	}
+
+	if (typeof fn !== 'function') {
+		throw new TypeError('Expected a function');
+	}
+
+	opts = opts || {};
+
+	let ret;
+	let called = false;
+	const fnName = fn.displayName || fn.name || '<anonymous>';
+
+	const onetime = function () {
+		if (called) {
+			if (opts.throw === true) {
+				throw new Error(`Function \`${fnName}\` can only be called once`);
+			}
+
+			return ret;
+		}
+
+		called = true;
+		ret = fn.apply(this, arguments);
+		fn = null;
+
+		return ret;
+	};
+
+	mimicFn(onetime, fn);
+
+	return onetime;
+};
+
+
+/***/ }),
+/* 306 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+module.exports = (to, from) => {
+	// TODO: use `Reflect.ownKeys()` when targeting Node.js 6
+	for (const prop of Object.getOwnPropertyNames(from).concat(Object.getOwnPropertySymbols(from))) {
+		Object.defineProperty(to, prop, Object.getOwnPropertyDescriptor(from, prop));
+	}
+};
+
+
+/***/ }),
+/* 307 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+module.exports = __webpack_require__(308);
+
+
+/***/ }),
+/* 308 */
+/***/ (function(module, exports) {
+
+module.exports = {"dots":{"interval":80,"frames":["⠋","⠙","⠹","⠸","⠼","⠴","⠦","⠧","⠇","⠏"]},"dots2":{"interval":80,"frames":["⣾","⣽","⣻","⢿","⡿","⣟","⣯","⣷"]},"dots3":{"interval":80,"frames":["⠋","⠙","⠚","⠞","⠖","⠦","⠴","⠲","⠳","⠓"]},"dots4":{"interval":80,"frames":["⠄","⠆","⠇","⠋","⠙","⠸","⠰","⠠","⠰","⠸","⠙","⠋","⠇","⠆"]},"dots5":{"interval":80,"frames":["⠋","⠙","⠚","⠒","⠂","⠂","⠒","⠲","⠴","⠦","⠖","⠒","⠐","⠐","⠒","⠓","⠋"]},"dots6":{"interval":80,"frames":["⠁","⠉","⠙","⠚","⠒","⠂","⠂","⠒","⠲","⠴","⠤","⠄","⠄","⠤","⠴","⠲","⠒","⠂","⠂","⠒","⠚","⠙","⠉","⠁"]},"dots7":{"interval":80,"frames":["⠈","⠉","⠋","⠓","⠒","⠐","⠐","⠒","⠖","⠦","⠤","⠠","⠠","⠤","⠦","⠖","⠒","⠐","⠐","⠒","⠓","⠋","⠉","⠈"]},"dots8":{"interval":80,"frames":["⠁","⠁","⠉","⠙","⠚","⠒","⠂","⠂","⠒","⠲","⠴","⠤","⠄","⠄","⠤","⠠","⠠","⠤","⠦","⠖","⠒","⠐","⠐","⠒","⠓","⠋","⠉","⠈","⠈"]},"dots9":{"interval":80,"frames":["⢹","⢺","⢼","⣸","⣇","⡧","⡗","⡏"]},"dots10":{"interval":80,"frames":["⢄","⢂","⢁","⡁","⡈","⡐","⡠"]},"dots11":{"interval":100,"frames":["⠁","⠂","⠄","⡀","⢀","⠠","⠐","⠈"]},"dots12":{"interval":80,"frames":["⢀⠀","⡀⠀","⠄⠀","⢂⠀","⡂⠀","⠅⠀","⢃⠀","⡃⠀","⠍⠀","⢋⠀","⡋⠀","⠍⠁","⢋⠁","⡋⠁","⠍⠉","⠋⠉","⠋⠉","⠉⠙","⠉⠙","⠉⠩","⠈⢙","⠈⡙","⢈⠩","⡀⢙","⠄⡙","⢂⠩","⡂⢘","⠅⡘","⢃⠨","⡃⢐","⠍⡐","⢋⠠","⡋⢀","⠍⡁","⢋⠁","⡋⠁","⠍⠉","⠋⠉","⠋⠉","⠉⠙","⠉⠙","⠉⠩","⠈⢙","⠈⡙","⠈⠩","⠀⢙","⠀⡙","⠀⠩","⠀⢘","⠀⡘","⠀⠨","⠀⢐","⠀⡐","⠀⠠","⠀⢀","⠀⡀"]},"line":{"interval":130,"frames":["-","\\","|","/"]},"line2":{"interval":100,"frames":["⠂","-","–","—","–","-"]},"pipe":{"interval":100,"frames":["┤","┘","┴","└","├","┌","┬","┐"]},"simpleDots":{"interval":400,"frames":[".  ",".. ","...","   "]},"simpleDotsScrolling":{"interval":200,"frames":[".  ",".. ","..."," ..","  .","   "]},"star":{"interval":70,"frames":["✶","✸","✹","✺","✹","✷"]},"star2":{"interval":80,"frames":["+","x","*"]},"flip":{"interval":70,"frames":["_","_","_","-","`","`","'","´","-","_","_","_"]},"hamburger":{"interval":100,"frames":["☱","☲","☴"]},"growVertical":{"interval":120,"frames":["▁","▃","▄","▅","▆","▇","▆","▅","▄","▃"]},"growHorizontal":{"interval":120,"frames":["▏","▎","▍","▌","▋","▊","▉","▊","▋","▌","▍","▎"]},"balloon":{"interval":140,"frames":[" ",".","o","O","@","*"," "]},"balloon2":{"interval":120,"frames":[".","o","O","°","O","o","."]},"noise":{"interval":100,"frames":["▓","▒","░"]},"bounce":{"interval":120,"frames":["⠁","⠂","⠄","⠂"]},"boxBounce":{"interval":120,"frames":["▖","▘","▝","▗"]},"boxBounce2":{"interval":100,"frames":["▌","▀","▐","▄"]},"triangle":{"interval":50,"frames":["◢","◣","◤","◥"]},"arc":{"interval":100,"frames":["◜","◠","◝","◞","◡","◟"]},"circle":{"interval":120,"frames":["◡","⊙","◠"]},"squareCorners":{"interval":180,"frames":["◰","◳","◲","◱"]},"circleQuarters":{"interval":120,"frames":["◴","◷","◶","◵"]},"circleHalves":{"interval":50,"frames":["◐","◓","◑","◒"]},"squish":{"interval":100,"frames":["╫","╪"]},"toggle":{"interval":250,"frames":["⊶","⊷"]},"toggle2":{"interval":80,"frames":["▫","▪"]},"toggle3":{"interval":120,"frames":["□","■"]},"toggle4":{"interval":100,"frames":["■","□","▪","▫"]},"toggle5":{"interval":100,"frames":["▮","▯"]},"toggle6":{"interval":300,"frames":["ဝ","၀"]},"toggle7":{"interval":80,"frames":["⦾","⦿"]},"toggle8":{"interval":100,"frames":["◍","◌"]},"toggle9":{"interval":100,"frames":["◉","◎"]},"toggle10":{"interval":100,"frames":["㊂","㊀","㊁"]},"toggle11":{"interval":50,"frames":["⧇","⧆"]},"toggle12":{"interval":120,"frames":["☗","☖"]},"toggle13":{"interval":80,"frames":["=","*","-"]},"arrow":{"interval":100,"frames":["←","↖","↑","↗","→","↘","↓","↙"]},"arrow2":{"interval":80,"frames":["⬆️ ","↗️ ","➡️ ","↘️ ","⬇️ ","↙️ ","⬅️ ","↖️ "]},"arrow3":{"interval":120,"frames":["▹▹▹▹▹","▸▹▹▹▹","▹▸▹▹▹","▹▹▸▹▹","▹▹▹▸▹","▹▹▹▹▸"]},"bouncingBar":{"interval":80,"frames":["[    ]","[=   ]","[==  ]","[=== ]","[ ===]","[  ==]","[   =]","[    ]","[   =]","[  ==]","[ ===]","[====]","[=== ]","[==  ]","[=   ]"]},"bouncingBall":{"interval":80,"frames":["( ●    )","(  ●   )","(   ●  )","(    ● )","(     ●)","(    ● )","(   ●  )","(  ●   )","( ●    )","(●     )"]},"smiley":{"interval":200,"frames":["😄 ","😝 "]},"monkey":{"interval":300,"frames":["🙈 ","🙈 ","🙉 ","🙊 "]},"hearts":{"interval":100,"frames":["💛 ","💙 ","💜 ","💚 ","❤️ "]},"clock":{"interval":100,"frames":["🕐 ","🕑 ","🕒 ","🕓 ","🕔 ","🕕 ","🕖 ","🕗 ","🕘 ","🕙 ","🕚 "]},"earth":{"interval":180,"frames":["🌍 ","🌎 ","🌏 "]},"moon":{"interval":80,"frames":["🌑 ","🌒 ","🌓 ","🌔 ","🌕 ","🌖 ","🌗 ","🌘 "]},"runner":{"interval":140,"frames":["🚶 ","🏃 "]},"pong":{"interval":80,"frames":["▐⠂       ▌","▐⠈       ▌","▐ ⠂      ▌","▐ ⠠      ▌","▐  ⡀     ▌","▐  ⠠     ▌","▐   ⠂    ▌","▐   ⠈    ▌","▐    ⠂   ▌","▐    ⠠   ▌","▐     ⡀  ▌","▐     ⠠  ▌","▐      ⠂ ▌","▐      ⠈ ▌","▐       ⠂▌","▐       ⠠▌","▐       ⡀▌","▐      ⠠ ▌","▐      ⠂ ▌","▐     ⠈  ▌","▐     ⠂  ▌","▐    ⠠   ▌","▐    ⡀   ▌","▐   ⠠    ▌","▐   ⠂    ▌","▐  ⠈     ▌","▐  ⠂     ▌","▐ ⠠      ▌","▐ ⡀      ▌","▐⠠       ▌"]},"shark":{"interval":120,"frames":["▐|\\____________▌","▐_|\\___________▌","▐__|\\__________▌","▐___|\\_________▌","▐____|\\________▌","▐_____|\\_______▌","▐______|\\______▌","▐_______|\\_____▌","▐________|\\____▌","▐_________|\\___▌","▐__________|\\__▌","▐___________|\\_▌","▐____________|\\▌","▐____________/|▌","▐___________/|_▌","▐__________/|__▌","▐_________/|___▌","▐________/|____▌","▐_______/|_____▌","▐______/|______▌","▐_____/|_______▌","▐____/|________▌","▐___/|_________▌","▐__/|__________▌","▐_/|___________▌","▐/|____________▌"]},"dqpb":{"interval":100,"frames":["d","q","p","b"]},"weather":{"interval":100,"frames":["☀️ ","☀️ ","☀️ ","🌤 ","⛅️ ","🌥 ","☁️ ","🌧 ","🌨 ","🌧 ","🌨 ","🌧 ","🌨 ","⛈ ","🌨 ","🌧 ","🌨 ","☁️ ","🌥 ","⛅️ ","🌤 ","☀️ ","☀️ "]},"christmas":{"interval":400,"frames":["🌲","🎄"]}}
+
+/***/ }),
+/* 309 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var chalk = __webpack_require__(5);
+
+var main = {
+	info: chalk.blue('ℹ'),
+	success: chalk.green('✔'),
+	warning: chalk.yellow('⚠'),
+	error: chalk.red('✖')
+};
+
+var win = {
+	info: chalk.blue('i'),
+	success: chalk.green('√'),
+	warning: chalk.yellow('‼'),
+	error: chalk.red('×')
+};
+
+module.exports = process.platform === 'win32' ? win : main;
+
+
+/***/ }),
+/* 310 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
 
 Object.defineProperty(exports, "__esModule", {
   value: true
@@ -38100,7 +38419,7 @@ var _fs = __webpack_require__(3);
 
 var _fs2 = _interopRequireDefault(_fs);
 
-var _bluebird = __webpack_require__(28);
+var _bluebird = __webpack_require__(29);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -38109,7 +38428,7 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
 const stat = (0, _bluebird.promisify)(_fs2.default.stat);
 
 /***/ }),
-/* 303 */
+/* 311 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -38173,7 +38492,7 @@ let run = exports.run = (() => {
   };
 })();
 
-var _chalk = __webpack_require__(7);
+var _chalk = __webpack_require__(5);
 
 var _chalk2 = _interopRequireDefault(_chalk);
 

@@ -1,6 +1,7 @@
 import del from "del";
 import chalk from "chalk";
 import { relative } from "path";
+import ora from "ora";
 
 import { getPackages } from "./utils/packages";
 import { isDirectory } from "./utils/fs";
@@ -35,9 +36,11 @@ export async function run(config) {
     console.log(chalk.bold.green("\n\nNo directories to delete"));
   } else {
     console.log(chalk.bold.red("\n\nDeleting folders:\n"));
+
     for (const dir of directoriesToDelete) {
-      console.log(`- ${relative(rootPath, dir)}`);
-      await del(dir, { force: true });
+      const deleting = del(dir, { force: true });
+      ora.promise(deleting, relative(rootPath, dir));
+      await deleting;
     }
   }
 }
