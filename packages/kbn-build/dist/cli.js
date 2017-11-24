@@ -5670,16 +5670,24 @@ let getPackages = exports.getPackages = (() => {
   var _ref = _asyncToGenerator(function* (rootPath, packagesPaths) {
     const globOpts = {
       cwd: rootPath,
+
+      // Should throw in case of unusual errors when reading the file system
       strict: true,
-      absolute: true
+
+      // Always returns absolute paths for matched files
+      absolute: true,
+
+      // Do not match ** against multiple filenames
+      // (This is only specified because we currently don't have a need for it.)
+      noglobstar: true
     };
     const packages = new Map();
 
     for (const globPath of packagesPaths) {
-      const res = yield glob(_path2.default.join(globPath, 'package.json'), globOpts);
+      const files = yield glob(_path2.default.join(globPath, 'package.json'), globOpts);
 
-      for (const globResult of res) {
-        const packageConfigPath = normalize(globResult);
+      for (const filePath of files) {
+        const packageConfigPath = normalize(filePath);
         const packageDir = _path2.default.dirname(packageConfigPath);
         const pkg = yield _Package.Package.fromPath(packageDir);
 
