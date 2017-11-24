@@ -36,7 +36,7 @@ export async function run(config) {
       const stream = pkg.runScriptStreaming("start");
 
       if (stream !== undefined) {
-        starting.push(stream.isStarted);
+        starting.push(stream.started);
       }
     }
 

@@ -20,7 +20,7 @@ export function runScriptInPackageStreaming(script, args, pkg) {
 
   // TODO Add a timeout that triggers in case we're not able to see a
   // completion trigger.
-  const isStarted = new Promise(resolve => {
+  const started = new Promise(resolve => {
     stream.stdout.on("data", resolveOnStartup);
 
     function resolveOnStartup(data) {
@@ -37,7 +37,7 @@ export function runScriptInPackageStreaming(script, args, pkg) {
   });
 
   return {
-    isStarted,
+    started,
     stream
   };
 }
