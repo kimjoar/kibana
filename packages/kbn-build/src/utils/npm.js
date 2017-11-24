@@ -1,6 +1,3 @@
-import path from 'path';
-import writePkg from 'write-pkg';
-
 import { spawn, spawnStreaming } from './childProcess';
 
 export function runScriptInDir(script, args, directory) {

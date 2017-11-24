@@ -9,7 +9,7 @@ import chalk from 'chalk';
 import * as commands from './commands';
 import { CliError } from './utils/errors';
 
-function help(options) {
+function help() {
   const availableCommands = Object.keys(commands)
     .map(commandName => commands[commandName])
     .map(command => `${command.name} - ${command.description}`);
@@ -30,13 +30,16 @@ export async function run(argv) {
     }
   });
 
-  if (options.help) {
+  const commandNames = options._;
+  const commandCount = commandNames.length;
+
+  if (options.help || commandCount === 0) {
     help();
     return;
   }
 
-  if (options._.length === 0) {
-    help();
+  if (commandCount > 1) {
+    console.log(`Only 1 command allowed at a time, ${commandCount} given.`);
     return;
   }
 
@@ -56,21 +59,13 @@ export async function run(argv) {
     return;
   }
 
-  const commandNames = options._;
-
-  const count = commandNames.length;
-  if (count > 1) {
-    console.log(`Only 1 command allowed at a time, ${count} given.`);
-    return;
-  }
-
   const commandName = commandNames[0];
-  const command = commands[commandName];
   const commandOptions = {
     ...config,
     rootPath: cwd
   };
 
+  const command = commands[commandName];  
   if (command === undefined) {
     console.log(`'${commandName}' is not a valid command, see 'kbn --help'`);
     return;

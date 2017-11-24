@@ -1,5 +1,4 @@
 import path from 'path';
-import semver from 'semver';
 import chalk from 'chalk';
 
 import {
@@ -39,10 +38,6 @@ export class Package {
 
   get devDependencies() {
     return this._json.devDependencies || {};
-  }
-
-  get peerDependencies() {
-    return this._json.peerDependencies || {};
   }
 
   get allDependencies() {

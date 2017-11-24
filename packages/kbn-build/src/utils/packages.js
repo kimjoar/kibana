@@ -1,6 +1,6 @@
 import _glob from 'glob';
 import path from 'path';
-import { promisify } from 'bluebird';
+import promisify from 'pify';
 
 import { CliError } from './errors';
 import { Package } from './Package';

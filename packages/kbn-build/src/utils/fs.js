@@ -1,5 +1,5 @@
 import fs from 'fs';
-import { promisify } from 'bluebird';
+import promisify from 'pify';
 
 const stat = promisify(fs.stat);
 
