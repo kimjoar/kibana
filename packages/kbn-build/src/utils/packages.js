@@ -23,6 +23,16 @@ export async function getPackages(rootPath, packagesPaths) {
       const packageDir = path.dirname(packageConfigPath);
       const pkg = await Package.fromPath(packageDir);
 
+      if (packages.has(pkg.name)) {
+        throw new CliError(
+          `There are multiple packages with the same name [${pkg.name}]`,
+          {
+            name: pkg.name,
+            paths: [pkg.path, packages.get(pkg.name).path]
+          }
+        );
+      }
+
       packages.set(pkg.name, pkg);
     }
   }
@@ -108,30 +118,4 @@ export function topologicallyBatchPackages(packagesToBatch) {
   }
 
   return batches;
-}
-
-/**
- * Making sure all packages have valid name. Currently, this only makes sure no
- * two packages have the same name.
- */
-export function ensureValidPackageNames(packages) {
-  const existingPackageNames = {};
-
-  packages.forEach(pkg => {
-    if (!existingPackageNames[pkg.name]) {
-      existingPackageNames[pkg.name] = [];
-    }
-
-    existingPackageNames[pkg.name].push(pkg.path);
-  });
-
-  const names = Object.keys(existingPackageNames).filter(
-    pkgName => existingPackageNames[pkgName].length > 1
-  );
-
-  if (names.length > 0) {
-    throw new CliError(
-      `Multiple packages with the same name: ${names.join(', ')}`
-    );
-  }
 }

@@ -5683,6 +5683,13 @@ let getPackages = exports.getPackages = (() => {
         const packageDir = _path2.default.dirname(packageConfigPath);
         const pkg = yield _Package.Package.fromPath(packageDir);
 
+        if (packages.has(pkg.name)) {
+          throw new _errors.CliError(`There are multiple packages with the same name [${pkg.name}]`, {
+            name: pkg.name,
+            paths: [pkg.path, packages.get(pkg.name).path]
+          });
+        }
+
         packages.set(pkg.name, pkg);
       }
     }
@@ -5701,7 +5708,6 @@ let getPackages = exports.getPackages = (() => {
 
 
 exports.topologicallyBatchPackages = topologicallyBatchPackages;
-exports.ensureValidPackageNames = ensureValidPackageNames;
 
 var _glob2 = __webpack_require__(8);
 
@@ -5796,28 +5802,6 @@ function topologicallyBatchPackages(packagesToBatch) {
   }
 
   return batches;
-}
-
-/**
- * Making sure all packages have valid name. Currently, this only makes sure no
- * two packages have the same name.
- */
-function ensureValidPackageNames(packages) {
-  const existingPackageNames = {};
-
-  packages.forEach(pkg => {
-    if (!existingPackageNames[pkg.name]) {
-      existingPackageNames[pkg.name] = [];
-    }
-
-    existingPackageNames[pkg.name].push(pkg.path);
-  });
-
-  const names = Object.keys(existingPackageNames).filter(pkgName => existingPackageNames[pkgName].length > 1);
-
-  if (names.length > 0) {
-    throw new _errors.CliError(`Multiple packages with the same name: ${names.join(', ')}`);
-  }
 }
 
 /***/ }),
@@ -21651,7 +21635,6 @@ let run = exports.run = (() => {
       console.log(`- ${pkg.name} (${pkg.path})`);
     }
 
-    (0, _packages.ensureValidPackageNames)(packages);
     const batchedPackages = (0, _packages.topologicallyBatchPackages)(packages);
 
     console.log('Running installs in topological order');

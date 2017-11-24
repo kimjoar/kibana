@@ -1,10 +1,6 @@
 import chalk from 'chalk';
 
-import {
-  getPackages,
-  ensureValidPackageNames,
-  topologicallyBatchPackages
-} from '../utils/packages';
+import { getPackages, topologicallyBatchPackages } from '../utils/packages';
 
 export const name = 'start';
 export const description = 'Start Kibana and watch packages';
