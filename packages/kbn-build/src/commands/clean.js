@@ -3,8 +3,8 @@ import chalk from "chalk";
 import { relative } from "path";
 import ora from "ora";
 
-import { getPackages } from "./utils/packages";
-import { isDirectory } from "./utils/fs";
+import { getPackages } from "../utils/packages";
+import { isDirectory } from "../utils/fs";
 
 export const name = "clean";
 export const description =

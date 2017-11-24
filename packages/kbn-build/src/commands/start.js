@@ -4,7 +4,7 @@ import {
   getPackages,
   ensureValidPackageNames,
   topologicallyBatchPackages
-} from "./utils/packages";
+} from "../utils/packages";
 
 export const name = "start";
 export const description = "Start Kibana and watch packages";

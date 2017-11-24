@@ -22186,9 +22186,9 @@ var _chalk = __webpack_require__(5);
 
 var _chalk2 = _interopRequireDefault(_chalk);
 
-var _ = __webpack_require__(181);
+var _commands = __webpack_require__(181);
 
-var commands = _interopRequireWildcard(_);
+var commands = _interopRequireWildcard(_commands);
 
 var _errors = __webpack_require__(18);
 

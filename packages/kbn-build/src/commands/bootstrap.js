@@ -4,7 +4,7 @@ import {
   getPackages,
   ensureValidPackageNames,
   topologicallyBatchPackages
-} from "./utils/packages";
+} from "../utils/packages";
 
 export const name = "bootstrap";
 export const description = "Install dependencies and crosslink packages";

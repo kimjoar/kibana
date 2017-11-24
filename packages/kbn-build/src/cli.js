@@ -6,7 +6,7 @@ import indentString from "indent-string";
 import wrapAnsi from "wrap-ansi";
 import chalk from "chalk";
 
-import * as commands from "./";
+import * as commands from "./commands";
 import { CliError } from "./utils/errors";
 
 function help(options) {
