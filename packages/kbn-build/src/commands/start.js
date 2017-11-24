@@ -30,9 +30,8 @@ export async function run(config) {
     const starting = [];
 
     for (const pkg of batch) {
-      const stream = pkg.runScriptStreaming('start');
-
-      if (stream !== undefined) {
+      if (pkg.hasScript('start')) {
+        const stream = pkg.runScriptStreaming('start');
         starting.push(stream.started);
         countPackagesWithWatch++;
       }
@@ -45,7 +44,7 @@ export async function run(config) {
 
   const kibana = packages.get('kibana');
 
-  if (countPackagesWithWatch.length > 0) {
+  if (countPackagesWithWatch > 0) {
     kibana.runScriptStreaming('start');
   } else {
     kibana.runScript('start');

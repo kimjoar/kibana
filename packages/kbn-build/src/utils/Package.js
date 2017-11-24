@@ -34,8 +34,8 @@ export class Package {
 
   getAllDependencies() {
     return {
-      ...this._json.devDependencies || {},
-      ...this._json.dependencies || {}
+      ...(this._json.devDependencies || {}),
+      ...(this._json.dependencies || {})
     };
   }
 
@@ -47,36 +47,32 @@ export class Package {
     const relativePathToPkg = path.relative(this.path, pkg.path);
     const expectedVersion = `link:${relativePathToPkg}`;
 
-    const expectedValue = `"${pkg.name}": "${expectedVersion}"`;
-    const actualValue = `"${pkg.name}": "${version}"`;
+    if (version.startsWith('link:') && version === expectedVersion) {
+      return;
+    }
 
+    const updateMsg = 'Update its package.json to the expected value below.';
     const meta = {
       package: `${this.name} (${this.packageJsonLocation})`,
-      expected: expectedValue,
-      actual: actualValue
+      expected: `"${pkg.name}": "${expectedVersion}"`,
+      actual: `"${pkg.name}": "${version}"`
     };
 
-    const updateMsg = "Update it's package.json to the expected value below.";
-
     if (version.startsWith('link:')) {
-      if (version !== expectedVersion) {
-        throw new CliError(
-          `[${this.name}] depends on [${
-            pkg.name
-          }] using 'link:', but it doesn't have the expected value. ${
-            updateMsg
-          }`,
-          meta
-        );
-      }
-    } else {
       throw new CliError(
         `[${this.name}] depends on [${
           pkg.name
-        }], but it's not using the local package. ${updateMsg}`,
+        }] using 'link:', but the path is wrong. ${updateMsg}`,
         meta
       );
     }
+
+    throw new CliError(
+      `[${this.name}] depends on [${
+        pkg.name
+      }], but it's not using the local package. ${updateMsg}`,
+      meta
+    );
   }
 
   hasScript(script) {
@@ -88,22 +84,18 @@ export class Package {
    * @param {String} script NPM script to run
    */
   async runScript(script) {
-    if (this.hasScript(script)) {
-      console.log(
-        chalk.bold(
-          `\n\nRunning npm script [${chalk.yellow(script)}] in [${chalk.green(
-            this.name
-          )}]:`
-        )
-      );
-      await runScriptInDir(script, [], this.path);
-    }
+    console.log(
+      chalk.bold(
+        `\n\nRunning npm script [${chalk.yellow(script)}] in [${chalk.green(
+          this.name
+        )}]:`
+      )
+    );
+    await runScriptInDir(script, [], this.path);
   }
 
   runScriptStreaming(script) {
-    if (this.hasScript(script)) {
-      return runScriptInPackageStreaming(script, [], this);
-    }
+    return runScriptInPackageStreaming(script, [], this);
   }
 
   installDependencies() {

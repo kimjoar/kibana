@@ -22928,24 +22928,22 @@ class Package {
     const relativePathToPkg = _path2.default.relative(this.path, pkg.path);
     const expectedVersion = `link:${relativePathToPkg}`;
 
-    const expectedValue = `"${pkg.name}": "${expectedVersion}"`;
-    const actualValue = `"${pkg.name}": "${version}"`;
+    if (version.startsWith('link:') && version === expectedVersion) {
+      return;
+    }
 
+    const updateMsg = 'Update its package.json to the expected value below.';
     const meta = {
       package: `${this.name} (${this.packageJsonLocation})`,
-      expected: expectedValue,
-      actual: actualValue
+      expected: `"${pkg.name}": "${expectedVersion}"`,
+      actual: `"${pkg.name}": "${version}"`
     };
 
-    const updateMsg = "Update it's package.json to the expected value below.";
-
     if (version.startsWith('link:')) {
-      if (version !== expectedVersion) {
-        throw new _errors.CliError(`[${this.name}] depends on [${pkg.name}] using 'link:', but it doesn't have the expected value. ${updateMsg}`, meta);
-      }
-    } else {
-      throw new _errors.CliError(`[${this.name}] depends on [${pkg.name}], but it's not using the local package. ${updateMsg}`, meta);
+      throw new _errors.CliError(`[${this.name}] depends on [${pkg.name}] using 'link:', but the path is wrong. ${updateMsg}`, meta);
     }
+
+    throw new _errors.CliError(`[${this.name}] depends on [${pkg.name}], but it's not using the local package. ${updateMsg}`, meta);
   }
 
   hasScript(script) {
@@ -22960,17 +22958,13 @@ class Package {
     var _this = this;
 
     return _asyncToGenerator(function* () {
-      if (_this.hasScript(script)) {
-        console.log(_chalk2.default.bold(`\n\nRunning npm script [${_chalk2.default.yellow(script)}] in [${_chalk2.default.green(_this.name)}]:`));
-        yield (0, _npm.runScriptInDir)(script, [], _this.path);
-      }
+      console.log(_chalk2.default.bold(`\n\nRunning npm script [${_chalk2.default.yellow(script)}] in [${_chalk2.default.green(_this.name)}]:`));
+      yield (0, _npm.runScriptInDir)(script, [], _this.path);
     })();
   }
 
   runScriptStreaming(script) {
-    if (this.hasScript(script)) {
-      return (0, _npm.runScriptInPackageStreaming)(script, [], this);
-    }
+    return (0, _npm.runScriptInPackageStreaming)(script, [], this);
   }
 
   installDependencies() {
@@ -31623,9 +31617,8 @@ let run = exports.run = (() => {
       const starting = [];
 
       for (const pkg of batch) {
-        const stream = pkg.runScriptStreaming('start');
-
-        if (stream !== undefined) {
+        if (pkg.hasScript('start')) {
+          const stream = pkg.runScriptStreaming('start');
           starting.push(stream.started);
           countPackagesWithWatch++;
         }
@@ -31638,7 +31631,7 @@ let run = exports.run = (() => {
 
     const kibana = packages.get('kibana');
 
-    if (countPackagesWithWatch.length > 0) {
+    if (countPackagesWithWatch > 0) {
       kibana.runScriptStreaming('start');
     } else {
       kibana.runScript('start');
