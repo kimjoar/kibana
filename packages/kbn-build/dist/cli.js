@@ -6546,7 +6546,7 @@ let getPackages = exports.getPackages = (() => {
     const packages = new Map();
 
     for (const globPath of packagesPaths) {
-      const res = yield glob(_path2.default.join(globPath, "package.json"), globOpts);
+      const res = yield glob(_path2.default.join(globPath, 'package.json'), globOpts);
 
       for (const globResult of res) {
         const packageConfigPath = normalize(globResult);
@@ -6650,7 +6650,7 @@ function topologicallyBatchPackages(packagesToBatch) {
     const hasCycles = packages.length > 0 && batch.length === 0;
     if (hasCycles) {
       const cyclePackageNames = packages.map(p => p.name);
-      const message = "Encountered a cycle in the dependency graph. Packages in cycle are:\n" + cyclePackageNames.join(", ");
+      const message = 'Encountered a cycle in the dependency graph. Packages in cycle are:\n' + cyclePackageNames.join(', ');
 
       throw new _errors.CliError(message);
     }
@@ -6684,7 +6684,7 @@ function ensureValidPackageNames(packages) {
   const names = Object.keys(existingPackageNames).filter(pkgName => existingPackageNames[pkgName].length > 1);
 
   if (names.length > 0) {
-    throw new _errors.CliError(`Multiple packages with the same name: ${names.join(", ")}`);
+    throw new _errors.CliError(`Multiple packages with the same name: ${names.join(', ')}`);
   }
 }
 
@@ -22082,7 +22082,7 @@ let run = exports.run = (() => {
   var _ref = _asyncToGenerator(function* (argv) {
     const options = (0, _getopts2.default)(argv, {
       alias: {
-        h: "help"
+        h: 'help'
       }
     });
 
@@ -22097,13 +22097,13 @@ let run = exports.run = (() => {
     }
 
     const cwd = process.cwd();
-    const configFile = (0, _path.resolve)(cwd, ".kbnconfig");
+    const configFile = (0, _path.resolve)(cwd, '.kbnconfig');
 
     let config;
     try {
       config = yield (0, _loadJsonFile2.default)(configFile);
     } catch (e) {
-      if (e.code === "ENOENT") {
+      if (e.code === 'ENOENT') {
         console.log(`Config file [${configFile}] was not found`);
       } else {
         console.log(`Reading config file [${configFile}] failed:`);
@@ -22146,8 +22146,8 @@ let run = exports.run = (() => {
             return `${key}: ${value}`;
           });
 
-          console.log("Additional debugging info:\n");
-          console.log((0, _indentString2.default)(metaOutput.join("\n"), 3));
+          console.log('Additional debugging info:\n');
+          console.log((0, _indentString2.default)(metaOutput.join('\n'), 3));
         }
       } else {
         console.error(e);
@@ -22206,7 +22206,7 @@ function help(options) {
 
     Available commands:
 
-       ${availableCommands.join("\n       ")}
+       ${availableCommands.join('\n       ')}
   `);
 }
 
@@ -23743,7 +23743,7 @@ let run = exports.run = (() => {
     (0, _packages.ensureValidPackageNames)(packages);
     const batchedPackages = (0, _packages.topologicallyBatchPackages)(packages);
 
-    console.log("Running installs in topological order");
+    console.log('Running installs in topological order');
 
     for (const batch of batchedPackages) {
       for (const pkg of batch) {
@@ -23767,8 +23767,8 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
 
-const name = exports.name = "bootstrap";
-const description = exports.description = "Install dependencies and crosslink packages";
+const name = exports.name = 'bootstrap';
+const description = exports.description = 'Install dependencies and crosslink packages';
 
 /***/ }),
 /* 183 */
@@ -30064,9 +30064,9 @@ class Package {
     this._json = packageJson;
     this.path = packageDir;
 
-    this.packageJsonLocation = _path2.default.resolve(this.path, "package.json");
-    this.nodeModulesLocation = _path2.default.resolve(this.path, "node_modules");
-    this.targetLocation = _path2.default.resolve(this.path, "target");
+    this.packageJsonLocation = _path2.default.resolve(this.path, 'package.json');
+    this.nodeModulesLocation = _path2.default.resolve(this.path, 'node_modules');
+    this.targetLocation = _path2.default.resolve(this.path, 'target');
   }
 
   get name() {
@@ -30112,7 +30112,7 @@ class Package {
 
     const updateMsg = "Update it's package.json to the expected value below.";
 
-    if (version.startsWith("link:")) {
+    if (version.startsWith('link:')) {
       if (version !== expectedVersion) {
         throw new _errors.CliError(`[${this.name}] depends on [${pkg.name}] using 'link:', but it doesn't have the expected value. ${updateMsg}`, meta);
       }
@@ -30180,7 +30180,7 @@ var _childProcess = __webpack_require__(231);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function runScriptInDir(script, args, directory) {
-  return (0, _childProcess.spawn)("npm", ["run", script, ...args], {
+  return (0, _childProcess.spawn)('npm', ['run', script, ...args], {
     cwd: directory
   });
 }
@@ -30190,24 +30190,24 @@ function runScriptInPackageStreaming(script, args, pkg) {
     cwd: pkg.path
   };
 
-  const stream = (0, _childProcess.spawnStreaming)("npm", ["run", script, ...args], execOpts, {
+  const stream = (0, _childProcess.spawnStreaming)('npm', ['run', script, ...args], execOpts, {
     prefix: pkg.name
   });
 
   // TODO Add a timeout that triggers in case we're not able to see a
   // completion trigger.
   const started = new Promise(resolve => {
-    stream.stdout.on("data", resolveOnStartup);
+    stream.stdout.on('data', resolveOnStartup);
 
     function resolveOnStartup(data) {
-      const isTypeScriptReady = data.includes("Compilation complete.");
-      const isWebpackReady = data.includes("Chunk Names");
+      const isTypeScriptReady = data.includes('Compilation complete.');
+      const isWebpackReady = data.includes('Chunk Names');
 
       if (isTypeScriptReady || isWebpackReady) {
         resolve();
 
         // When we've started up we no longer need to listen for changes
-        stream.stdout.removeListener("data", resolveOnStartup);
+        stream.stdout.removeListener('data', resolveOnStartup);
       }
     }
   });
@@ -30219,7 +30219,7 @@ function runScriptInPackageStreaming(script, args, pkg) {
 }
 
 function installInDir(directory) {
-  return (0, _childProcess.spawn)("yarn", ["install", "--non-interactive"], {
+  return (0, _childProcess.spawn)('yarn', ['install', '--non-interactive'], {
     cwd: directory
   });
 }
@@ -31041,12 +31041,12 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 let children = 0;
 
 // when streaming children are spawned, use this color for prefix
-const colorWheel = ["cyan", "magenta", "blue", "yellow", "green", "red"];
+const colorWheel = ['cyan', 'magenta', 'blue', 'yellow', 'green', 'red'];
 const NUM_COLORS = colorWheel.length;
 
 function spawn(command, args, opts) {
   return (0, _execa2.default)(command, args, _extends({}, opts, {
-    stdio: "inherit"
+    stdio: 'inherit'
   }));
 }
 
@@ -31055,7 +31055,7 @@ function spawnStreaming(command, args, opts, { prefix }) {
   const color = _chalk2.default[colorName];
 
   const spawned = spawnWithTracking(command, args, _extends({}, opts, {
-    stdio: ["ignore", "pipe", "pipe"]
+    stdio: ['ignore', 'pipe', 'pipe']
   }));
 
   const prefixedStdout = (0, _strongLogTransformer2.default)({ tag: `${color.bold(prefix)}:` });
@@ -31065,7 +31065,7 @@ function spawnStreaming(command, args, opts, { prefix }) {
   });
 
   // Avoid "Possible EventEmitter memory leak detected" warning due to piped stdio
-  if (children > process.stdout.listenerCount("close")) {
+  if (children > process.stdout.listenerCount('close')) {
     process.stdout.setMaxListeners(children);
     process.stderr.setMaxListeners(children);
   }
@@ -34145,8 +34145,8 @@ var _path2 = _interopRequireDefault(_path);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function readPackageJson(dir, depName = "") {
-  return (0, _readPkg2.default)(_path2.default.join(dir, depName, "package.json"), { normalize: false });
+function readPackageJson(dir, depName = '') {
+  return (0, _readPkg2.default)(_path2.default.join(dir, depName, 'package.json'), { normalize: false });
 }
 
 /***/ }),
@@ -36769,9 +36769,9 @@ let run = exports.run = (() => {
     }
 
     if (directoriesToDelete.length === 0) {
-      console.log(_chalk2.default.bold.green("\n\nNo directories to delete"));
+      console.log(_chalk2.default.bold.green('\n\nNo directories to delete'));
     } else {
-      console.log(_chalk2.default.bold.red("\n\nDeleting folders:\n"));
+      console.log(_chalk2.default.bold.red('\n\nDeleting folders:\n'));
 
       for (const dir of directoriesToDelete) {
         const deleting = (0, _del2.default)(dir, { force: true });
@@ -36808,8 +36808,8 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
 
-const name = exports.name = "clean";
-const description = exports.description = "Remove the node_modules and target directories from all packages.";
+const name = exports.name = 'clean';
+const description = exports.description = 'Remove the node_modules and target directories from all packages.';
 
 /***/ }),
 /* 288 */
@@ -38403,7 +38403,7 @@ let isDirectory = exports.isDirectory = (() => {
       const targetFolder = yield stat(path);
       return targetFolder.isDirectory();
     } catch (e) {
-      if (e.code === "ENOENT") {
+      if (e.code === 'ENOENT') {
         return false;
       }
       throw e;
@@ -38454,7 +38454,7 @@ let run = exports.run = (() => {
     // We know we want to start Kibana last, so this is just making _sure_ it's
     // actually the last package to start.
     const packagesLessKibana = new Map(packages);
-    packagesLessKibana.delete("kibana");
+    packagesLessKibana.delete('kibana');
 
     const batchedPackages = (0, _packages.topologicallyBatchPackages)(packagesLessKibana);
     let countPackagesWithWatch = 0;
@@ -38465,7 +38465,7 @@ let run = exports.run = (() => {
       const starting = [];
 
       for (const pkg of batch) {
-        const stream = pkg.runScriptStreaming("start");
+        const stream = pkg.runScriptStreaming('start');
 
         if (stream !== undefined) {
           starting.push(stream.started);
@@ -38478,12 +38478,12 @@ let run = exports.run = (() => {
       yield Promise.all(starting);
     }
 
-    const kibana = packages.get("kibana");
+    const kibana = packages.get('kibana');
 
     if (countPackagesWithWatch.length > 0) {
-      kibana.runScriptStreaming("start");
+      kibana.runScriptStreaming('start');
     } else {
-      kibana.runScript("start");
+      kibana.runScript('start');
     }
   });
 
@@ -38502,8 +38502,8 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
 
-const name = exports.name = "start";
-const description = exports.description = "Start Kibana and watch packages";
+const name = exports.name = 'start';
+const description = exports.description = 'Start Kibana and watch packages';
 
 /***/ })
 /******/ ]);

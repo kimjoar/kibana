@@ -1,13 +1,13 @@
-import chalk from "chalk";
+import chalk from 'chalk';
 
 import {
   getPackages,
   ensureValidPackageNames,
   topologicallyBatchPackages
-} from "../utils/packages";
+} from '../utils/packages';
 
-export const name = "bootstrap";
-export const description = "Install dependencies and crosslink packages";
+export const name = 'bootstrap';
+export const description = 'Install dependencies and crosslink packages';
 
 export async function run(config) {
   const rootPath = config.rootPath;
@@ -23,7 +23,7 @@ export async function run(config) {
   ensureValidPackageNames(packages);
   const batchedPackages = topologicallyBatchPackages(packages);
 
-  console.log("Running installs in topological order");
+  console.log('Running installs in topological order');
 
   for (const batch of batchedPackages) {
     for (const pkg of batch) {

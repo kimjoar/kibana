@@ -1,9 +1,9 @@
-import _glob from "glob";
-import path from "path";
-import { promisify } from "bluebird";
+import _glob from 'glob';
+import path from 'path';
+import { promisify } from 'bluebird';
 
-import { CliError } from "./errors";
-import { Package } from "./Package";
+import { CliError } from './errors';
+import { Package } from './Package';
 
 const glob = promisify(_glob);
 
@@ -16,7 +16,7 @@ export async function getPackages(rootPath, packagesPaths) {
   const packages = new Map();
 
   for (const globPath of packagesPaths) {
-    const res = await glob(path.join(globPath, "package.json"), globOpts);
+    const res = await glob(path.join(globPath, 'package.json'), globOpts);
 
     for (const globResult of res) {
       const packageConfigPath = normalize(globResult);
@@ -93,8 +93,8 @@ export function topologicallyBatchPackages(packagesToBatch) {
     if (hasCycles) {
       const cyclePackageNames = packages.map(p => p.name);
       const message =
-        "Encountered a cycle in the dependency graph. Packages in cycle are:\n" +
-        cyclePackageNames.join(", ");
+        'Encountered a cycle in the dependency graph. Packages in cycle are:\n' +
+        cyclePackageNames.join(', ');
 
       throw new CliError(message);
     }
@@ -131,7 +131,7 @@ export function ensureValidPackageNames(packages) {
 
   if (names.length > 0) {
     throw new CliError(
-      `Multiple packages with the same name: ${names.join(", ")}`
+      `Multiple packages with the same name: ${names.join(', ')}`
     );
   }
 }

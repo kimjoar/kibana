@@ -1,14 +1,14 @@
-import del from "del";
-import chalk from "chalk";
-import { relative } from "path";
-import ora from "ora";
+import del from 'del';
+import chalk from 'chalk';
+import { relative } from 'path';
+import ora from 'ora';
 
-import { getPackages } from "../utils/packages";
-import { isDirectory } from "../utils/fs";
+import { getPackages } from '../utils/packages';
+import { isDirectory } from '../utils/fs';
 
-export const name = "clean";
+export const name = 'clean';
 export const description =
-  "Remove the node_modules and target directories from all packages.";
+  'Remove the node_modules and target directories from all packages.';
 
 export async function run(config) {
   const rootPath = config.rootPath;
@@ -33,9 +33,9 @@ export async function run(config) {
   }
 
   if (directoriesToDelete.length === 0) {
-    console.log(chalk.bold.green("\n\nNo directories to delete"));
+    console.log(chalk.bold.green('\n\nNo directories to delete'));
   } else {
-    console.log(chalk.bold.red("\n\nDeleting folders:\n"));
+    console.log(chalk.bold.red('\n\nDeleting folders:\n'));
 
     for (const dir of directoriesToDelete) {
       const deleting = del(dir, { force: true });

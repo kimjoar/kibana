@@ -1,10 +1,10 @@
-import path from "path";
-import writePkg from "write-pkg";
+import path from 'path';
+import writePkg from 'write-pkg';
 
-import { spawn, spawnStreaming } from "./childProcess";
+import { spawn, spawnStreaming } from './childProcess';
 
 export function runScriptInDir(script, args, directory) {
-  return spawn("npm", ["run", script, ...args], {
+  return spawn('npm', ['run', script, ...args], {
     cwd: directory
   });
 }
@@ -14,24 +14,24 @@ export function runScriptInPackageStreaming(script, args, pkg) {
     cwd: pkg.path
   };
 
-  const stream = spawnStreaming("npm", ["run", script, ...args], execOpts, {
+  const stream = spawnStreaming('npm', ['run', script, ...args], execOpts, {
     prefix: pkg.name
   });
 
   // TODO Add a timeout that triggers in case we're not able to see a
   // completion trigger.
   const started = new Promise(resolve => {
-    stream.stdout.on("data", resolveOnStartup);
+    stream.stdout.on('data', resolveOnStartup);
 
     function resolveOnStartup(data) {
-      const isTypeScriptReady = data.includes("Compilation complete.");
-      const isWebpackReady = data.includes("Chunk Names");
+      const isTypeScriptReady = data.includes('Compilation complete.');
+      const isWebpackReady = data.includes('Chunk Names');
 
       if (isTypeScriptReady || isWebpackReady) {
         resolve();
 
         // When we've started up we no longer need to listen for changes
-        stream.stdout.removeListener("data", resolveOnStartup);
+        stream.stdout.removeListener('data', resolveOnStartup);
       }
     }
   });
@@ -43,7 +43,7 @@ export function runScriptInPackageStreaming(script, args, pkg) {
 }
 
 export function installInDir(directory) {
-  return spawn("yarn", ["install", "--non-interactive"], {
+  return spawn('yarn', ['install', '--non-interactive'], {
     cwd: directory
   });
 }

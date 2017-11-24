@@ -1,13 +1,13 @@
-import chalk from "chalk";
+import chalk from 'chalk';
 
 import {
   getPackages,
   ensureValidPackageNames,
   topologicallyBatchPackages
-} from "../utils/packages";
+} from '../utils/packages';
 
-export const name = "start";
-export const description = "Start Kibana and watch packages";
+export const name = 'start';
+export const description = 'Start Kibana and watch packages';
 
 export async function run(config) {
   const rootPath = config.rootPath;
@@ -23,7 +23,7 @@ export async function run(config) {
   // We know we want to start Kibana last, so this is just making _sure_ it's
   // actually the last package to start.
   const packagesLessKibana = new Map(packages);
-  packagesLessKibana.delete("kibana");
+  packagesLessKibana.delete('kibana');
 
   const batchedPackages = topologicallyBatchPackages(packagesLessKibana);
   let countPackagesWithWatch = 0;
@@ -34,7 +34,7 @@ export async function run(config) {
     const starting = [];
 
     for (const pkg of batch) {
-      const stream = pkg.runScriptStreaming("start");
+      const stream = pkg.runScriptStreaming('start');
 
       if (stream !== undefined) {
         starting.push(stream.started);
@@ -47,11 +47,11 @@ export async function run(config) {
     await Promise.all(starting);
   }
 
-  const kibana = packages.get("kibana");
+  const kibana = packages.get('kibana');
 
   if (countPackagesWithWatch.length > 0) {
-    kibana.runScriptStreaming("start");
+    kibana.runScriptStreaming('start');
   } else {
-    kibana.runScript("start");
+    kibana.runScript('start');
   }
 }

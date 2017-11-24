@@ -1,14 +1,14 @@
-import path from "path";
-import semver from "semver";
-import chalk from "chalk";
+import path from 'path';
+import semver from 'semver';
+import chalk from 'chalk';
 
 import {
   runScriptInDir,
   runScriptInPackageStreaming,
   installInDir
-} from "./npm";
-import { readPackageJson } from "./packageJson";
-import { CliError } from "./errors";
+} from './npm';
+import { readPackageJson } from './packageJson';
+import { CliError } from './errors';
 
 export class Package {
   static async fromPath(path) {
@@ -20,9 +20,9 @@ export class Package {
     this._json = packageJson;
     this.path = packageDir;
 
-    this.packageJsonLocation = path.resolve(this.path, "package.json");
-    this.nodeModulesLocation = path.resolve(this.path, "node_modules");
-    this.targetLocation = path.resolve(this.path, "target");
+    this.packageJsonLocation = path.resolve(this.path, 'package.json');
+    this.nodeModulesLocation = path.resolve(this.path, 'node_modules');
+    this.targetLocation = path.resolve(this.path, 'target');
   }
 
   get name() {
@@ -71,7 +71,7 @@ export class Package {
 
     const updateMsg = "Update it's package.json to the expected value below.";
 
-    if (version.startsWith("link:")) {
+    if (version.startsWith('link:')) {
       if (version !== expectedVersion) {
         throw new CliError(
           `[${this.name}] depends on [${

@@ -1,13 +1,13 @@
-import { resolve } from "path";
-import getopts from "getopts";
-import loadJsonFile from "load-json-file";
-import dedent from "dedent";
-import indentString from "indent-string";
-import wrapAnsi from "wrap-ansi";
-import chalk from "chalk";
+import { resolve } from 'path';
+import getopts from 'getopts';
+import loadJsonFile from 'load-json-file';
+import dedent from 'dedent';
+import indentString from 'indent-string';
+import wrapAnsi from 'wrap-ansi';
+import chalk from 'chalk';
 
-import * as commands from "./commands";
-import { CliError } from "./utils/errors";
+import * as commands from './commands';
+import { CliError } from './utils/errors';
 
 function help(options) {
   const availableCommands = Object.keys(commands)
@@ -19,14 +19,14 @@ function help(options) {
 
     Available commands:
 
-       ${availableCommands.join("\n       ")}
+       ${availableCommands.join('\n       ')}
   `);
 }
 
 export async function run(argv) {
   const options = getopts(argv, {
     alias: {
-      h: "help"
+      h: 'help'
     }
   });
 
@@ -41,13 +41,13 @@ export async function run(argv) {
   }
 
   const cwd = process.cwd();
-  const configFile = resolve(cwd, ".kbnconfig");
+  const configFile = resolve(cwd, '.kbnconfig');
 
   let config;
   try {
     config = await loadJsonFile(configFile);
   } catch (e) {
-    if (e.code === "ENOENT") {
+    if (e.code === 'ENOENT') {
       console.log(`Config file [${configFile}] was not found`);
     } else {
       console.log(`Reading config file [${configFile}] failed:`);
@@ -97,8 +97,8 @@ export async function run(argv) {
           return `${key}: ${value}`;
         });
 
-        console.log("Additional debugging info:\n");
-        console.log(indentString(metaOutput.join("\n"), 3));
+        console.log('Additional debugging info:\n');
+        console.log(indentString(metaOutput.join('\n'), 3));
       }
     } else {
       console.error(e);

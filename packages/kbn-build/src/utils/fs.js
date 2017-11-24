@@ -1,5 +1,5 @@
-import fs from "fs";
-import { promisify } from "bluebird";
+import fs from 'fs';
+import { promisify } from 'bluebird';
 
 const stat = promisify(fs.stat);
 
@@ -8,7 +8,7 @@ export async function isDirectory(path) {
     const targetFolder = await stat(path);
     return targetFolder.isDirectory();
   } catch (e) {
-    if (e.code === "ENOENT") {
+    if (e.code === 'ENOENT') {
       return false;
     }
     throw e;

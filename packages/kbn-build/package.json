@@ -6,7 +6,7 @@
   "main": "./cli.js",
   "scripts": {
     "build": "webpack",
-    "prettier": "prettier --write './src/**/*.js'"
+    "prettier": "prettier --single-quote --write './src/**/*.js'"
   },
   "dependencies": {
     "bluebird": "^3.5.1",
