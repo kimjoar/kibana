@@ -114,7 +114,9 @@ export class Package {
   }
 
   runScriptStreaming(script) {
-    return runScriptInPackageStreaming(script, [], this);
+    if (this.hasScript(script)) {
+      return runScriptInPackageStreaming(script, [], this);
+    }
   }
 
   installDependencies() {

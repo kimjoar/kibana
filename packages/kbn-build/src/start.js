@@ -29,20 +29,25 @@ export async function run(config) {
 
   console.log(chalk.bold(`\n\nStarting up:\n`));
 
-  let startedCount = 0;
   for (const batch of batchedPackages) {
+    const starting = [];
+
     for (const pkg of batch) {
-      if (pkg.hasScript("start")) {
-        const { isStarted } = pkg.runScriptStreaming("start");
-        await isStarted;
-        startedCount++;
+      const stream = pkg.runScriptStreaming("start");
+
+      if (stream !== undefined) {
+        starting.push(stream.isStarted);
       }
     }
+
+    // We need to make sure the entire batch has completed the startup process
+    // before we can move on to the next batch
+    await Promise.all(starting);
   }
 
   const kibana = packages.get("kibana");
 
-  if (startedCount > 0) {
+  if (packagesLessKibana.size > 0) {
     kibana.runScriptStreaming("start");
   } else {
     kibana.runScript("start");
