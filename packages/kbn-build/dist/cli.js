@@ -38138,6 +38138,7 @@ let run = exports.run = (() => {
     packagesLessKibana.delete("kibana");
 
     const batchedPackages = (0, _packages.topologicallyBatchPackages)(packagesLessKibana);
+    let countPackagesWithWatch = 0;
 
     console.log(_chalk2.default.bold(`\n\nStarting up:\n`));
 
@@ -38149,6 +38150,7 @@ let run = exports.run = (() => {
 
         if (stream !== undefined) {
           starting.push(stream.started);
+          countPackagesWithWatch++;
         }
       }
 
@@ -38159,7 +38161,7 @@ let run = exports.run = (() => {
 
     const kibana = packages.get("kibana");
 
-    if (packagesLessKibana.size > 0) {
+    if (countPackagesWithWatch.length > 0) {
       kibana.runScriptStreaming("start");
     } else {
       kibana.runScript("start");

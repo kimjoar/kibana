@@ -26,6 +26,7 @@ export async function run(config) {
   packagesLessKibana.delete("kibana");
 
   const batchedPackages = topologicallyBatchPackages(packagesLessKibana);
+  let countPackagesWithWatch = 0;
 
   console.log(chalk.bold(`\n\nStarting up:\n`));
 
@@ -37,6 +38,7 @@ export async function run(config) {
 
       if (stream !== undefined) {
         starting.push(stream.started);
+        countPackagesWithWatch++;
       }
     }
 
@@ -47,7 +49,7 @@ export async function run(config) {
 
   const kibana = packages.get("kibana");
 
-  if (packagesLessKibana.size > 0) {
+  if (countPackagesWithWatch.length > 0) {
     kibana.runScriptStreaming("start");
   } else {
     kibana.runScript("start");
