@@ -40,7 +40,7 @@ export async function run(argv) {
 
   if (commandCount > 1) {
     console.log(`Only 1 command allowed at a time, ${commandCount} given.`);
-    return;
+    process.exit(1);
   }
 
   const cwd = process.cwd();
@@ -51,12 +51,12 @@ export async function run(argv) {
     config = await loadJsonFile(configFile);
   } catch (e) {
     if (e.code === 'ENOENT') {
-      console.log(`Config file [${configFile}] was not found`);
+      console.log(chalk.red(`Config file [${configFile}] was not found`));
     } else {
-      console.log(`Reading config file [${configFile}] failed:`);
-      console.log(e);
+      console.log(chalk.red(`Reading config file [${configFile}] failed:\n`));
+      console.log(e.stack);
     }
-    return;
+    process.exit(1);
   }
 
   const commandName = commandNames[0];
@@ -65,10 +65,12 @@ export async function run(argv) {
     rootPath: cwd
   };
 
-  const command = commands[commandName];  
+  const command = commands[commandName];
   if (command === undefined) {
-    console.log(`'${commandName}' is not a valid command, see 'kbn --help'`);
-    return;
+    console.log(
+      chalk.red(`[${commandName}] is not a valid command, see 'kbn --help'`)
+    );
+    process.exit(1);
   }
 
   try {
@@ -82,8 +84,11 @@ export async function run(argv) {
 
     await command.run(commandOptions);
   } catch (e) {
+    console.log(chalk.bold.red(`\n[${commandName}] failed:\n`));
+
     if (e instanceof CliError) {
-      console.error(wrapAnsi(`CliError: ${e.message}\n`, 80));
+      const msg = chalk.red(`CliError: ${e.message}\n`);
+      console.log(wrapAnsi(msg, 80));
 
       const keys = Object.keys(e.meta);
       if (keys.length > 0) {
@@ -96,7 +101,9 @@ export async function run(argv) {
         console.log(indentString(metaOutput.join('\n'), 3));
       }
     } else {
-      console.error(e);
+      console.log(e.stack);
     }
+
+    process.exit(1);
   }
 }

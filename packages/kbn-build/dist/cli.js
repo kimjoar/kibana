@@ -19739,7 +19739,7 @@ let run = exports.run = (() => {
 
     if (commandCount > 1) {
       console.log(`Only 1 command allowed at a time, ${commandCount} given.`);
-      return;
+      process.exit(1);
     }
 
     const cwd = process.cwd();
@@ -19750,12 +19750,12 @@ let run = exports.run = (() => {
       config = yield (0, _loadJsonFile2.default)(configFile);
     } catch (e) {
       if (e.code === 'ENOENT') {
-        console.log(`Config file [${configFile}] was not found`);
+        console.log(_chalk2.default.red(`Config file [${configFile}] was not found`));
       } else {
-        console.log(`Reading config file [${configFile}] failed:`);
-        console.log(e);
+        console.log(_chalk2.default.red(`Reading config file [${configFile}] failed:\n`));
+        console.log(e.stack);
       }
-      return;
+      process.exit(1);
     }
 
     const commandName = commandNames[0];
@@ -19765,8 +19765,8 @@ let run = exports.run = (() => {
 
     const command = commands[commandName];
     if (command === undefined) {
-      console.log(`'${commandName}' is not a valid command, see 'kbn --help'`);
-      return;
+      console.log(_chalk2.default.red(`[${commandName}] is not a valid command, see 'kbn --help'`));
+      process.exit(1);
     }
 
     try {
@@ -19774,8 +19774,11 @@ let run = exports.run = (() => {
 
       yield command.run(commandOptions);
     } catch (e) {
+      console.log(_chalk2.default.bold.red(`\n[${commandName}] failed:\n`));
+
       if (e instanceof _errors.CliError) {
-        console.error((0, _wrapAnsi2.default)(`CliError: ${e.message}\n`, 80));
+        const msg = _chalk2.default.red(`CliError: ${e.message}\n`);
+        console.log((0, _wrapAnsi2.default)(msg, 80));
 
         const keys = Object.keys(e.meta);
         if (keys.length > 0) {
@@ -19788,8 +19791,10 @@ let run = exports.run = (() => {
           console.log((0, _indentString2.default)(metaOutput.join('\n'), 3));
         }
       } else {
-        console.error(e);
+        console.log(e.stack);
       }
+
+      process.exit(1);
     }
   });
 
