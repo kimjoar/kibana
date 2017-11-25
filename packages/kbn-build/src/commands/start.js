@@ -16,6 +16,10 @@ export async function run(config) {
     console.log(`- ${pkg.name} (${pkg.path})`);
   }
 
+  // Avoid "Possible EventEmitter memory leak detected" warning due to piped stdio
+  process.stdout.setMaxListeners(packages.size);
+  process.stderr.setMaxListeners(packages.size);
+
   // We know we want to start Kibana last, so this is just making _sure_ it's
   // actually the last package to start.
   const packagesLessKibana = new Map(packages);

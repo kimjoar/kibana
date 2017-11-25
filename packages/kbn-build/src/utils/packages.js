@@ -7,8 +7,6 @@ import { Package } from './Package';
 
 const glob = promisify(_glob);
 
-
-
 export async function getPackages(rootPath, packagesPaths) {
   const globOpts = {
     cwd: rootPath,
