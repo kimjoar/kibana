@@ -5,17 +5,7 @@ import { getPackages, topologicallyBatchPackages } from '../utils/packages';
 export const name = 'start';
 export const description = 'Start Kibana and watch packages';
 
-export async function run(config) {
-  const rootPath = config.rootPath;
-  const packagesPaths = config.packages;
-
-  const packages = await getPackages(rootPath, packagesPaths);
-
-  console.log(chalk.bold(`Found [${chalk.green(packages.size)}] packages:\n`));
-  for (const pkg of packages.values()) {
-    console.log(`- ${pkg.name} (${pkg.path})`);
-  }
-
+export async function run(packages) {
   // Avoid "Possible EventEmitter memory leak detected" warning due to piped stdio
   process.stdout.setMaxListeners(packages.size);
   process.stderr.setMaxListeners(packages.size);

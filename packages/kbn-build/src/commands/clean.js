@@ -3,24 +3,13 @@ import chalk from 'chalk';
 import { relative } from 'path';
 import ora from 'ora';
 
-import { getPackages } from '../utils/packages';
 import { isDirectory } from '../utils/fs';
 
 export const name = 'clean';
 export const description =
   'Remove the node_modules and target directories from all packages.';
 
-export async function run(config) {
-  const rootPath = config.rootPath;
-  const packagesPaths = config.packages;
-
-  const packages = await getPackages(rootPath, packagesPaths);
-
-  console.log(chalk.bold(`Found [${chalk.green(packages.size)}] packages:\n`));
-  for (const pkg of packages.values()) {
-    console.log(`- ${pkg.name} (${relative(rootPath, pkg.path)})`);
-  }
-
+export async function run(packages, { rootPath }) {
   const directoriesToDelete = [];
   for (const pkg of packages.values()) {
     if (await isDirectory(pkg.nodeModulesLocation)) {

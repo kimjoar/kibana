@@ -3,18 +3,28 @@ import wrapAnsi from 'wrap-ansi';
 import indentString from 'indent-string';
 
 import { CliError } from './utils/errors';
+import { getPackages } from './utils/packages';
 
-export async function runCommand(command, commandOptions) {
+export async function runCommand(command, config) {
   try {
     console.log(
       chalk.bold(
         `Running [${chalk.green(command.name)}] from [${chalk.yellow(
-          commandOptions.rootPath
+          config.rootPath
         )}]:\n`
       )
     );
 
-    await command.run(commandOptions);
+    const packages = await getPackages(config.rootPath, config.packages);
+
+    console.log(
+      chalk.bold(`Found [${chalk.green(packages.size)}] packages:\n`)
+    );
+    for (const pkg of packages.values()) {
+      console.log(`- ${pkg.name} (${pkg.path})`);
+    }
+
+    await command.run(packages, config);
   } catch (e) {
     console.log(chalk.bold.red(`\n[${command.name}] failed:\n`));
 
