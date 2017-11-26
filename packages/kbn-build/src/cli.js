@@ -2,11 +2,10 @@ import { resolve } from 'path';
 import getopts from 'getopts';
 import loadJsonFile from 'load-json-file';
 import dedent from 'dedent';
-import indentString from 'indent-string';
-import wrapAnsi from 'wrap-ansi';
 import chalk from 'chalk';
 
 import * as commands from './commands';
+import { runCommand } from './run';
 import { CliError } from './utils/errors';
 
 function help() {
@@ -73,37 +72,5 @@ export async function run(argv) {
     process.exit(1);
   }
 
-  try {
-    console.log(
-      chalk.bold(
-        `Running [${chalk.green(commandName)}] from [${chalk.yellow(
-          commandOptions.rootPath
-        )}]:\n`
-      )
-    );
-
-    await command.run(commandOptions);
-  } catch (e) {
-    console.log(chalk.bold.red(`\n[${commandName}] failed:\n`));
-
-    if (e instanceof CliError) {
-      const msg = chalk.red(`CliError: ${e.message}\n`);
-      console.log(wrapAnsi(msg, 80));
-
-      const keys = Object.keys(e.meta);
-      if (keys.length > 0) {
-        const metaOutput = keys.map(key => {
-          const value = e.meta[key];
-          return `${key}: ${value}`;
-        });
-
-        console.log('Additional debugging info:\n');
-        console.log(indentString(metaOutput.join('\n'), 3));
-      }
-    } else {
-      console.log(e.stack);
-    }
-
-    process.exit(1);
-  }
+  await runCommand(command, commandOptions);
 }
