@@ -1,33 +1,33 @@
 import chalk from 'chalk';
 
-import { getPackages, topologicallyBatchPackages } from '../utils/packages';
+import { getProjects, topologicallyBatchProjects } from '../utils/projects';
 
 export const name = 'start';
-export const description = 'Start Kibana and watch packages';
+export const description = 'Start Kibana and watch projects';
 
-export async function run(packages) {
+export async function run(projects) {
   // Avoid "Possible EventEmitter memory leak detected" warning due to piped stdio
-  process.stdout.setMaxListeners(packages.size);
-  process.stderr.setMaxListeners(packages.size);
+  process.stdout.setMaxListeners(projects.size);
+  process.stderr.setMaxListeners(projects.size);
 
   // We know we want to start Kibana last, so this is just making _sure_ it's
-  // actually the last package to start.
-  const packagesLessKibana = new Map(packages);
-  packagesLessKibana.delete('kibana');
+  // actually the last project to start.
+  const projectsLessKibana = new Map(projects);
+  projectsLessKibana.delete('kibana');
 
-  const batchedPackages = topologicallyBatchPackages(packagesLessKibana);
-  let countPackagesWithWatch = 0;
+  const batchedProjects = topologicallyBatchProjects(projectsLessKibana);
+  let countProjectsWithWatch = 0;
 
   console.log(chalk.bold(`\n\nStarting up:\n`));
 
-  for (const batch of batchedPackages) {
+  for (const batch of batchedProjects) {
     const starting = [];
 
     for (const pkg of batch) {
       if (pkg.hasScript('start')) {
         const stream = pkg.runScriptStreaming('start');
         starting.push(stream.started);
-        countPackagesWithWatch++;
+        countProjectsWithWatch++;
       }
     }
 
@@ -36,9 +36,9 @@ export async function run(packages) {
     await Promise.all(starting);
   }
 
-  const kibana = packages.get('kibana');
+  const kibana = projects.get('kibana');
 
-  if (countPackagesWithWatch > 0) {
+  if (countProjectsWithWatch > 0) {
     kibana.runScriptStreaming('start');
   } else {
     kibana.runScript('start');

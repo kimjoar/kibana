@@ -11,15 +11,15 @@ import { CliError } from './errors';
 
 const PREFIX = 'link:';
 
-export class Package {
+export class Project {
   static async fromPath(path) {
     const pkgJson = await readPackageJson(path);
-    return new Package(pkgJson, path);
+    return new Project(pkgJson, path);
   }
 
-  constructor(packageJson, packageDir) {
+  constructor(packageJson, projectPath) {
     this._json = packageJson;
-    this.path = packageDir;
+    this.path = projectPath;
 
     this.packageJsonLocation = path.resolve(this.path, 'package.json');
     this.nodeModulesLocation = path.resolve(this.path, 'node_modules');
@@ -43,7 +43,7 @@ export class Package {
     return this._json.scripts || {};
   }
 
-  ensureValidPackageDependency(pkg) {
+  ensureValidProjectDependency(pkg) {
     const versionInPackageJson = this.allDependencies[pkg.name];
 
     const relativePathToPkg = path.relative(this.path, pkg.path);

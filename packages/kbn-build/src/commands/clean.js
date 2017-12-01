@@ -7,17 +7,17 @@ import { isDirectory } from '../utils/fs';
 
 export const name = 'clean';
 export const description =
-  'Remove the node_modules and target directories from all packages.';
+  'Remove the node_modules and target directories from all projects.';
 
-export async function run(packages, { rootPath }) {
+export async function run(projects, { rootPath }) {
   const directoriesToDelete = [];
-  for (const pkg of packages.values()) {
-    if (await isDirectory(pkg.nodeModulesLocation)) {
-      directoriesToDelete.push(pkg.nodeModulesLocation);
+  for (const project of projects.values()) {
+    if (await isDirectory(project.nodeModulesLocation)) {
+      directoriesToDelete.push(project.nodeModulesLocation);
     }
 
-    if (await isDirectory(pkg.targetLocation)) {
-      directoriesToDelete.push(pkg.targetLocation);
+    if (await isDirectory(project.targetLocation)) {
+      directoriesToDelete.push(project.targetLocation);
     }
   }
 

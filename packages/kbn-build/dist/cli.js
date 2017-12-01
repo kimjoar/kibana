@@ -5682,10 +5682,10 @@ exports.CliError = CliError;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.getPackages = undefined;
+exports.getProjects = undefined;
 
-let getPackages = exports.getPackages = (() => {
-  var _ref = _asyncToGenerator(function* (rootPath, packagesPaths) {
+let getProjects = exports.getProjects = (() => {
+  var _ref = _asyncToGenerator(function* (rootPath, projectsPaths) {
     const globOpts = {
       cwd: rootPath,
 
@@ -5699,31 +5699,31 @@ let getPackages = exports.getPackages = (() => {
       // (This is only specified because we currently don't have a need for it.)
       noglobstar: true
     };
-    const packages = new Map();
+    const projects = new Map();
 
-    for (const globPath of packagesPaths) {
+    for (const globPath of projectsPaths) {
       const files = yield glob(_path2.default.join(globPath, 'package.json'), globOpts);
 
       for (const filePath of files) {
-        const packageConfigPath = normalize(filePath);
-        const packageDir = _path2.default.dirname(packageConfigPath);
-        const pkg = yield _Package.Package.fromPath(packageDir);
+        const projectConfigPath = normalize(filePath);
+        const projectDir = _path2.default.dirname(projectConfigPath);
+        const project = yield _Project.Project.fromPath(projectDir);
 
-        if (packages.has(pkg.name)) {
-          throw new _errors.CliError(`There are multiple packages with the same name [${pkg.name}]`, {
-            name: pkg.name,
-            paths: [pkg.path, packages.get(pkg.name).path]
+        if (projects.has(project.name)) {
+          throw new _errors.CliError(`There are multiple projects with the same name [${project.name}]`, {
+            name: project.name,
+            paths: [project.path, projects.get(project.name).path]
           });
         }
 
-        packages.set(pkg.name, pkg);
+        projects.set(project.name, project);
       }
     }
 
-    return packages;
+    return projects;
   });
 
-  return function getPackages(_x, _x2) {
+  return function getProjects(_x, _x2) {
     return _ref.apply(this, arguments);
   };
 })();
@@ -5733,7 +5733,7 @@ let getPackages = exports.getPackages = (() => {
 // gets normalized because we can't have nice things.
 
 
-exports.topologicallyBatchPackages = topologicallyBatchPackages;
+exports.topologicallyBatchProjects = topologicallyBatchProjects;
 
 var _glob2 = __webpack_require__(9);
 
@@ -5749,7 +5749,7 @@ var _pify2 = _interopRequireDefault(_pify);
 
 var _errors = __webpack_require__(10);
 
-var _Package = __webpack_require__(178);
+var _Project = __webpack_require__(178);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -5761,58 +5761,58 @@ function normalize(dir) {
   return _path2.default.normalize(dir);
 }
 
-function buildPackageGraph(packages) {
-  const packageGraph = new Map();
+function buildProjectGraph(projects) {
+  const projectGraph = new Map();
 
-  for (const pkg of packages.values()) {
-    const packageDeps = [];
-    const dependencies = pkg.allDependencies;
+  for (const project of projects.values()) {
+    const projectDeps = [];
+    const dependencies = project.allDependencies;
 
     for (const depName of Object.keys(dependencies)) {
-      if (packages.has(depName)) {
-        const dep = packages.get(depName);
+      if (projects.has(depName)) {
+        const dep = projects.get(depName);
 
-        pkg.ensureValidPackageDependency(dep);
+        project.ensureValidProjectDependency(dep);
 
-        packageDeps.push(dep);
+        projectDeps.push(dep);
       }
     }
 
-    packageGraph.set(pkg.name, packageDeps);
+    projectGraph.set(project.name, projectDeps);
   }
 
-  return packageGraph;
+  return projectGraph;
 }
 
-function topologicallyBatchPackages(packagesToBatch) {
-  const packageGraph = buildPackageGraph(packagesToBatch);
+function topologicallyBatchProjects(projectsToBatch) {
+  const projectGraph = buildProjectGraph(projectsToBatch);
 
   // We're going to be chopping stuff out of this array, so copy it.
-  const packages = [...packagesToBatch.values()];
+  const projects = [...projectsToBatch.values()];
 
-  // This maps package names to the number of packages that depend on them.
-  // As packages are completed their names will be removed from this object.
+  // This maps project names to the number of projects that depend on them.
+  // As projects are completed their names will be removed from this object.
   const refCounts = {};
-  packages.forEach(pkg => packageGraph.get(pkg.name).forEach(dep => {
+  projects.forEach(pkg => projectGraph.get(pkg.name).forEach(dep => {
     if (!refCounts[dep.name]) refCounts[dep.name] = 0;
     refCounts[dep.name]++;
   }));
 
   const batches = [];
-  while (packages.length > 0) {
-    // Get all packages that have no remaining dependencies within the repo
+  while (projects.length > 0) {
+    // Get all projects that have no remaining dependencies within the repo
     // that haven't yet been picked.
-    const batch = packages.filter(pkg => {
-      const packageDeps = packageGraph.get(pkg.name);
-      return packageDeps.filter(dep => refCounts[dep.name] > 0).length === 0;
+    const batch = projects.filter(pkg => {
+      const projectDeps = projectGraph.get(pkg.name);
+      return projectDeps.filter(dep => refCounts[dep.name] > 0).length === 0;
     });
 
-    // If we weren't able to find a package with no remaining dependencies,
+    // If we weren't able to find a project with no remaining dependencies,
     // then we've encountered a cycle in the dependency graph.
-    const hasCycles = packages.length > 0 && batch.length === 0;
+    const hasCycles = projects.length > 0 && batch.length === 0;
     if (hasCycles) {
-      const cyclePackageNames = packages.map(p => p.name);
-      const message = 'Encountered a cycle in the dependency graph. Packages in cycle are:\n' + cyclePackageNames.join(', ');
+      const cycleProjectNames = projects.map(p => p.name);
+      const message = 'Encountered a cycle in the dependency graph. Projects in cycle are:\n' + cycleProjectNames.join(', ');
 
       throw new _errors.CliError(message);
     }
@@ -5821,7 +5821,7 @@ function topologicallyBatchPackages(packagesToBatch) {
 
     batch.forEach(pkg => {
       delete refCounts[pkg.name];
-      packages.splice(packages.indexOf(pkg), 1);
+      projects.splice(projects.indexOf(pkg), 1);
     });
   }
 
@@ -22118,14 +22118,14 @@ Object.defineProperty(exports, "__esModule", {
 exports.run = exports.description = exports.name = undefined;
 
 let run = exports.run = (() => {
-  var _ref = _asyncToGenerator(function* (packages) {
-    const batchedPackages = (0, _packages.topologicallyBatchPackages)(packages);
+  var _ref = _asyncToGenerator(function* (projects) {
+    const batchedProjects = (0, _projects.topologicallyBatchProjects)(projects);
 
     console.log(_chalk2.default.bold('\nRunning installs in topological order'));
 
-    for (const batch of batchedPackages) {
-      for (const pkg of batch) {
-        yield pkg.installDependencies();
+    for (const batch of batchedProjects) {
+      for (const project of batch) {
+        yield project.installDependencies();
       }
     }
   });
@@ -22139,14 +22139,14 @@ var _chalk = __webpack_require__(4);
 
 var _chalk2 = _interopRequireDefault(_chalk);
 
-var _packages = __webpack_require__(11);
+var _projects = __webpack_require__(11);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
 
 const name = exports.name = 'bootstrap';
-const description = exports.description = 'Install dependencies and crosslink packages';
+const description = exports.description = 'Install dependencies and crosslink projects';
 
 /***/ }),
 /* 170 */
@@ -23353,7 +23353,7 @@ function slice (args) {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.Package = undefined;
+exports.Project = undefined;
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
@@ -23377,17 +23377,17 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
 
 const PREFIX = 'link:';
 
-class Package {
+class Project {
   static fromPath(path) {
     return _asyncToGenerator(function* () {
       const pkgJson = yield (0, _packageJson.readPackageJson)(path);
-      return new Package(pkgJson, path);
+      return new Project(pkgJson, path);
     })();
   }
 
-  constructor(packageJson, packageDir) {
+  constructor(packageJson, projectPath) {
     this._json = packageJson;
-    this.path = packageDir;
+    this.path = projectPath;
 
     this.packageJsonLocation = _path2.default.resolve(this.path, 'package.json');
     this.nodeModulesLocation = _path2.default.resolve(this.path, 'node_modules');
@@ -23408,7 +23408,7 @@ class Package {
     return this._json.scripts || {};
   }
 
-  ensureValidPackageDependency(pkg) {
+  ensureValidProjectDependency(pkg) {
     const versionInPackageJson = this.allDependencies[pkg.name];
 
     const relativePathToPkg = _path2.default.relative(this.path, pkg.path);
@@ -23458,7 +23458,7 @@ class Package {
     return (0, _npm.installInDir)(this.path);
   }
 }
-exports.Package = Package;
+exports.Project = Project;
 
 /***/ }),
 /* 179 */
@@ -31416,15 +31416,15 @@ Object.defineProperty(exports, "__esModule", {
 exports.run = exports.description = exports.name = undefined;
 
 let run = exports.run = (() => {
-  var _ref = _asyncToGenerator(function* (packages, { rootPath }) {
+  var _ref = _asyncToGenerator(function* (projects, { rootPath }) {
     const directoriesToDelete = [];
-    for (const pkg of packages.values()) {
-      if (yield (0, _fs.isDirectory)(pkg.nodeModulesLocation)) {
-        directoriesToDelete.push(pkg.nodeModulesLocation);
+    for (const project of projects.values()) {
+      if (yield (0, _fs.isDirectory)(project.nodeModulesLocation)) {
+        directoriesToDelete.push(project.nodeModulesLocation);
       }
 
-      if (yield (0, _fs.isDirectory)(pkg.targetLocation)) {
-        directoriesToDelete.push(pkg.targetLocation);
+      if (yield (0, _fs.isDirectory)(project.targetLocation)) {
+        directoriesToDelete.push(project.targetLocation);
       }
     }
 
@@ -31467,7 +31467,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
 
 const name = exports.name = 'clean';
-const description = exports.description = 'Remove the node_modules and target directories from all packages.';
+const description = exports.description = 'Remove the node_modules and target directories from all projects.';
 
 /***/ }),
 /* 246 */
@@ -33100,29 +33100,29 @@ Object.defineProperty(exports, "__esModule", {
 exports.run = exports.description = exports.name = undefined;
 
 let run = exports.run = (() => {
-  var _ref = _asyncToGenerator(function* (packages) {
+  var _ref = _asyncToGenerator(function* (projects) {
     // Avoid "Possible EventEmitter memory leak detected" warning due to piped stdio
-    process.stdout.setMaxListeners(packages.size);
-    process.stderr.setMaxListeners(packages.size);
+    process.stdout.setMaxListeners(projects.size);
+    process.stderr.setMaxListeners(projects.size);
 
     // We know we want to start Kibana last, so this is just making _sure_ it's
-    // actually the last package to start.
-    const packagesLessKibana = new Map(packages);
-    packagesLessKibana.delete('kibana');
+    // actually the last project to start.
+    const projectsLessKibana = new Map(projects);
+    projectsLessKibana.delete('kibana');
 
-    const batchedPackages = (0, _packages.topologicallyBatchPackages)(packagesLessKibana);
-    let countPackagesWithWatch = 0;
+    const batchedProjects = (0, _projects.topologicallyBatchProjects)(projectsLessKibana);
+    let countProjectsWithWatch = 0;
 
     console.log(_chalk2.default.bold(`\n\nStarting up:\n`));
 
-    for (const batch of batchedPackages) {
+    for (const batch of batchedProjects) {
       const starting = [];
 
       for (const pkg of batch) {
         if (pkg.hasScript('start')) {
           const stream = pkg.runScriptStreaming('start');
           starting.push(stream.started);
-          countPackagesWithWatch++;
+          countProjectsWithWatch++;
         }
       }
 
@@ -33131,9 +33131,9 @@ let run = exports.run = (() => {
       yield Promise.all(starting);
     }
 
-    const kibana = packages.get('kibana');
+    const kibana = projects.get('kibana');
 
-    if (countPackagesWithWatch > 0) {
+    if (countProjectsWithWatch > 0) {
       kibana.runScriptStreaming('start');
     } else {
       kibana.runScript('start');
@@ -33149,14 +33149,14 @@ var _chalk = __webpack_require__(4);
 
 var _chalk2 = _interopRequireDefault(_chalk);
 
-var _packages = __webpack_require__(11);
+var _projects = __webpack_require__(11);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
 
 const name = exports.name = 'start';
-const description = exports.description = 'Start Kibana and watch packages';
+const description = exports.description = 'Start Kibana and watch projects';
 
 /***/ }),
 /* 270 */
@@ -33175,14 +33175,14 @@ let runCommand = exports.runCommand = (() => {
     try {
       console.log(_chalk2.default.bold(`Running [${_chalk2.default.green(command.name)}] from [${_chalk2.default.yellow(config.rootPath)}]:\n`));
 
-      const packages = yield (0, _packages.getPackages)(config.rootPath, config.packages);
+      const projects = yield (0, _projects.getProjects)(config.rootPath, config.projects);
 
-      console.log(_chalk2.default.bold(`Found [${_chalk2.default.green(packages.size)}] packages:\n`));
-      for (const pkg of packages.values()) {
+      console.log(_chalk2.default.bold(`Found [${_chalk2.default.green(projects.size)}] projects:\n`));
+      for (const pkg of projects.values()) {
         console.log(`- ${pkg.name} (${pkg.path})`);
       }
 
-      yield command.run(packages, config);
+      yield command.run(projects, config);
     } catch (e) {
       console.log(_chalk2.default.bold.red(`\n[${command.name}] failed:\n`));
 
@@ -33227,7 +33227,7 @@ var _indentString2 = _interopRequireDefault(_indentString);
 
 var _errors = __webpack_require__(10);
 
-var _packages = __webpack_require__(11);
+var _projects = __webpack_require__(11);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
