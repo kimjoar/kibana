@@ -158,10 +158,10 @@ Install the version of node.js listed in the `.node-version` file _(this can be 
 nvm install "$(cat .node-version)"
 ```
 
-Install `npm` dependencies
+Bootstrap Kibana and install all the dependencies
 
 ```bash
-npm install
+node scripts/kbn bootstrap
 ```
 
 Start elasticsearch.
