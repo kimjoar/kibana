@@ -9,6 +9,8 @@ import {
 import { readPackageJson } from './packageJson';
 import { CliError } from './errors';
 
+const PREFIX = 'link:';
+
 export class Package {
   static async fromPath(path) {
     const pkgJson = await readPackageJson(path);
@@ -22,6 +24,11 @@ export class Package {
     this.packageJsonLocation = path.resolve(this.path, 'package.json');
     this.nodeModulesLocation = path.resolve(this.path, 'node_modules');
     this.targetLocation = path.resolve(this.path, 'target');
+
+    this.allDependencies = {
+      ...(this._json.devDependencies || {}),
+      ...(this._json.dependencies || {})
+    };
   }
 
   get name() {
@@ -32,37 +39,32 @@ export class Package {
     return this._json.version;
   }
 
-  getAllDependencies() {
-    return {
-      ...(this._json.devDependencies || {}),
-      ...(this._json.dependencies || {})
-    };
-  }
-
   get scripts() {
     return this._json.scripts || {};
   }
 
-  ensureValidPackageVersion(pkg, version) {
-    const relativePathToPkg = path.relative(this.path, pkg.path);
-    const expectedVersion = `link:${relativePathToPkg}`;
+  ensureValidPackageDependency(pkg) {
+    const versionInPackageJson = this.allDependencies[pkg.name];
 
-    if (version.startsWith('link:') && version === expectedVersion) {
+    const relativePathToPkg = path.relative(this.path, pkg.path);
+    const expectedVersionInPackageJson = `${PREFIX}${relativePathToPkg}`;
+
+    if (versionInPackageJson === expectedVersionInPackageJson) {
       return;
     }
 
     const updateMsg = 'Update its package.json to the expected value below.';
     const meta = {
       package: `${this.name} (${this.packageJsonLocation})`,
-      expected: `"${pkg.name}": "${expectedVersion}"`,
-      actual: `"${pkg.name}": "${version}"`
+      expected: `"${pkg.name}": "${expectedVersionInPackageJson}"`,
+      actual: `"${pkg.name}": "${versionInPackageJson}"`
     };
 
-    if (version.startsWith('link:')) {
+    if (versionInPackageJson.startsWith(PREFIX)) {
       throw new CliError(
-        `[${this.name}] depends on [${
-          pkg.name
-        }] using 'link:', but the path is wrong. ${updateMsg}`,
+        `[${this.name}] depends on [${pkg.name}] using '${
+          PREFIX
+        }', but the path is wrong. ${updateMsg}`,
         meta
       );
     }

@@ -5766,15 +5766,13 @@ function buildPackageGraph(packages) {
 
   for (const pkg of packages.values()) {
     const packageDeps = [];
-    const dependencies = pkg.getAllDependencies();
+    const dependencies = pkg.allDependencies;
 
     for (const depName of Object.keys(dependencies)) {
-      const depVersion = dependencies[depName];
-
       if (packages.has(depName)) {
         const dep = packages.get(depName);
 
-        pkg.ensureValidPackageVersion(dep, depVersion);
+        pkg.ensureValidPackageDependency(dep);
 
         packageDeps.push(dep);
       }
@@ -23377,6 +23375,8 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
 
+const PREFIX = 'link:';
+
 class Package {
   static fromPath(path) {
     return _asyncToGenerator(function* () {
@@ -23392,6 +23392,8 @@ class Package {
     this.packageJsonLocation = _path2.default.resolve(this.path, 'package.json');
     this.nodeModulesLocation = _path2.default.resolve(this.path, 'node_modules');
     this.targetLocation = _path2.default.resolve(this.path, 'target');
+
+    this.allDependencies = _extends({}, this._json.devDependencies || {}, this._json.dependencies || {});
   }
 
   get name() {
@@ -23402,31 +23404,29 @@ class Package {
     return this._json.version;
   }
 
-  getAllDependencies() {
-    return _extends({}, this._json.devDependencies || {}, this._json.dependencies || {});
-  }
-
   get scripts() {
     return this._json.scripts || {};
   }
 
-  ensureValidPackageVersion(pkg, version) {
-    const relativePathToPkg = _path2.default.relative(this.path, pkg.path);
-    const expectedVersion = `link:${relativePathToPkg}`;
+  ensureValidPackageDependency(pkg) {
+    const versionInPackageJson = this.allDependencies[pkg.name];
 
-    if (version.startsWith('link:') && version === expectedVersion) {
+    const relativePathToPkg = _path2.default.relative(this.path, pkg.path);
+    const expectedVersionInPackageJson = `${PREFIX}${relativePathToPkg}`;
+
+    if (versionInPackageJson === expectedVersionInPackageJson) {
       return;
     }
 
     const updateMsg = 'Update its package.json to the expected value below.';
     const meta = {
       package: `${this.name} (${this.packageJsonLocation})`,
-      expected: `"${pkg.name}": "${expectedVersion}"`,
-      actual: `"${pkg.name}": "${version}"`
+      expected: `"${pkg.name}": "${expectedVersionInPackageJson}"`,
+      actual: `"${pkg.name}": "${versionInPackageJson}"`
     };
 
-    if (version.startsWith('link:')) {
-      throw new _errors.CliError(`[${this.name}] depends on [${pkg.name}] using 'link:', but the path is wrong. ${updateMsg}`, meta);
+    if (versionInPackageJson.startsWith(PREFIX)) {
+      throw new _errors.CliError(`[${this.name}] depends on [${pkg.name}] using '${PREFIX}', but the path is wrong. ${updateMsg}`, meta);
     }
 
     throw new _errors.CliError(`[${this.name}] depends on [${pkg.name}], but it's not using the local package. ${updateMsg}`, meta);

@@ -60,15 +60,13 @@ function buildPackageGraph(packages) {
 
   for (const pkg of packages.values()) {
     const packageDeps = [];
-    const dependencies = pkg.getAllDependencies();
+    const dependencies = pkg.allDependencies;
 
     for (const depName of Object.keys(dependencies)) {
-      const depVersion = dependencies[depName];
-
       if (packages.has(depName)) {
         const dep = packages.get(depName);
 
-        pkg.ensureValidPackageVersion(dep, depVersion);
+        pkg.ensureValidPackageDependency(dep);
 
         packageDeps.push(dep);
       }
