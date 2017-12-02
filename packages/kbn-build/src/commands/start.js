@@ -25,8 +25,8 @@ export async function run(projects) {
 
     for (const pkg of batch) {
       if (pkg.hasScript('start')) {
-        const stream = pkg.runScriptStreaming('start');
-        starting.push(stream.started);
+        const execution = pkg.runScriptStreaming('start');
+        starting.push(execution.initialBuildComplete);
         countProjectsWithWatch++;
       }
     }
