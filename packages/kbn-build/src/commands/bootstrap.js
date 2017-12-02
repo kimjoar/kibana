@@ -12,7 +12,9 @@ export async function run(projects) {
 
   for (const batch of batchedProjects) {
     for (const project of batch) {
-      await project.installDependencies();
+      if (project.hasDependencies()) {
+        await project.installDependencies();
+      }
     }
   }
 }

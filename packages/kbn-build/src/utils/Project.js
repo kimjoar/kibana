@@ -100,6 +100,10 @@ export class Project {
     return runScriptInPackageStreaming(script, [], this);
   }
 
+  hasDependencies() {
+    return Object.keys(this.allDependencies).length > 0;
+  }
+
   installDependencies() {
     console.log(
       chalk.bold(

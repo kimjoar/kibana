@@ -22125,7 +22125,9 @@ let run = exports.run = (() => {
 
     for (const batch of batchedProjects) {
       for (const project of batch) {
-        yield project.installDependencies();
+        if (project.hasDependencies()) {
+          yield project.installDependencies();
+        }
       }
     }
   });
@@ -23451,6 +23453,10 @@ class Project {
 
   runScriptStreaming(script) {
     return (0, _npm.runScriptInPackageStreaming)(script, [], this);
+  }
+
+  hasDependencies() {
+    return Object.keys(this.allDependencies).length > 0;
   }
 
   installDependencies() {
