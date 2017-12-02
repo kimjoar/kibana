@@ -23410,10 +23410,10 @@ class Project {
     return this._json.scripts || {};
   }
 
-  ensureValidProjectDependency(pkg) {
-    const versionInPackageJson = this.allDependencies[pkg.name];
+  ensureValidProjectDependency(project) {
+    const versionInPackageJson = this.allDependencies[project.name];
 
-    const relativePathToPkg = _path2.default.relative(this.path, pkg.path);
+    const relativePathToPkg = _path2.default.relative(this.path, project.path);
     const expectedVersionInPackageJson = `${PREFIX}${relativePathToPkg}`;
 
     if (versionInPackageJson === expectedVersionInPackageJson) {
@@ -23423,15 +23423,15 @@ class Project {
     const updateMsg = 'Update its package.json to the expected value below.';
     const meta = {
       package: `${this.name} (${this.packageJsonLocation})`,
-      expected: `"${pkg.name}": "${expectedVersionInPackageJson}"`,
-      actual: `"${pkg.name}": "${versionInPackageJson}"`
+      expected: `"${project.name}": "${expectedVersionInPackageJson}"`,
+      actual: `"${project.name}": "${versionInPackageJson}"`
     };
 
     if (versionInPackageJson.startsWith(PREFIX)) {
-      throw new _errors.CliError(`[${this.name}] depends on [${pkg.name}] using '${PREFIX}', but the path is wrong. ${updateMsg}`, meta);
+      throw new _errors.CliError(`[${this.name}] depends on [${project.name}] using '${PREFIX}', but the path is wrong. ${updateMsg}`, meta);
     }
 
-    throw new _errors.CliError(`[${this.name}] depends on [${pkg.name}], but it's not using the local package. ${updateMsg}`, meta);
+    throw new _errors.CliError(`[${this.name}] depends on [${project.name}], but it's not using the local package. ${updateMsg}`, meta);
   }
 
   hasScript(script) {

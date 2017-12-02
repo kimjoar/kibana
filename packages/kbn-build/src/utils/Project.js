@@ -43,10 +43,10 @@ export class Project {
     return this._json.scripts || {};
   }
 
-  ensureValidProjectDependency(pkg) {
-    const versionInPackageJson = this.allDependencies[pkg.name];
+  ensureValidProjectDependency(project) {
+    const versionInPackageJson = this.allDependencies[project.name];
 
-    const relativePathToPkg = path.relative(this.path, pkg.path);
+    const relativePathToPkg = path.relative(this.path, project.path);
     const expectedVersionInPackageJson = `${PREFIX}${relativePathToPkg}`;
 
     if (versionInPackageJson === expectedVersionInPackageJson) {
@@ -56,13 +56,13 @@ export class Project {
     const updateMsg = 'Update its package.json to the expected value below.';
     const meta = {
       package: `${this.name} (${this.packageJsonLocation})`,
-      expected: `"${pkg.name}": "${expectedVersionInPackageJson}"`,
-      actual: `"${pkg.name}": "${versionInPackageJson}"`
+      expected: `"${project.name}": "${expectedVersionInPackageJson}"`,
+      actual: `"${project.name}": "${versionInPackageJson}"`
     };
 
     if (versionInPackageJson.startsWith(PREFIX)) {
       throw new CliError(
-        `[${this.name}] depends on [${pkg.name}] using '${
+        `[${this.name}] depends on [${project.name}] using '${
           PREFIX
         }', but the path is wrong. ${updateMsg}`,
         meta
@@ -71,7 +71,7 @@ export class Project {
 
     throw new CliError(
       `[${this.name}] depends on [${
-        pkg.name
+        project.name
       }], but it's not using the local package. ${updateMsg}`,
       meta
     );
