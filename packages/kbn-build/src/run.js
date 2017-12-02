@@ -3,7 +3,7 @@ import wrapAnsi from 'wrap-ansi';
 import indentString from 'indent-string';
 
 import { CliError } from './utils/errors';
-import { getProjects } from './utils/projects';
+import { getProjects, buildProjectGraph } from './utils/projects';
 
 export async function runCommand(command, config) {
   try {
@@ -16,6 +16,7 @@ export async function runCommand(command, config) {
     );
 
     const projects = await getProjects(config.rootPath, config.projects);
+    const projectGraph = buildProjectGraph(projects);
 
     console.log(
       chalk.bold(`Found [${chalk.green(projects.size)}] projects:\n`)
@@ -24,7 +25,7 @@ export async function runCommand(command, config) {
       console.log(`- ${pkg.name} (${pkg.path})`);
     }
 
-    await command.run(projects, config);
+    await command.run(projects, projectGraph, config);
   } catch (e) {
     console.log(chalk.bold.red(`\n[${command.name}] failed:\n`));
 

@@ -1,11 +1,11 @@
 import chalk from 'chalk';
 
-import { getProjects, topologicallyBatchProjects } from '../utils/projects';
+import { topologicallyBatchProjects } from '../utils/projects';
 
 export const name = 'start';
 export const description = 'Start Kibana and watch projects';
 
-export async function run(projects) {
+export async function run(projects, projectGraph) {
   // Avoid "Possible EventEmitter memory leak detected" warning due to piped stdio
   process.stdout.setMaxListeners(projects.size);
   process.stderr.setMaxListeners(projects.size);
@@ -15,7 +15,7 @@ export async function run(projects) {
   const projectsLessKibana = new Map(projects);
   projectsLessKibana.delete('kibana');
 
-  const batchedProjects = topologicallyBatchProjects(projectsLessKibana);
+  const batchedProjects = topologicallyBatchProjects(projectsLessKibana, projectGraph);
   let countProjectsWithWatch = 0;
 
   console.log(chalk.bold(`\n\nStarting up:\n`));

@@ -9,7 +9,7 @@ export const name = 'clean';
 export const description =
   'Remove the node_modules and target directories from all projects.';
 
-export async function run(projects, { rootPath }) {
+export async function run(projects, projectGraph, { rootPath }) {
   const directoriesToDelete = [];
   for (const project of projects.values()) {
     if (await isDirectory(project.nodeModulesLocation)) {

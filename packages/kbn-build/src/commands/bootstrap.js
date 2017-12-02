@@ -5,8 +5,8 @@ import { topologicallyBatchProjects } from '../utils/projects';
 export const name = 'bootstrap';
 export const description = 'Install dependencies and crosslink projects';
 
-export async function run(projects) {
-  const batchedProjects = topologicallyBatchProjects(projects);
+export async function run(projects, projectGraph) {
+  const batchedProjects = topologicallyBatchProjects(projects, projectGraph);
 
   console.log(chalk.bold('\nRunning installs in topological order'));
 

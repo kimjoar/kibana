@@ -44,10 +44,10 @@ export class Project {
   }
 
   ensureValidProjectDependency(project) {
-    const versionInPackageJson = this.allDependencies[project.name];
+    const relativePathToProject = path.relative(this.path, project.path);
 
-    const relativePathToPkg = path.relative(this.path, project.path);
-    const expectedVersionInPackageJson = `${PREFIX}${relativePathToPkg}`;
+    const versionInPackageJson = this.allDependencies[project.name];
+    const expectedVersionInPackageJson = `${PREFIX}${relativePathToProject}`;
 
     if (versionInPackageJson === expectedVersionInPackageJson) {
       return;

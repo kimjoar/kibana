@@ -55,7 +55,7 @@ function normalize(dir) {
   return path.normalize(dir);
 }
 
-function buildProjectGraph(projects) {
+export function buildProjectGraph(projects) {
   const projectGraph = new Map();
 
   for (const project of projects.values()) {
@@ -78,9 +78,7 @@ function buildProjectGraph(projects) {
   return projectGraph;
 }
 
-export function topologicallyBatchProjects(projectsToBatch) {
-  const projectGraph = buildProjectGraph(projectsToBatch);
-
+export function topologicallyBatchProjects(projectsToBatch, projectGraph) {
   // We're going to be chopping stuff out of this array, so copy it.
   const projects = [...projectsToBatch.values()];
 
