@@ -1,4 +1,5 @@
 const path = require('path');
+const webpack = require('webpack');
 
 module.exports = {
   entry: './src/cli.js',
@@ -9,6 +10,8 @@ module.exports = {
     filename: 'cli.js',
     libraryTarget: "commonjs2",
   },
+
+  devtool: 'inline-source-map',
 
   module: {
     rules: [
@@ -37,6 +40,14 @@ module.exports = {
       }
     ]
   },
+
+  plugins: [
+    new webpack.BannerPlugin({
+      banner: 'require("source-map-support").install();',
+      raw: true,
+      entryOnly: false
+    })
+  ],
 
   node: {
     __filename: true,
