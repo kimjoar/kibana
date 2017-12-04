@@ -15,7 +15,10 @@ export async function run(projects, projectGraph) {
   const projectsLessKibana = new Map(projects);
   projectsLessKibana.delete('kibana');
 
-  const batchedProjects = topologicallyBatchProjects(projectsLessKibana, projectGraph);
+  const batchedProjects = topologicallyBatchProjects(
+    projectsLessKibana,
+    projectGraph
+  );
   let countProjectsWithWatch = 0;
 
   console.log(chalk.bold(`\n\nStarting up:\n`));
@@ -36,11 +39,13 @@ export async function run(projects, projectGraph) {
     await Promise.all(starting);
   }
 
-  const kibana = projects.get('kibana');
+  if (projects.has('kibana')) {
+    const kibana = projects.get('kibana');
 
-  if (countProjectsWithWatch > 0) {
-    kibana.runScriptStreaming('start');
-  } else {
-    kibana.runScript('start');
+    if (countProjectsWithWatch > 0) {
+      kibana.runScriptStreaming('start');
+    } else {
+      kibana.runScript('start');
+    }
   }
 }

@@ -3,7 +3,11 @@ import wrapAnsi from 'wrap-ansi';
 import indentString from 'indent-string';
 
 import { CliError } from './utils/errors';
-import { getProjects, buildProjectGraph } from './utils/projects';
+import {
+  getProjects,
+  buildProjectGraph,
+  filterProjects
+} from './utils/projects';
 
 export async function runCommand(command, config) {
   try {
@@ -16,16 +20,23 @@ export async function runCommand(command, config) {
     );
 
     const projects = await getProjects(config.rootPath, config.projects);
-    const projectGraph = buildProjectGraph(projects);
+    const filteredProjects = filterProjects(projects, {
+      scopes: config.scopes,
+      skipTransitive: config.skipTransitive,
+      skipKibana: config.skipKibana
+    });
+    const projectGraph = buildProjectGraph(filteredProjects);
 
     console.log(
-      chalk.bold(`Found [${chalk.green(projects.size)}] projects:\n`)
+      chalk.bold(
+        `Found [${chalk.green(filteredProjects.size)}] matching projects:\n`
+      )
     );
-    for (const pkg of projects.values()) {
+    for (const pkg of filteredProjects.values()) {
       console.log(`- ${pkg.name} (${pkg.path})`);
     }
 
-    await command.run(projects, projectGraph, config);
+    await command.run(filteredProjects, projectGraph, config);
   } catch (e) {
     console.log(chalk.bold.red(`\n[${command.name}] failed:\n`));
 
