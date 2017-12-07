@@ -21,14 +21,14 @@ export async function run(projects, projectGraph) {
   );
   let countProjectsWithWatch = 0;
 
-  console.log(chalk.bold(`\n\nStarting up:\n`));
+  console.log(chalk.bold(`\n\nStarting up watches:\n`));
 
   for (const batch of batchedProjects) {
     const starting = [];
 
     for (const pkg of batch) {
-      if (pkg.hasScript('start')) {
-        const execution = pkg.runScriptStreaming('start');
+      if (pkg.hasScript('watch')) {
+        const execution = pkg.runScriptStreaming('watch');
         starting.push(execution.initialBuildComplete);
         countProjectsWithWatch++;
       }
