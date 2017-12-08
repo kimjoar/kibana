@@ -1,7 +1,11 @@
 import path from 'path';
 import chalk from 'chalk';
 
-import { installInDir } from './npm';
+import {
+  runScriptInDir,
+  runScriptInPackageStreaming,
+  installInDir
+} from './npm';
 import { readPackageJson } from './packageJson';
 import { CliError } from './errors';
 
@@ -29,6 +33,14 @@ export class Project {
 
   get name() {
     return this._json.name;
+  }
+
+  get version() {
+    return this._json.version;
+  }
+
+  get scripts() {
+    return this._json.scripts || {};
   }
 
   ensureValidProjectDependency(project) {
@@ -63,6 +75,29 @@ export class Project {
       }], but it's not using the local package. ${updateMsg}`,
       meta
     );
+  }
+
+  hasScript(script) {
+    return this.scripts.hasOwnProperty(script);
+  }
+
+  /**
+   * Run a NPM script in this package's directory
+   * @param {String} script NPM script to run
+   */
+  async runScript(script) {
+    console.log(
+      chalk.bold(
+        `\n\nRunning npm script [${chalk.yellow(script)}] in [${chalk.green(
+          this.name
+        )}]:`
+      )
+    );
+    await runScriptInDir(script, [], this.path);
+  }
+
+  runScriptStreaming(script) {
+    return runScriptInPackageStreaming(script, [], this);
   }
 
   hasDependencies() {

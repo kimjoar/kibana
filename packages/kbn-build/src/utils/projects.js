@@ -78,6 +78,56 @@ export function buildProjectGraph(projects) {
   return projectGraph;
 }
 
+export function filterProjects(
+  projects,
+  { scopes, skipTransitive, skipKibana }
+) {
+  if (scopes.length === 0) {
+    return projects;
+  }
+
+  let filteredProjects = new Map();
+
+  scopes.forEach(scope => {
+    if (projects.has(scope)) {
+      const project = projects.get(scope);
+      filteredProjects.set(project.name, project);
+    }
+  });
+
+  if (!skipTransitive) {
+    filteredProjects = includeTransitiveProjects(filteredProjects, projects);
+  }
+
+  if (!skipKibana) {
+    const kibana = projects.get('kibana');
+    filteredProjects.set(kibana.name, kibana);
+  }
+
+  return filteredProjects;
+}
+
+function includeTransitiveProjects(filtered, projects) {
+  const dependentProjects = new Map();
+
+  // the current list of packages we are expanding using breadth-first-search
+  const toProcess = [...filtered.values()];
+
+  while (toProcess.length !== 0) {
+    const project = toProcess.shift();
+
+    Object.keys(project.allDependencies).forEach(dep => {
+      if (projects.has(dep)) {
+        toProcess.push(projects.get(dep));
+      }
+    });
+
+    dependentProjects.set(project.name, project);
+  }
+
+  return dependentProjects;
+}
+
 export function topologicallyBatchProjects(projectsToBatch, projectGraph) {
   // We're going to be chopping stuff out of this array, so copy it.
   const projects = [...projectsToBatch.values()];
