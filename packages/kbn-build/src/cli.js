@@ -19,15 +19,6 @@ function help() {
     Available commands:
 
        ${availableCommands.join('\n       ')}
-
-    Global Options:
-
-       --scope            Restricts the scope to package names matching the given
-                          name. By default includes transitive dependencies. Scope
-                          can be specified multiple times to specify multiple packages.
-       --skip-transitive  Skip all transitive dependencies when 'scope' is passed.
-       --skip-kibana      Kibana is included by default even if 'scope' is defined.
-                          Pass this option to not include Kibana when running command.
   `);
 }
 
@@ -70,10 +61,7 @@ export async function run(argv) {
   const commandName = commandNames[0];
   const commandOptions = {
     ...config,
-    rootPath: cwd,
-    scopes: toArray(options.scope),
-    skipTransitive: Boolean(options['skip-transitive']),
-    skipKibana: Boolean(options['skip-kibana'])
+    rootPath: cwd
   };
 
   const command = commands[commandName];

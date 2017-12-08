@@ -11,30 +11,12 @@ This package is run from Kibana root, using `node scripts/kbn`.
 
 TODO: Describe
 
-### Running Kibana
-
-TODO: Describe
-
 ## Examples
 
 Bootstrap all projects:
 
 ```
 node scripts/kbn bootstrap
-```
-
-Bootstrap `@elastic/kbn-observable` and all its transitive dependencies (this
-will also bootstrap Kibana):
-
-```
-node scripts/kbn bootstrap --scope @elastic/kbn-observable
-```
-
-Bootstrap `@elastic/kbn-observable` and all its transitive dependencies, but
-don't bootstrap Kibana itself:
-
-```
-node scripts/kbn bootstrap --scope @elastic/kbn-observable --skip-kibana
 ```
 
 ## Development
