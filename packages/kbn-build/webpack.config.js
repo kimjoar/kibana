@@ -2,13 +2,15 @@ const path = require('path');
 const webpack = require('webpack');
 
 module.exports = {
-  entry: './src/cli.js',
+  entry: {
+    cli: './src/cli.js'
+  },
   target: 'node',
 
   output: {
     path: path.resolve(__dirname, 'dist'),
-    filename: 'cli.js',
-    libraryTarget: "commonjs2",
+    filename: '[name].js',
+    libraryTarget: 'commonjs2',
   },
 
   devtool: 'inline-source-map',
