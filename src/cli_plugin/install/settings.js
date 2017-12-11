@@ -23,6 +23,7 @@ export function parseMilliseconds(val) {
 
 export function parse(command, options, kbnPackage) {
   const settings = {
+    kibanaPath: kbnPackage.__dirname,
     timeout: options.timeout || 0,
     quiet: options.quiet || false,
     silent: options.silent || false,
@@ -35,11 +36,6 @@ export function parse(command, options, kbnPackage) {
   settings.urls = generateUrls(settings);
   settings.workingPath = resolve(settings.pluginDir, '.plugin.installing');
   settings.tempArchiveFile = resolve(settings.workingPath, 'archive.part');
-  settings.tempPackageFile = resolve(settings.workingPath, 'package.json');
-  settings.setPlugin = function (plugin) {
-    settings.plugin = plugin;
-    settings.pluginPath = resolve(settings.pluginDir, settings.plugin.name);
-  };
 
   return settings;
 }
