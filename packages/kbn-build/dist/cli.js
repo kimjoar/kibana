@@ -3586,23 +3586,19 @@ let run = exports.run = (() => {
       }
     });
 
-    const commandNames = options._;
-    const commandCount = commandNames.length;
+    const args = options._;
 
-    if (options.help || commandCount === 0) {
+    if (options.help || args.length === 0) {
       help();
       return;
     }
 
-    if (commandCount > 1) {
-      console.log(`Only 1 command allowed at a time, ${commandCount} given.`);
-      process.exit(1);
-    }
-
     const rootPath = process.cwd();
 
-    const commandName = commandNames[0];
-    const commandOptions = { options, rootPath };
+    const commandName = args[0];
+    const extraArgs = args.slice(1);
+
+    const commandOptions = { options, extraArgs, rootPath };
 
     const command = commands[commandName];
     if (command === undefined) {
@@ -4107,7 +4103,7 @@ Object.defineProperty(exports, "__esModule", {
 exports.run = exports.description = exports.name = undefined;
 
 let run = exports.run = (() => {
-  var _ref = _asyncToGenerator(function* (projects, projectGraph) {
+  var _ref = _asyncToGenerator(function* (projects, projectGraph, { extraArgs }) {
     const batchedProjects = (0, _projects.topologicallyBatchProjects)(projects, projectGraph);
 
     console.log(_chalk2.default.bold('\nRunning installs in topological order'));
@@ -4115,13 +4111,13 @@ let run = exports.run = (() => {
     for (const batch of batchedProjects) {
       for (const project of batch) {
         if (project.hasDependencies()) {
-          yield project.installDependencies();
+          yield project.installDependencies({ extraArgs });
         }
       }
     }
   });
 
-  return function run(_x, _x2) {
+  return function run(_x, _x2, _x3) {
     return _ref.apply(this, arguments);
   };
 })();
@@ -5419,9 +5415,9 @@ class Project {
     return Object.keys(this.allDependencies).length > 0;
   }
 
-  installDependencies() {
+  installDependencies({ extraArgs }) {
     console.log(_chalk2.default.bold(`\n\nInstalling dependencies in [${_chalk2.default.green(this.name)}]:\n`));
-    return (0, _npm.installInDir)(this.path);
+    return (0, _npm.installInDir)(this.path, extraArgs);
   }
 }
 exports.Project = Project;
@@ -5443,10 +5439,12 @@ var _childProcess = __webpack_require__(49);
 /**
  * Install all dependencies in the given directory
  */
-function installInDir(directory) {
+function installInDir(directory, extraArgs = []) {
+  const options = ['install', '--non-interactive', '--mutex file', ...extraArgs];
+
   // We pass the mutex flag to ensure only one instance of yarn runs at any
   // given time (e.g. to avoid conflicts).
-  return (0, _childProcess.spawn)('yarn', ['install', '--non-interactive', '--mutex file'], {
+  return (0, _childProcess.spawn)('yarn', options, {
     cwd: directory
   });
 }

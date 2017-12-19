@@ -69,12 +69,12 @@ export class Project {
     return Object.keys(this.allDependencies).length > 0;
   }
 
-  installDependencies() {
+  installDependencies({ extraArgs }) {
     console.log(
       chalk.bold(
         `\n\nInstalling dependencies in [${chalk.green(this.name)}]:\n`
       )
     );
-    return installInDir(this.path);
+    return installInDir(this.path, extraArgs);
   }
 }

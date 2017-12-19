@@ -34,23 +34,19 @@ export async function run(argv) {
     }
   });
 
-  const commandNames = options._;
-  const commandCount = commandNames.length;
+  const args = options._;
 
-  if (options.help || commandCount === 0) {
+  if (options.help || args.length === 0) {
     help();
     return;
   }
 
-  if (commandCount > 1) {
-    console.log(`Only 1 command allowed at a time, ${commandCount} given.`);
-    process.exit(1);
-  }
-
   const rootPath = process.cwd();
 
-  const commandName = commandNames[0];
-  const commandOptions = { options, rootPath };
+  const commandName = args[0];
+  const extraArgs = args.slice(1);
+
+  const commandOptions = { options, extraArgs, rootPath };
 
   const command = commands[commandName];
   if (command === undefined) {
