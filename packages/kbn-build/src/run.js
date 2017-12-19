@@ -10,7 +10,7 @@ export async function runCommand(command, config) {
   try {
     console.log(
       chalk.bold(
-        `Running [${chalk.green(command.name)}] from [${chalk.yellow(
+        `Running [${chalk.green(command.name)}] command from [${chalk.yellow(
           config.rootPath
         )}]:\n`
       )

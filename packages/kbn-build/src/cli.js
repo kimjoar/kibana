@@ -23,7 +23,8 @@ function help() {
 
     Global options:
 
-       --skip-kibana-extra  Filter all plugins in ../kibana-extra when running commands.
+       --skip-kibana        Do not include the root Kibana project when running command.
+       --skip-kibana-extra  Filter all plugins in ../kibana-extra when running command.
   `);
 }
 

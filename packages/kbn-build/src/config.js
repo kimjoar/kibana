@@ -5,8 +5,13 @@ import { resolve } from 'path';
  */
 export function getProjectPaths(rootPath, options) {
   const skipKibanaExtra = Boolean(options['skip-kibana-extra']);
+  const skipKibana = Boolean(options['skip-kibana']);
 
-  const projectPaths = [rootPath, resolve(rootPath, 'packages/*')];
+  let projectPaths = [resolve(rootPath, 'packages/*')];
+
+  if (!skipKibana) {
+    projectPaths.push(rootPath);
+  }
 
   if (!skipKibanaExtra) {
     projectPaths.push(resolve(rootPath, '../kibana-extra/*'));

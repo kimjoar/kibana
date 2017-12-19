@@ -3655,7 +3655,8 @@ function help() {
 
     Global options:
 
-       --skip-kibana-extra  Filter all plugins in ../kibana-extra when running commands.
+       --skip-kibana        Do not include the root Kibana project when running command.
+       --skip-kibana-extra  Filter all plugins in ../kibana-extra when running command.
   `);
 }
 
@@ -14030,7 +14031,7 @@ exports.runCommand = undefined;
 let runCommand = exports.runCommand = (() => {
   var _ref = _asyncToGenerator(function* (command, config) {
     try {
-      console.log(_chalk2.default.bold(`Running [${_chalk2.default.green(command.name)}] from [${_chalk2.default.yellow(config.rootPath)}]:\n`));
+      console.log(_chalk2.default.bold(`Running [${_chalk2.default.green(command.name)}] command from [${_chalk2.default.yellow(config.rootPath)}]:\n`));
 
       const projectPaths = (0, _config.getProjectPaths)(config.rootPath, config.options);
 
@@ -14461,8 +14462,13 @@ var _path = __webpack_require__(0);
  */
 function getProjectPaths(rootPath, options) {
   const skipKibanaExtra = Boolean(options['skip-kibana-extra']);
+  const skipKibana = Boolean(options['skip-kibana']);
 
-  const projectPaths = [rootPath, (0, _path.resolve)(rootPath, 'packages/*')];
+  let projectPaths = [(0, _path.resolve)(rootPath, 'packages/*')];
+
+  if (!skipKibana) {
+    projectPaths.push(rootPath);
+  }
 
   if (!skipKibanaExtra) {
     projectPaths.push((0, _path.resolve)(rootPath, '../kibana-extra/*'));
