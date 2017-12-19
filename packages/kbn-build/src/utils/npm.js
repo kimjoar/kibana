@@ -1,4 +1,4 @@
-import { spawn } from './childProcess';
+import { spawn, spawnStreaming } from './childProcess';
 
 /**
  * Install all dependencies in the given directory
@@ -15,5 +15,18 @@ export function installInDir(directory, extraArgs = []) {
   // given time (e.g. to avoid conflicts).
   return spawn('yarn', options, {
     cwd: directory
+  });
+}
+
+/**
+ * Run script in the given directory
+ */
+export function runScriptInPackageStreaming(script, args, pkg) {
+  const execOpts = {
+    cwd: pkg.path
+  };
+
+  return spawnStreaming('yarn', ['run', script, ...args], execOpts, {
+    prefix: pkg.name
   });
 }

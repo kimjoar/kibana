@@ -1,7 +1,7 @@
 import path from 'path';
 import chalk from 'chalk';
 
-import { installInDir } from './npm';
+import { installInDir, runScriptInPackageStreaming } from './npm';
 import { readPackageJson } from './packageJson';
 import { CliError } from './errors';
 
@@ -25,6 +25,8 @@ export class Project {
       ...(this._json.devDependencies || {}),
       ...(this._json.dependencies || {})
     };
+
+    this.scripts = this._json.scripts || {};
   }
 
   get name() {
@@ -63,6 +65,14 @@ export class Project {
       }], but it's not using the local package. ${updateMsg}`,
       meta
     );
+  }
+
+  hasScript(name) {
+    return name in this.scripts;
+  }
+
+  runScriptStreaming(scriptName, args = []) {
+    return runScriptInPackageStreaming(scriptName, args, this);
   }
 
   hasDependencies() {
