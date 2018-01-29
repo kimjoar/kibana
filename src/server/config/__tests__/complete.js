@@ -1,5 +1,4 @@
 import completeMixin from '../complete';
-import expect from 'expect.js';
 import sinon from 'sinon';
 
 /* eslint-disable import/no-duplicates */
@@ -48,7 +47,7 @@ describe('server/config completeMixin()', function () {
       callCompleteMixin();
       sinon.assert.calledOnce(server.decorate);
       sinon.assert.calledWith(server.decorate, 'server', 'config', sinon.match.func);
-      expect(server.decorate.firstCall.args[2]()).to.be(config);
+      expect(server.decorate.firstCall.args[2]()).toBe(config);
     });
   });
 
@@ -129,11 +128,13 @@ describe('server/config completeMixin()', function () {
         }
       });
 
-      expect(callCompleteMixin).to.throwError('"unused" not applied');
+      expect(callCompleteMixin).toThrowError('"unused" setting was not applied');
     });
 
     describe('error thrown', () => {
       it('has correct code, processExitCode, and message', () => {
+        expect.assertions(3);
+
         const { callCompleteMixin } = setup({
           settings: {
             unused: true,
@@ -148,11 +149,13 @@ describe('server/config completeMixin()', function () {
           }
         });
 
-        expect(callCompleteMixin).to.throwError((error) => {
-          expect(error).to.have.property('code', 'InvalidConfig');
-          expect(error).to.have.property('processExitCode', 64);
-          expect(error.message).to.contain('"unused", "foo", and "namespace.with.sub.keys"');
-        });
+        try {
+          callCompleteMixin();
+        } catch (error) {
+          expect(error).toHaveProperty('code', 'InvalidConfig');
+          expect(error).toHaveProperty('processExitCode', 64);
+          expect(error.message).toMatch('"unused", "foo", and "namespace.with.sub.keys"');
+        }
       });
     });
   });

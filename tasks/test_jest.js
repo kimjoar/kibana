@@ -10,7 +10,9 @@ module.exports = function (grunt) {
     const serverCmd = {
       cmd: 'node',
       args: [
-        resolve(__dirname, '../scripts/jest.js')
+        resolve(__dirname, '../scripts/jest.js'),
+        '--no-cache',
+        '--ci'
       ],
       opts: { stdio: 'inherit' }
     };
