@@ -1,4 +1,3 @@
-import expect from 'expect.js';
 import sinon from 'sinon';
 import mockFs from 'mock-fs';
 
@@ -31,7 +30,7 @@ describe('Kibana keystore', () => {
 
       remove(keystore, 'a2');
 
-      expect(keystore.data).to.eql({ 'a1.b2.c3': 'foo' });
+      expect(keystore.data).toEqual({ 'a1.b2.c3': 'foo' });
     });
 
     it('persists the keystore', () => {

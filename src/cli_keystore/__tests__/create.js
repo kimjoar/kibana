@@ -1,4 +1,3 @@
-import expect from 'expect.js';
 import sinon from 'sinon';
 import mockFs from 'mock-fs';
 
@@ -59,7 +58,7 @@ describe('Kibana keystore', () => {
       sinon.assert.calledOnce(prompt.confirm);
       const { args } = prompt.confirm.getCall(0);
 
-      expect(args[0]).to.eql('A Kibana keystore already exists. Overwrite?');
+      expect(args[0]).toEqual('A Kibana keystore already exists. Overwrite?');
     });
 
     it('aborts if overwrite is denied', async () => {
