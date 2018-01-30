@@ -1,4 +1,3 @@
-import expect from 'expect.js';
 import sinon from 'sinon';
 import nock from 'nock';
 import glob from 'glob-all';
@@ -26,7 +25,7 @@ describe('kibana cli', function () {
 
     function expectWorkingPathEmpty() {
       const files = glob.sync('**/*', { cwd: testWorkingPath });
-      expect(files).to.eql([]);
+      expect(files).toEqual([]);
     }
 
     function expectWorkingPathNotEmpty() {
@@ -35,7 +34,7 @@ describe('kibana cli', function () {
         'archive.part'
       ];
 
-      expect(files.sort()).to.eql(expected.sort());
+      expect(files.sort()).toEqual(expected.sort());
     }
 
     function shouldReject() {
@@ -71,7 +70,7 @@ describe('kibana cli', function () {
 
           return _downloadSingle(settings, logger, sourceUrl)
             .then(shouldReject, function (err) {
-              expect(err.message).to.match(/ENOTFOUND/);
+              expect(err.message).toMatch(/ENOTFOUND/);
               expectWorkingPathEmpty();
             });
         });
@@ -81,7 +80,7 @@ describe('kibana cli', function () {
 
           return _downloadSingle(settings, logger, sourceUrl)
             .then(shouldReject, function (err) {
-              expect(err).to.be.an(UnsupportedProtocolError);
+              expect(err).toBeInstanceOf(UnsupportedProtocolError);
               expectWorkingPathEmpty();
             });
         });
@@ -115,7 +114,7 @@ describe('kibana cli', function () {
 
           return _downloadSingle(settings, logger, sourceUrl)
             .then(shouldReject, function (err) {
-              expect(err.message).to.match(/ENOTFOUND/);
+              expect(err.message).toMatch(/ENOTFOUND/);
               expectWorkingPathEmpty();
             });
         });
@@ -136,14 +135,14 @@ describe('kibana cli', function () {
 
     describe('_getFilePath', function () {
       it('should decode paths', function () {
-        expect(_getFilePath('Test%20folder/file.zip')).to.equal('Test folder/file.zip');
+        expect(_getFilePath('Test%20folder/file.zip')).toBe('Test folder/file.zip');
       });
 
       it('should remove the leading slash from windows paths', function () {
         const platform = Object.getOwnPropertyDescriptor(process, 'platform');
         Object.defineProperty(process, 'platform', { value: 'win32' });
 
-        expect(_getFilePath('/C:/foo/bar')).to.equal('C:/foo/bar');
+        expect(_getFilePath('/C:/foo/bar')).toBe('C:/foo/bar');
 
         Object.defineProperty(process, 'platform', platform);
       });
@@ -159,8 +158,8 @@ describe('kibana cli', function () {
         };
         _checkFilePathDeprecation('file://foo/bar', logger);
         _checkFilePathDeprecation('file:///foo/bar', logger);
-        expect(logger.log.callCount).to.be(1);
-        expect(logger.log.calledWith('Install paths with file:// are deprecated, use file:/// instead')).to.be(true);
+        expect(logger.log.callCount).toBe(1);
+        expect(logger.log.calledWith('Install paths with file:// are deprecated, use file:/// instead')).toBe(true);
         Object.defineProperty(process, 'platform', platform);
       });
     });
@@ -188,10 +187,10 @@ describe('kibana cli', function () {
 
         return download(settings, logger)
           .then(function () {
-            expect(logger.log.getCall(0).args[0]).to.match(/badfile1.tar.gz/);
-            expect(logger.log.getCall(1).args[0]).to.match(/badfile2.tar.gz/);
-            expect(logger.log.getCall(2).args[0]).to.match(/I am a bad uri/);
-            expect(logger.log.getCall(3).args[0]).to.match(/goodfile.tar.gz/);
+            expect(logger.log.getCall(0).args[0]).toMatch(/badfile1.tar.gz/);
+            expect(logger.log.getCall(1).args[0]).toMatch(/badfile2.tar.gz/);
+            expect(logger.log.getCall(2).args[0]).toMatch(/I am a bad uri/);
+            expect(logger.log.getCall(3).args[0]).toMatch(/goodfile.tar.gz/);
             expectWorkingPathNotEmpty();
           });
       });
@@ -221,7 +220,7 @@ describe('kibana cli', function () {
         return download(settings, logger)
           .then(function () {
             for (let i = 0; i < logger.log.callCount; i++) {
-              expect(logger.log.getCall(i).args[0]).to.not.match(/badfile3.tar.gz/);
+              expect(logger.log.getCall(i).args[0]).not.toMatch(/badfile3.tar.gz/);
             }
             expectWorkingPathNotEmpty();
           });
@@ -247,12 +246,12 @@ describe('kibana cli', function () {
 
         return download(settings, logger)
           .then(shouldReject, function (err) {
-            expect(err.message).to.match(/no valid url specified/i);
+            expect(err.message).toMatch(/no valid url specified/i);
             expectWorkingPathEmpty();
           });
       });
 
-      after(function () {
+      afterAll(function () {
         nock.cleanAll();
       });
 
@@ -274,11 +273,11 @@ describe('kibana cli', function () {
       });
 
       function expectProxyHit() {
-        expect(proxyHit).to.be(true);
+        expect(proxyHit).toBe(true);
       }
 
       function expectNoProxyHit() {
-        expect(proxyHit).to.be(false);
+        expect(proxyHit).toBe(false);
       }
 
       function nockPluginForUrl(url) {
@@ -287,7 +286,7 @@ describe('kibana cli', function () {
           .replyWithFile(200, join(__dirname, 'replies/test_plugin.zip'));
       }
 
-      before(function (done) {
+      beforeAll(function (done) {
         proxy.listen(proxyPort, done);
       });
 
@@ -392,7 +391,7 @@ describe('kibana cli', function () {
           .then(expectNoProxyHit);
       });
 
-      after(function (done) {
+      afterAll(function (done) {
         proxy.close(done);
       });
 
