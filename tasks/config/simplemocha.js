@@ -22,6 +22,9 @@ export default {
 
       // These tests have been moved to Jest
       '!src/server/**/*.js',
+      '!src/cli/**/*.js',
+      '!src/cli_keystore/**/*.js',
+      '!src/cli_plugin/**/*.js',
     ]
   }
 };
