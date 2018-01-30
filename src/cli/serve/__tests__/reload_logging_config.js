@@ -4,7 +4,6 @@ import { relative, resolve } from 'path';
 import { safeDump } from 'js-yaml';
 import es from 'event-stream';
 import { readYamlConfig } from '../read_yaml_config';
-import expect from 'expect.js';
 
 const testConfigFile = follow(`fixtures/reload_logging_config/kibana.test.yml`);
 
@@ -28,8 +27,6 @@ describe(`Server logging configuration`, function () {
     it('SIGHUP is not a feature of Windows.');
   } else {
     it(`should be reloadable via SIGHUP process signaling`, function (done) {
-      this.timeout(60000);
-
       let asserted = false;
       let json = Infinity;
       setLoggingJson(true);

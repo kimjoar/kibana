@@ -4,6 +4,7 @@
     "<rootDir>/src/ui/public",
     "<rootDir>/src/core_plugins",
     "<rootDir>/src/server",
+    "<rootDir>/src/cli",
     "<rootDir>/ui_framework/",
     "<rootDir>/packages"
   ],
@@ -38,6 +39,7 @@
   ],
   "testMatch": [
     "**/*.test.js",
+    "**/src/cli/**/__tests__/**/*.js",
     "**/src/server/**/__tests__/**/*.js"
   ],
   "modulePathIgnorePatterns": [
