@@ -1,4 +1,3 @@
-import expect from 'expect.js';
 import sinon from 'sinon';
 
 import { PluginPack } from '../plugin_pack';
@@ -9,21 +8,21 @@ describe('plugin discovery/plugin pack', () => {
     it('requires an object', () => {
       expect(() => {
         new PluginPack();
-      }).to.throwError();
+      }).toThrow();
     });
   });
   describe('#getPkg()', () => {
     it('returns the `pkg` constructor argument', () => {
       const pkg = {};
       const pack = new PluginPack({ pkg });
-      expect(pack.getPkg()).to.be(pkg);
+      expect(pack.getPkg()).toBe(pkg);
     });
   });
   describe('#getPath()', () => {
     it('returns the `path` constructor argument', () => {
       const path = {};
       const pack = new PluginPack({ path });
-      expect(pack.getPath()).to.be(path);
+      expect(pack.getPath()).toBe(path);
     });
   });
   describe('#getPluginSpecs()', () => {
@@ -42,7 +41,7 @@ describe('plugin discovery/plugin pack', () => {
 
     it('casts undefined return value to array', () => {
       const pack = new PluginPack({ provider: () => undefined });
-      expect(pack.getPluginSpecs()).to.eql([]);
+      expect(pack.getPluginSpecs()).toEqual([]);
     });
 
     it('casts single PluginSpec to an array', () => {
@@ -53,9 +52,9 @@ describe('plugin discovery/plugin pack', () => {
       });
 
       const specs = pack.getPluginSpecs();
-      expect(specs).to.be.an('array');
-      expect(specs).to.have.length(1);
-      expect(specs[0]).to.be.a(PluginSpec);
+      expect(specs).toBeInstanceOf(Array);
+      expect(specs).toHaveLength(1);
+      expect(specs[0]).toBeInstanceOf(PluginSpec);
     });
 
     it('returns an array of PluginSpec', () => {
@@ -69,10 +68,10 @@ describe('plugin discovery/plugin pack', () => {
       });
 
       const specs = pack.getPluginSpecs();
-      expect(specs).to.be.an('array');
-      expect(specs).to.have.length(2);
-      expect(specs[0]).to.be.a(PluginSpec);
-      expect(specs[1]).to.be.a(PluginSpec);
+      expect(specs).toBeInstanceOf(Array);
+      expect(specs).toHaveLength(2);
+      expect(specs[0]).toBeInstanceOf(PluginSpec);
+      expect(specs[1]).toBeInstanceOf(PluginSpec);
     });
 
     it('throws if non-undefined return value is not an instance of api.Plugin', () => {
@@ -101,9 +100,7 @@ describe('plugin discovery/plugin pack', () => {
       ];
 
       for (const pack of badPacks) {
-        expect(() => pack.getPluginSpecs()).to.throwError(error => {
-          expect(error.message).to.contain('unexpected plugin export');
-        });
+        expect(() => pack.getPluginSpecs()).toThrowError('unexpected plugin export');
       }
     });
   });

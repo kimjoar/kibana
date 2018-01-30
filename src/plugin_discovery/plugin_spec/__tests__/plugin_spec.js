@@ -1,6 +1,5 @@
 import { resolve } from 'path';
 
-import expect from 'expect.js';
 import sinon from 'sinon';
 
 import { PluginPack } from '../../plugin_pack';
@@ -17,23 +16,20 @@ describe('plugin discovery/plugin spec', () => {
     describe('validation', () => {
       it('throws if missing spec.id AND Pack has no name', () => {
         const pack = new PluginPack({ pkg: {} });
-        expect(() => new PluginSpec(pack, {})).to.throwError(error => {
-          expect(error.message).to.contain('Unable to determine plugin id');
-        });
+        expect(() => new PluginSpec(pack, {}))
+          .toThrowError('Unable to determine plugin id');
       });
 
       it('throws if missing spec.kibanaVersion AND Pack has no version', () => {
         const pack = new PluginPack({ pkg: { name: 'foo' } });
-        expect(() => new PluginSpec(pack, {})).to.throwError(error => {
-          expect(error.message).to.contain('Unable to determine plugin version');
-        });
+        expect(() => new PluginSpec(pack, {}))
+          .toThrowError('Unable to determine plugin version');
       });
 
       it('throws if spec.require is defined, but not an array', () => {
         function assert(require) {
-          expect(() => new PluginSpec(fooPack, { require })).to.throwError(error => {
-            expect(error.message).to.contain('"plugin.require" must be an array of plugin ids');
-          });
+          expect(() => new PluginSpec(fooPack, { require }))
+            .toThrowError('"plugin.require" must be an array of plugin ids');
         }
 
         assert(null);
@@ -46,9 +42,8 @@ describe('plugin discovery/plugin spec', () => {
 
       it('throws if spec.publicDir is truthy and not a string', () => {
         function assert(publicDir) {
-          expect(() => new PluginSpec(fooPack, { publicDir })).to.throwError(error => {
-            expect(error.message).to.contain('Path must be a string');
-          });
+          expect(() => new PluginSpec(fooPack, { publicDir }))
+            .toThrowError('Path must be a string');
         }
 
         assert(1);
@@ -59,9 +54,8 @@ describe('plugin discovery/plugin spec', () => {
 
       it('throws if spec.publicDir is not an absolute path', () => {
         function assert(publicDir) {
-          expect(() => new PluginSpec(fooPack, { publicDir })).to.throwError(error => {
-            expect(error.message).to.contain('plugin.publicDir must be an absolute path');
-          });
+          expect(() => new PluginSpec(fooPack, { publicDir }))
+            .toThrowError('plugin.publicDir must be an absolute path');
         }
 
         assert('relative/path');
@@ -70,9 +64,8 @@ describe('plugin discovery/plugin spec', () => {
 
       it('throws if spec.publicDir basename is not `public`', () => {
         function assert(publicDir) {
-          expect(() => new PluginSpec(fooPack, { publicDir })).to.throwError(error => {
-            expect(error.message).to.contain('must end with a "public" directory');
-          });
+          expect(() => new PluginSpec(fooPack, { publicDir }))
+            .toThrowError('must end with a "public" directory');
         }
 
         assert('/www');
@@ -85,21 +78,21 @@ describe('plugin discovery/plugin spec', () => {
     describe('#getPack()', () => {
       it('returns the pack', () => {
         const spec = new PluginSpec(fooPack, {});
-        expect(spec.getPack()).to.be(fooPack);
+        expect(spec.getPack()).toBe(fooPack);
       });
     });
 
     describe('#getPkg()', () => {
       it('returns the pkg from the pack', () => {
         const spec = new PluginSpec(fooPack, {});
-        expect(spec.getPkg()).to.be(fooPack.getPkg());
+        expect(spec.getPkg()).toBe(fooPack.getPkg());
       });
     });
 
     describe('#getPath()', () => {
       it('returns the path from the pack', () => {
         const spec = new PluginSpec(fooPack, {});
-        expect(spec.getPath()).to.be(fooPack.getPath());
+        expect(spec.getPath()).toBe(fooPack.getPath());
       });
     });
 
@@ -109,13 +102,13 @@ describe('plugin discovery/plugin spec', () => {
           id: 'bar'
         });
 
-        expect(spec.getId()).to.be('bar');
+        expect(spec.getId()).toBe('bar');
       });
 
       it('defaults to pack.pkg.name', () => {
         const spec = new PluginSpec(fooPack, {});
 
-        expect(spec.getId()).to.be('foo');
+        expect(spec.getId()).toBe('foo');
       });
     });
 
@@ -125,13 +118,13 @@ describe('plugin discovery/plugin spec', () => {
           version: 'bar'
         });
 
-        expect(spec.getVersion()).to.be('bar');
+        expect(spec.getVersion()).toBe('bar');
       });
 
       it('defaults to pack.pkg.version', () => {
         const spec = new PluginSpec(fooPack, {});
 
-        expect(spec.getVersion()).to.be('kibana');
+        expect(spec.getVersion()).toBe('kibana');
       });
     });
 
@@ -150,21 +143,18 @@ describe('plugin discovery/plugin spec', () => {
         it('throws if not passed a config service', () => {
           const { spec } = setup('a.b.c', () => true);
 
-          expect(() => spec.isEnabled()).to.throwError(error => {
-            expect(error.message).to.contain('must be called with a config service');
-          });
-          expect(() => spec.isEnabled(null)).to.throwError(error => {
-            expect(error.message).to.contain('must be called with a config service');
-          });
-          expect(() => spec.isEnabled({ get: () => {} })).to.throwError(error => {
-            expect(error.message).to.contain('must be called with a config service');
-          });
+          expect(() => spec.isEnabled())
+            .toThrowError('must be called with a config service');
+          expect(() => spec.isEnabled(null))
+            .toThrowError('must be called with a config service');
+          expect(() => spec.isEnabled({ get: () => {} }))
+            .toThrowError('must be called with a config service');
         });
 
         it('returns true when config.get([...configPrefix, "enabled"]) returns true', () => {
           const { spec, config } = setup('d.e.f', () => true);
 
-          expect(spec.isEnabled(config)).to.be(true);
+          expect(spec.isEnabled(config)).toBe(true);
           sinon.assert.calledOnce(config.get);
           sinon.assert.calledWithExactly(config.get, ['d', 'e', 'f', 'enabled']);
         });
@@ -172,7 +162,7 @@ describe('plugin discovery/plugin spec', () => {
         it('returns false when config.get([...configPrefix, "enabled"]) returns false', () => {
           const { spec, config } = setup('g.h.i', () => false);
 
-          expect(spec.isEnabled(config)).to.be(false);
+          expect(spec.isEnabled(config)).toBe(false);
           sinon.assert.calledOnce(config.get);
           sinon.assert.calledWithExactly(config.get, ['g', 'h', 'i', 'enabled']);
         });
@@ -193,21 +183,18 @@ describe('plugin discovery/plugin spec', () => {
         it('throws if not passed a config service', () => {
           const { spec } = setup(() => true);
 
-          expect(() => spec.isEnabled()).to.throwError(error => {
-            expect(error.message).to.contain('must be called with a config service');
-          });
-          expect(() => spec.isEnabled(null)).to.throwError(error => {
-            expect(error.message).to.contain('must be called with a config service');
-          });
-          expect(() => spec.isEnabled({ get: () => {} })).to.throwError(error => {
-            expect(error.message).to.contain('must be called with a config service');
-          });
+          expect(() => spec.isEnabled())
+            .toThrowError('must be called with a config service');
+          expect(() => spec.isEnabled(null))
+            .toThrowError('must be called with a config service');
+          expect(() => spec.isEnabled({ get: () => {} }))
+            .toThrowError('must be called with a config service');
         });
 
         it('does not check config if spec.isEnabled returns true', () => {
           const { spec, isEnabled, config } = setup(() => true);
 
-          expect(spec.isEnabled(config)).to.be(true);
+          expect(spec.isEnabled(config)).toBe(true);
           sinon.assert.calledOnce(isEnabled);
           sinon.assert.notCalled(config.get);
         });
@@ -215,7 +202,7 @@ describe('plugin discovery/plugin spec', () => {
         it('does not check config if spec.isEnabled returns false', () => {
           const { spec, isEnabled, config } = setup(() => false);
 
-          expect(spec.isEnabled(config)).to.be(false);
+          expect(spec.isEnabled(config)).toBe(false);
           sinon.assert.calledOnce(isEnabled);
           sinon.assert.notCalled(config.get);
         });
@@ -241,7 +228,7 @@ describe('plugin discovery/plugin spec', () => {
             kibanaVersion: '5.0.0'
           });
 
-          expect(spec.getExpectedKibanaVersion()).to.be('5.0.0');
+          expect(spec.getExpectedKibanaVersion()).toBe('5.0.0');
         });
       });
       describe('missing: spec.kibanaVersion, has: pkg.kibana.version,spec.version,pkg.version', () => {
@@ -261,7 +248,7 @@ describe('plugin discovery/plugin spec', () => {
             version: '2.0.0',
           });
 
-          expect(spec.getExpectedKibanaVersion()).to.be('6.0.0');
+          expect(spec.getExpectedKibanaVersion()).toBe('6.0.0');
         });
       });
       describe('missing: spec.kibanaVersion,pkg.kibana.version, has: spec.version,pkg.version', () => {
@@ -278,7 +265,7 @@ describe('plugin discovery/plugin spec', () => {
             version: '2.0.0',
           });
 
-          expect(spec.getExpectedKibanaVersion()).to.be('2.0.0');
+          expect(spec.getExpectedKibanaVersion()).toBe('2.0.0');
         });
       });
       describe('missing: spec.kibanaVersion,pkg.kibana.version,spec.version, has: pkg.version', () => {
@@ -293,7 +280,7 @@ describe('plugin discovery/plugin spec', () => {
 
           const spec = new PluginSpec(pack, {});
 
-          expect(spec.getExpectedKibanaVersion()).to.be('1.0.0');
+          expect(spec.getExpectedKibanaVersion()).toBe('1.0.0');
         });
       });
     });
@@ -303,7 +290,7 @@ describe('plugin discovery/plugin spec', () => {
         const spec = new PluginSpec(fooPack, { version: '1.0.0' });
         sinon.stub(spec, 'getExpectedKibanaVersion').returns('foo');
         const isVersionCompatible = sinon.stub(IsVersionCompatibleNS, 'isVersionCompatible').returns('bar');
-        expect(spec.isVersionCompatible('baz')).to.be('bar');
+        expect(spec.isVersionCompatible('baz')).toBe('bar');
 
         sinon.assert.calledOnce(spec.getExpectedKibanaVersion);
         sinon.assert.calledWithExactly(spec.getExpectedKibanaVersion);
@@ -316,7 +303,7 @@ describe('plugin discovery/plugin spec', () => {
     describe('#getRequiredPluginIds()', () => {
       it('returns spec.require', () => {
         const spec = new PluginSpec(fooPack, { require: [1, 2, 3] });
-        expect(spec.getRequiredPluginIds()).to.eql([1, 2, 3]);
+        expect(spec.getRequiredPluginIds()).toEqual([1, 2, 3]);
       });
     });
 
@@ -324,7 +311,7 @@ describe('plugin discovery/plugin spec', () => {
       describe('spec.publicDir === false', () => {
         it('returns null', () => {
           const spec = new PluginSpec(fooPack, { publicDir: false });
-          expect(spec.getPublicDir()).to.be(null);
+          expect(spec.getPublicDir()).toBe(null);
         });
       });
 
@@ -332,7 +319,7 @@ describe('plugin discovery/plugin spec', () => {
         it('returns public child of pack path', () => {
           function assert(publicDir) {
             const spec = new PluginSpec(fooPack, { publicDir });
-            expect(spec.getPublicDir()).to.be(resolve('/dev/null/public'));
+            expect(spec.getPublicDir()).toBe(resolve('/dev/null/public'));
           }
 
           assert(0);
@@ -349,7 +336,7 @@ describe('plugin discovery/plugin spec', () => {
             publicDir: '/var/www/public'
           });
 
-          expect(spec.getPublicDir()).to.be('/var/www/public');
+          expect(spec.getPublicDir()).toBe('/var/www/public');
         });
       });
 
@@ -362,7 +349,7 @@ describe('plugin discovery/plugin spec', () => {
           uiExports: 'foo'
         });
 
-        expect(spec.getExportSpecs()).to.be('foo');
+        expect(spec.getExportSpecs()).toBe('foo');
       });
     });
 
@@ -372,7 +359,7 @@ describe('plugin discovery/plugin spec', () => {
           preInit: 'foo'
         });
 
-        expect(spec.getPreInitHandler()).to.be('foo');
+        expect(spec.getPreInitHandler()).toBe('foo');
       });
     });
 
@@ -382,7 +369,7 @@ describe('plugin discovery/plugin spec', () => {
           init: 'foo'
         });
 
-        expect(spec.getInitHandler()).to.be('foo');
+        expect(spec.getInitHandler()).toBe('foo');
       });
     });
 
@@ -393,7 +380,7 @@ describe('plugin discovery/plugin spec', () => {
             configPrefix: 'foo.bar.baz'
           });
 
-          expect(spec.getConfigPrefix()).to.be('foo.bar.baz');
+          expect(spec.getConfigPrefix()).toBe('foo.bar.baz');
         });
       });
       describe('spec.configPrefix is falsy', () => {
@@ -401,7 +388,7 @@ describe('plugin discovery/plugin spec', () => {
           function assert(configPrefix) {
             const spec = new PluginSpec(fooPack, { configPrefix });
             sinon.stub(spec, 'getId').returns('foo');
-            expect(spec.getConfigPrefix()).to.be('foo');
+            expect(spec.getConfigPrefix()).toBe('foo');
             sinon.assert.calledOnce(spec.getId);
           }
 
@@ -420,7 +407,7 @@ describe('plugin discovery/plugin spec', () => {
           config: 'foo'
         });
 
-        expect(spec.getConfigSchemaProvider()).to.be('foo');
+        expect(spec.getConfigSchemaProvider()).toBe('foo');
       });
     });
 
@@ -466,7 +453,7 @@ describe('plugin discovery/plugin spec', () => {
           deprecations: 'foo'
         });
 
-        expect(spec.getDeprecationsProvider()).to.be('foo');
+        expect(spec.getDeprecationsProvider()).toBe('foo');
       });
     });
   });

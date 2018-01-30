@@ -25,6 +25,7 @@ export default {
       '!src/cli/**/*.js',
       '!src/cli_keystore/**/*.js',
       '!src/cli_plugin/**/*.js',
+      '!src/plugin_discovery/**/*.js',
     ]
   }
 };

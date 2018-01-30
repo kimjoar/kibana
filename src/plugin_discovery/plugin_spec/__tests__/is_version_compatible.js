@@ -1,5 +1,3 @@
-import expect from 'expect.js';
-
 import { isVersionCompatible } from '../is_version_compatible';
 
 describe('plugin discovery/plugin spec', () => {
@@ -22,7 +20,7 @@ describe('plugin discovery/plugin spec', () => {
 
     for (const [plugin, kibana, shouldPass] of tests) {
       it(`${shouldPass ? 'should' : `shouldn't`} allow plugin: ${plugin} kibana: ${kibana}`, () => {
-        expect(isVersionCompatible(plugin, kibana)).to.be(shouldPass);
+        expect(isVersionCompatible(plugin, kibana)).toBe(shouldPass);
       });
     }
   });

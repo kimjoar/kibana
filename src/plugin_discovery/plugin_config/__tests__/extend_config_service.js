@@ -1,5 +1,4 @@
 import sinon from 'sinon';
-import expect from 'expect.js';
 
 import { Config } from '../../../server/config';
 import { PluginPack } from '../../plugin_pack';
@@ -78,16 +77,16 @@ describe('plugin discovery/extend config service', () => {
 
     it('adds the schema for a plugin spec to its config prefix', async () => {
       const config = Config.withDefaultSchema();
-      expect(config.has('foo.bar.baz')).to.be(false);
+      expect(config.has('foo.bar.baz')).toBe(false);
       await extendConfigService(pluginSpec, config);
-      expect(config.has('foo.bar.baz')).to.be(true);
+      expect(config.has('foo.bar.baz')).toBe(true);
     });
 
     it('initializes it with the default settings', async () => {
       const config = Config.withDefaultSchema();
       await extendConfigService(pluginSpec, config);
-      expect(config.get('foo.bar.baz.enabled')).to.be(true);
-      expect(config.get('foo.bar.baz.test')).to.be('bonk');
+      expect(config.get('foo.bar.baz.enabled')).toBe(true);
+      expect(config.get('foo.bar.baz.test')).toBe('bonk');
     });
 
     it('initializes it with values from root settings if defined', async () => {
@@ -102,7 +101,7 @@ describe('plugin discovery/extend config service', () => {
         }
       });
 
-      expect(config.get('foo.bar.baz.test')).to.be('hello world');
+      expect(config.get('foo.bar.baz.test')).toBe('hello world');
     });
 
     it('throws if root settings are invalid', async () => {
@@ -121,7 +120,7 @@ describe('plugin discovery/extend config service', () => {
         });
         throw new Error('Expected extendConfigService() to throw because of bad settings');
       } catch (error) {
-        expect(error.message).to.contain('"test" must be a string');
+        expect(error.message).toContain('"test" must be a string');
       }
     });
 
@@ -152,7 +151,7 @@ describe('plugin discovery/extend config service', () => {
           }
         }
       });
-      expect(config.get('foo.bar.baz.test')).to.be('123');
+      expect(config.get('foo.bar.baz.test')).toBe('123');
     });
   });
 
@@ -160,18 +159,18 @@ describe('plugin discovery/extend config service', () => {
     it('removes added config', async () => {
       const config = Config.withDefaultSchema();
       await extendConfigService(pluginSpec, config);
-      expect(config.has('foo.bar.baz.test')).to.be(true);
+      expect(config.has('foo.bar.baz.test')).toBe(true);
       await disableConfigExtension(pluginSpec, config);
-      expect(config.has('foo.bar.baz.test')).to.be(false);
+      expect(config.has('foo.bar.baz.test')).toBe(false);
     });
 
     it('leaves {configPrefix}.enabled config', async () => {
       const config = Config.withDefaultSchema();
-      expect(config.has('foo.bar.baz.enabled')).to.be(false);
+      expect(config.has('foo.bar.baz.enabled')).toBe(false);
       await extendConfigService(pluginSpec, config);
-      expect(config.get('foo.bar.baz.enabled')).to.be(true);
+      expect(config.get('foo.bar.baz.enabled')).toBe(true);
       await disableConfigExtension(pluginSpec, config);
-      expect(config.get('foo.bar.baz.enabled')).to.be(false);
+      expect(config.get('foo.bar.baz.enabled')).toBe(false);
     });
   });
 });

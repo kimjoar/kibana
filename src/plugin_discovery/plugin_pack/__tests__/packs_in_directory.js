@@ -1,7 +1,5 @@
 import { resolve } from 'path';
 
-import expect from 'expect.js';
-
 import { createPacksInDirectory$ } from '../packs_in_directory';
 import { PluginPack } from '../plugin_pack';
 
@@ -16,31 +14,31 @@ describe('plugin discovery/packs in directory', () => {
     describe('errors emitted as { error } results', () => {
       async function checkError(path, check) {
         const results = await createPacksInDirectory$(path).toArray().toPromise();
-        expect(results).to.have.length(1);
-        expect(results[0]).to.only.have.keys('error');
+        expect(results).toHaveLength(1);
+        expect(Object.keys(results[0])).toEqual(['error']);
         const { error } = results[0];
         await check(error);
       }
 
       it('undefined path', () => checkError(undefined, error => {
         assertInvalidDirectoryError(error);
-        expect(error.message).to.contain('path must be a string');
+        expect(error.message).toContain('path must be a string');
       }));
       it('relative path', () => checkError('my/plugins', error => {
         assertInvalidDirectoryError(error);
-        expect(error.message).to.contain('path must be absolute');
+        expect(error.message).toContain('path must be absolute');
       }));
       it('./relative path', () => checkError('./my/pluginsd', error => {
         assertInvalidDirectoryError(error);
-        expect(error.message).to.contain('path must be absolute');
+        expect(error.message).toContain('path must be absolute');
       }));
       it('non-existent path', () => checkError(resolve(PLUGINS_DIR, 'notreal'), error => {
         assertInvalidDirectoryError(error);
-        expect(error.message).to.contain('no such file or directory');
+        expect(error.message).toContain('no such file or directory');
       }));
       it('path to a file', () => checkError(resolve(PLUGINS_DIR, 'index.js'), error => {
         assertInvalidDirectoryError(error);
-        expect(error.message).to.contain('not a directory');
+        expect(error.message).toContain('not a directory');
       }));
     });
 
@@ -56,13 +54,13 @@ describe('plugin discovery/packs in directory', () => {
         .filter(Boolean);
 
       errors.forEach(assertInvalidPackError);
-      packs.forEach(pack => expect(pack).to.be.a(PluginPack));
+      packs.forEach(pack => expect(pack).toBeInstanceOf(PluginPack));
       // there should be one result for each item in PLUGINS_DIR
-      expect(results).to.have.length(8);
+      expect(results).toHaveLength(8);
       // six of the fixtures are errors of some sorta
-      expect(errors).to.have.length(6);
+      expect(errors).toHaveLength(6);
       // two of them are valid
-      expect(packs).to.have.length(2);
+      expect(packs).toHaveLength(2);
 
     });
   });

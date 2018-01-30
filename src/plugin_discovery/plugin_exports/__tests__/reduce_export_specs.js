@@ -1,5 +1,3 @@
-import expect from 'expect.js';
-
 import { PluginPack } from '../../plugin_pack';
 import { reduceExportSpecs } from '../reduce_export_specs';
 
@@ -49,7 +47,7 @@ const PLUGIN_SPECS = PLUGIN.getPluginSpecs();
 describe('reduceExportSpecs', () => {
   it('combines ui exports from a list of plugin definitions', () => {
     const exports = reduceExportSpecs(PLUGIN_SPECS, REDUCERS);
-    expect(exports).to.eql({
+    expect(exports).toEqual({
       names: [
         'foo:export1',
         'foo:export2',
@@ -65,7 +63,7 @@ describe('reduceExportSpecs', () => {
       ]
     });
 
-    expect(exports).to.eql({
+    expect(exports).toEqual({
       names: [
         'default',
         'foo:export1',

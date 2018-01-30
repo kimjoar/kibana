@@ -1,5 +1,3 @@
-import expect from 'expect.js';
-
 import { PluginPack } from '../../plugin_pack';
 import { getSchema, getStubSchema } from '../schema';
 
@@ -23,37 +21,37 @@ describe('plugin discovery/schema', () => {
   describe('getSchema()', () => {
     it('calls the config provider and returns its return value', async () => {
       const pluginSpec = createPluginSpec(() => 'foo');
-      expect(await getSchema(pluginSpec)).to.be('foo');
+      expect(await getSchema(pluginSpec)).toBe('foo');
     });
 
     it('supports config provider that returns a promise', async () => {
       const pluginSpec = createPluginSpec(() => Promise.resolve('foo'));
-      expect(await getSchema(pluginSpec)).to.be('foo');
+      expect(await getSchema(pluginSpec)).toBe('foo');
     });
 
     it('uses default schema when no config provider', async () => {
       const schema = await getSchema(createPluginSpec());
-      expect(schema).to.be.an('object');
-      expect(schema).to.have.property('validate').a('function');
-      expect(schema.validate({}).value).to.eql({
+      expect(typeof schema).toBe('object');
+      expect(typeof schema.validate).toBe('function');
+      expect(schema.validate({}).value).toEqual({
         enabled: true
       });
     });
 
     it('uses default schema when config returns falsy value', async () => {
       const schema = await getSchema(createPluginSpec(() => null));
-      expect(schema).to.be.an('object');
-      expect(schema).to.have.property('validate').a('function');
-      expect(schema.validate({}).value).to.eql({
+      expect(typeof schema).toBe('object');
+      expect(typeof schema.validate).toBe('function');
+      expect(schema.validate({}).value).toEqual({
         enabled: true
       });
     });
 
     it('uses default schema when config promise resolves to falsy value', async () => {
       const schema = await getSchema(createPluginSpec(() => Promise.resolve(null)));
-      expect(schema).to.be.an('object');
-      expect(schema).to.have.property('validate').a('function');
-      expect(schema.validate({}).value).to.eql({
+      expect(typeof schema).toBe('object');
+      expect(typeof schema.validate).toBe('function');
+      expect(schema.validate({}).value).toEqual({
         enabled: true
       });
     });
@@ -62,9 +60,9 @@ describe('plugin discovery/schema', () => {
   describe('getStubSchema()', () => {
     it('returns schema with enabled: false', async () => {
       const schema = await getStubSchema();
-      expect(schema).to.be.an('object');
-      expect(schema).to.have.property('validate').a('function');
-      expect(schema.validate({}).value).to.eql({
+      expect(typeof schema).toBe('object');
+      expect(typeof schema.validate).toBe('function');
+      expect(schema.validate({}).value).toEqual({
         enabled: false
       });
     });

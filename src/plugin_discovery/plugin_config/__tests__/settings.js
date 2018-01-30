@@ -1,4 +1,3 @@
-import expect from 'expect.js';
 import sinon from 'sinon';
 
 import { PluginPack } from '../../plugin_pack';
@@ -33,15 +32,14 @@ describe('plugin_discovery/settings', () => {
         }
       };
 
-      expect(await getSettings(pluginSpec, rootSettings))
-        .to.eql({
+      expect(await getSettings(pluginSpec, rootSettings)).toEqual({
           enabled: false
         });
     });
 
     it('allows rootSettings to be undefined', async () => {
       expect(await getSettings(pluginSpec))
-        .to.eql(undefined);
+        .toEqual(undefined);
     });
 
     it('resolves deprecations', async () => {
@@ -54,7 +52,7 @@ describe('plugin_discovery/settings', () => {
             }
           }
         }
-      }, logDeprecation)).to.eql({
+      }, logDeprecation)).toEqual({
         bar: true
       });
 

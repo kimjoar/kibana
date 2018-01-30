@@ -1,6 +1,5 @@
 import { resolve } from 'path';
 
-import expect from 'expect.js';
 import { findPluginSpecs } from '../find_plugin_specs';
 import { PluginSpec } from '../plugin_spec';
 
@@ -8,8 +7,6 @@ const PLUGIN_FIXTURES = resolve(__dirname, 'fixtures/plugins');
 
 describe('plugin discovery', () => {
   describe('findPluginSpecs()', function () {
-    this.timeout(10000);
-
     it('finds specs for specified plugin paths', async () => {
       const { spec$ } = findPluginSpecs({
         plugins: {
@@ -21,13 +18,12 @@ describe('plugin discovery', () => {
       });
 
       const specs = await spec$.toArray().toPromise();
-      expect(specs).to.have.length(3);
+      expect(specs).toHaveLength(3);
       specs.forEach(spec => {
-        expect(spec).to.be.a(PluginSpec);
+        expect(spec).toBeInstanceOf(PluginSpec);
       });
-      expect(specs.map(s => s.getId()).sort())
-        .to.eql(['bar:one', 'bar:two', 'foo']);
-    });
+      expect(specs.map(s => s.getId()).sort()).toEqual(['bar:one', 'bar:two', 'foo']);
+    }, 10000);
 
     it('finds all specs in scanDirs', async () => {
       const { spec$ } = findPluginSpecs({
@@ -40,13 +36,12 @@ describe('plugin discovery', () => {
       });
 
       const specs = await spec$.toArray().toPromise();
-      expect(specs).to.have.length(3);
+      expect(specs).toHaveLength(3);
       specs.forEach(spec => {
-        expect(spec).to.be.a(PluginSpec);
+        expect(spec).toBeInstanceOf(PluginSpec);
       });
-      expect(specs.map(s => s.getId()).sort())
-        .to.eql(['bar:one', 'bar:two', 'foo']);
-    });
+      expect(specs.map(s => s.getId()).sort()).toEqual(['bar:one', 'bar:two', 'foo']);
+    }, 10000);
 
     it('does not find disabled plugins', async () => {
       const { spec$ } = findPluginSpecs({
@@ -63,12 +58,11 @@ describe('plugin discovery', () => {
       });
 
       const specs = await spec$.toArray().toPromise();
-      expect(specs).to.have.length(2);
+      expect(specs).toHaveLength(2);
       specs.forEach(spec => {
-        expect(spec).to.be.a(PluginSpec);
+        expect(spec).toBeInstanceOf(PluginSpec);
       });
-      expect(specs.map(s => s.getId()).sort())
-        .to.eql(['bar:two', 'foo']);
-    });
+      expect(specs.map(s => s.getId()).sort()).toEqual(['bar:two', 'foo']);
+    }, 10000);
   });
 });
