@@ -5,7 +5,8 @@ import { safeDump } from 'js-yaml';
 import es from 'event-stream';
 import { readYamlConfig } from '../read_yaml_config';
 
-const testConfigFile = follow(`fixtures/reload_logging_config/kibana.test.yml`);
+const testConfigFile = follow('fixtures/reload_logging_config/kibana.test.yml');
+const kibanaPath = follow('../../../../scripts/kibana.js');
 
 function follow(file) {
   return relative(process.cwd(), resolve(__dirname, file));
@@ -15,78 +16,103 @@ function setLoggingJson(enabled) {
   const conf = readYamlConfig(testConfigFile);
   conf.logging = conf.logging || {};
   conf.logging.json = enabled;
+
   const yaml = safeDump(conf);
+
   writeFileSync(testConfigFile, yaml);
-  return conf;
 }
 
-describe(`Server logging configuration`, function () {
+const prepareJson = obj => ({
+  ...obj,
+  pid: '## PID ##',
+  '@timestamp': '## @timestamp ##'
+});
+
+const prepareLogLine = str =>
+  str.replace(
+    /\[\d{2}:\d{2}:\d{2}.\d{3}\]/,
+    '[## timestamp ##]'
+  );
+
+describe('Server logging configuration', function () {
+  let child;
+  let isJson;
+
+  beforeEach(() => {
+    isJson = true;
+    setLoggingJson(true);
+  });
+
+  afterEach(() => {
+    isJson = true;
+    setLoggingJson(true);
+
+    if (child !== undefined) {
+      child.kill();
+      child = undefined;
+    }
+  });
 
   const isWindows = /^win/.test(process.platform);
   if (isWindows) {
-    it('SIGHUP is not a feature of Windows.');
+    it('SIGHUP is not a feature of Windows.', () => {
+      // nothing to do for Windows
+    });
   } else {
-    it(`should be reloadable via SIGHUP process signaling`, function (done) {
-      let asserted = false;
-      let json = Infinity;
-      setLoggingJson(true);
-      const kibanaPath = follow(`../../../../scripts/kibana.js`);
-      const child = spawn('node', [kibanaPath, '--config', testConfigFile]);
+    it('should be reloadable via SIGHUP process signaling', function (done) {
+      expect.assertions(6);
+
+      child = spawn('node', [kibanaPath, '--config', testConfigFile]);
 
       child.on('error', err => {
         done(new Error(`error in child process while attempting to reload config. ${err.stack || err.message || err}`));
       });
 
       child.on('exit', code => {
-        expect([null, 0]).to.contain(code);
-        expect(asserted).to.eql(true);
+        expect([null, 0]).toContain(code);
         done();
       });
 
       child.stdout
         .pipe(es.split())
-        .pipe(es.mapSync(function (line) {
+        .pipe(es.mapSync(line => {
           if (!line) {
-            return line; // ignore empty lines
+            // skip empty lines
+            return;
           }
-          if (json--) {
-            expect(parseJsonLogLine).withArgs(line).to.not.throwError();
+
+          if (isJson) {
+            const data = JSON.parse(line);
+            expect(prepareJson(data)).toMatchSnapshot();
+
+            if (data.tags.includes('listening')) {
+              switchToPlainTextLog();
+            }
+          } else if (line.startsWith('{')) {
+            // We have told Kibana to stop logging json, but it hasn't completed
+            // the switch yet, so we verify the messages that are logged while
+            // switching over.
+
+            const data = JSON.parse(line);
+            expect(prepareJson(data)).toMatchSnapshot();
           } else {
-            expectPlainTextLogLine(line);
+            // Kibana has successfully stopped logging json, so we verify the
+            // log line and kill the server.
+
+            expect(prepareLogLine(line)).toMatchSnapshot();
+
+            child.kill();
+            child = undefined;
           }
         }));
 
-      function parseJsonLogLine(line) {
-        try {
-          const data = JSON.parse(line);
-          const listening = data.tags.indexOf(`listening`) !== -1;
-          if (listening) {
-            switchToPlainTextLog();
-          }
-        } catch (err) {
-          expect(`Error parsing log line as JSON\n ${err.stack || err.message || err}`).to.eql(true);
-        }
-      }
-
       function switchToPlainTextLog() {
-        json = 2; // ignore both "reloading" messages
+        isJson = false;
         setLoggingJson(false);
-        child.kill(`SIGHUP`); // reload logging config
-      }
 
-      function expectPlainTextLogLine(line) {
-        // assert
-        const tags = `[info][config]`;
-        const status = `Reloaded logging configuration due to SIGHUP.`;
-        const expected = `${tags} ${status}`;
-        const actual = line.slice(-expected.length);
-        expect(actual).to.eql(expected);
-
-        // cleanup
-        asserted = true;
-        setLoggingJson(true);
-        child.kill();
+        // reload logging config
+        child.kill('SIGHUP');
       }
-    });
+    }, 60000);
   }
 });
