@@ -1,5 +1,3 @@
-import expect from 'expect.js';
-
 import {
   createPromiseFromStreams,
   createListStream,
@@ -23,7 +21,7 @@ describe('jsonStringifyStream', () => {
       });
       str.write({ foo: 'bar' });
 
-      expect(await dataPromise).to.be('{"foo":"bar"}');
+      expect(await dataPromise).toBe('{"foo":"bar"}');
     });
 
     it('stringifys js values passed from a list stream', async () => {
@@ -36,7 +34,7 @@ describe('jsonStringifyStream', () => {
         createConcatStream([])
       ]);
 
-      expect(all).to.eql(['"foo"', '1']);
+      expect(all).toEqual(['"foo"', '1']);
     });
   });
 
@@ -46,9 +44,9 @@ describe('jsonStringifyStream', () => {
       const errorPromise = new Promise(resolve => str.once('error', resolve));
       str.write(createCircularStructure());
       const err = await errorPromise;
-      expect(err).to.be.an(Error);
-      expect(err).to.have.property('name', 'TypeError');
-      expect(err.message).to.contain('circular');
+      expect(err).toBeInstanceOf(Error);
+      expect(err.name).toBe('TypeError');
+      expect(err.message).toContain('circular');
     });
 
     it('continues parsing after an error', async () => {
@@ -62,8 +60,8 @@ describe('jsonStringifyStream', () => {
       str.write(createCircularStructure());
 
       const firstEmit = await firstEmitPromise;
-      expect(firstEmit).to.have.property('name', 'error');
-      expect(firstEmit.value).to.be.an(Error);
+      expect(firstEmit).toHaveProperty('name', 'error');
+      expect(firstEmit.value).toBeInstanceOf(Error);
 
       const secondEmitPromise = new Promise(resolve => {
         str.once('error', v => resolve({ name: 'error', value: v }));
@@ -72,8 +70,8 @@ describe('jsonStringifyStream', () => {
 
       str.write('foo');
       const secondEmit = await secondEmitPromise;
-      expect(secondEmit).to.have.property('name', 'data');
-      expect(secondEmit).to.have.property('value', '"foo"');
+      expect(secondEmit).toHaveProperty('name', 'data');
+      expect(secondEmit).toHaveProperty('value', '"foo"');
     });
   });
 });

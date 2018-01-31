@@ -1,4 +1,3 @@
-import expect from 'expect.js';
 import sinon from 'sinon';
 
 import { createListStream } from '../';
@@ -12,10 +11,10 @@ describe('listStream', () => {
     await new Promise(resolve => str.on('end', resolve));
 
     sinon.assert.callCount(stub, 4);
-    expect(stub.getCall(0).args).to.eql([1]);
-    expect(stub.getCall(1).args).to.eql([2]);
-    expect(stub.getCall(2).args).to.eql([3]);
-    expect(stub.getCall(3).args).to.eql([4]);
+    expect(stub.getCall(0).args).toEqual([1]);
+    expect(stub.getCall(1).args).toEqual([2]);
+    expect(stub.getCall(2).args).toEqual([3]);
+    expect(stub.getCall(3).args).toEqual([4]);
   });
 
   it('does not modify the list passed', async () => {
@@ -23,6 +22,6 @@ describe('listStream', () => {
     const str = createListStream(list);
     str.resume();
     await new Promise(resolve => str.on('end', resolve));
-    expect(list).to.eql([1, 2, 3, 4]);
+    expect(list).toEqual([1, 2, 3, 4]);
   });
 });

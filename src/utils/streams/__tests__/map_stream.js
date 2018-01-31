@@ -1,5 +1,4 @@
 import sinon from 'sinon';
-import expect from 'expect.js';
 import { delay } from 'bluebird';
 
 import { createPromiseFromStreams } from '../promise_from_streams';
@@ -29,7 +28,7 @@ describe('createMapStream()', () => {
       createConcatStream([])
     ]);
 
-    expect(result).to.eql([100, 200, 300]);
+    expect(result).toEqual([100, 200, 300]);
   });
 
   it('supports async mappers', async () => {
@@ -42,6 +41,6 @@ describe('createMapStream()', () => {
       createConcatStream([])
     ]);
 
-    expect(result).to.eql([ 0, 2, 6]);
+    expect(result).toEqual([ 0, 2, 6]);
   });
 });

@@ -1,5 +1,3 @@
-import expect from 'expect.js';
-
 import {
   createListStream,
   createPromiseFromStreams,
@@ -13,7 +11,7 @@ describe('concatStream', () => {
       createConcatStream([0])
     ]);
 
-    expect(output).to.eql([0, 1, 2, 3]);
+    expect(output).toEqual([0, 1, 2, 3]);
   });
 
   describe(`combines using the previous value's concat method`, () => {
@@ -26,7 +24,7 @@ describe('concatStream', () => {
         ]),
         createConcatStream()
       ]);
-      expect(output).to.eql('abc');
+      expect(output).toEqual('abc');
     });
 
     it('works with arrays', async () => {
@@ -38,7 +36,7 @@ describe('concatStream', () => {
         ]),
         createConcatStream()
       ]);
-      expect(output).to.eql([1, 2, 3, 4, 10]);
+      expect(output).toEqual([1, 2, 3, 4, 10]);
     });
 
     it('works with a mixture, starting with array', async () => {
@@ -53,7 +51,7 @@ describe('concatStream', () => {
         ]),
         createConcatStream()
       ]);
-      expect(output).to.eql([1, 2, 3, 4, 5, 6, 7]);
+      expect(output).toEqual([1, 2, 3, 4, 5, 6, 7]);
     });
 
     it('fails when the value does not have a concat method', async () => {
@@ -71,8 +69,8 @@ describe('concatStream', () => {
         await promise;
         expect.fail('Promise should have rejected');
       } catch (err) {
-        expect(err).to.be.an(Error);
-        expect(err.message).to.contain('concat');
+        expect(err).toBeInstanceOf(Error);
+        expect(err.message).toContain('concat');
       }
     });
   });

@@ -1,4 +1,3 @@
-import expect from 'expect.js';
 import sinon from 'sinon';
 
 import {
@@ -16,7 +15,7 @@ describe('intersperseStream', () => {
         createIntersperseStream(' '),
         createConcatStream()
       ])
-    ).to.be('to be or not to be');
+    ).toBe('to be or not to be');
   });
 
   it('emits values as soon as possible, does not needlessly buffer', async () => {
@@ -26,13 +25,13 @@ describe('intersperseStream', () => {
 
     str.write('a');
     sinon.assert.calledOnce(stub);
-    expect(stub.firstCall.args).to.eql(['a']);
+    expect(stub.firstCall.args).toEqual(['a']);
     stub.reset();
 
     str.write('b');
     sinon.assert.calledTwice(stub);
-    expect(stub.firstCall.args).to.eql(['y']);
+    expect(stub.firstCall.args).toEqual(['y']);
     sinon.assert.calledTwice(stub);
-    expect(stub.secondCall.args).to.eql(['b']);
+    expect(stub.secondCall.args).toEqual(['b']);
   });
 });

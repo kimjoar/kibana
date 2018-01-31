@@ -1,5 +1,3 @@
-import expect from 'expect.js';
-
 import {
   createSplitStream,
   createConcatStream,
@@ -23,36 +21,36 @@ async function split(stream, input) {
 describe('splitStream', () => {
   it('splits buffers, produces strings', async () => {
     const output = await split(createSplitStream('&'), [Buffer.from('foo&bar')]);
-    expect(output).to.eql(['foo', 'bar']);
+    expect(output).toEqual(['foo', 'bar']);
   });
 
   it('supports mixed input', async () => {
     const output = await split(createSplitStream('&'), [Buffer.from('foo&b'), 'ar']);
-    expect(output).to.eql(['foo', 'bar']);
+    expect(output).toEqual(['foo', 'bar']);
   });
 
   it('supports buffer split chunks', async () => {
     const output = await split(createSplitStream(Buffer.from('&')), ['foo&b', 'ar']);
-    expect(output).to.eql(['foo', 'bar']);
+    expect(output).toEqual(['foo', 'bar']);
   });
 
   it('splits provided values by a delimiter', async () => {
     const output = await split(createSplitStream('&'), ['foo&b', 'ar']);
-    expect(output).to.eql(['foo', 'bar']);
+    expect(output).toEqual(['foo', 'bar']);
   });
 
   it('handles multi-character delimiters', async () => {
     const output = await split(createSplitStream('oo'), ['foo&b', 'ar']);
-    expect(output).to.eql(['f', '&bar']);
+    expect(output).toEqual(['f', '&bar']);
   });
 
   it('handles delimiters that span multple chunks', async () => {
     const output = await split(createSplitStream('ba'), ['foo&b', 'ar']);
-    expect(output).to.eql(['foo&', 'r']);
+    expect(output).toEqual(['foo&', 'r']);
   });
 
   it('produces an empty chunk if the split char is at the end of the input', async () => {
     const output = await split(createSplitStream('&bar'), ['foo&b', 'ar']);
-    expect(output).to.eql(['foo', '']);
+    expect(output).toEqual(['foo', '']);
   });
 });

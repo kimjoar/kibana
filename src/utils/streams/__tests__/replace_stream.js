@@ -1,5 +1,3 @@
-import expect from 'expect.js';
-
 import {
   createReplaceStream,
   createConcatStream,
@@ -25,7 +23,7 @@ describe('replaceStream', () => {
     ]);
 
     chunks.forEach(chunk => {
-      expect(chunk).to.be.a(Buffer);
+      expect(chunk).toBeInstanceOf(Buffer);
     });
   });
 
@@ -37,43 +35,41 @@ describe('replaceStream', () => {
     ]);
 
     chunks.forEach(chunk => {
-      expect(chunk).to.be.a(Buffer);
+      expect(chunk).toBeInstanceOf(Buffer);
     });
   });
 
   it('expects toReplace to be a string', () => {
     expect(() => createReplaceStream(Buffer.from('foo')))
-      .to.throwError(error => {
-        expect(error.message).to.match(/be a string/);
-      });
+      .toThrowError(/be a string/);
   });
 
   it('replaces multiple single-char instances in a single chunk', async () => {
     expect(await concatToString([
       createListStream([Buffer.from('f00 bar')]),
       createReplaceStream('0', 'o'),
-    ])).to.be('foo bar');
+    ])).toBe('foo bar');
   });
 
   it('replaces multiple single-char instances in multiple chunks', async () => {
     expect(await concatToString([
       createListStream([Buffer.from('f0'), Buffer.from('0 bar')]),
       createReplaceStream('0', 'o'),
-    ])).to.be('foo bar');
+    ])).toBe('foo bar');
   });
 
   it('replaces single multi-char instances in single chunks', async () => {
     expect(await concatToString([
       createListStream([Buffer.from('f0'), Buffer.from('0 bar')]),
       createReplaceStream('0', 'o'),
-    ])).to.be('foo bar');
+    ])).toBe('foo bar');
   });
 
   it('replaces multiple multi-char instances in single chunks', async () => {
     expect(await concatToString([
       createListStream([Buffer.from('foo ba'), Buffer.from('r b'), Buffer.from('az bar')]),
       createReplaceStream('bar', '*'),
-    ])).to.be('foo * baz *');
+    ])).toBe('foo * baz *');
   });
 
   it('replaces multi-char instance that stretches multiple chunks', async () => {
@@ -86,7 +82,7 @@ describe('replaceStream', () => {
         Buffer.from('ocious bar'),
       ]),
       createReplaceStream('supercalifragilisticexpialidocious', '*'),
-    ])).to.be('foo * bar');
+    ])).toBe('foo * bar');
   });
 
   it('ignores missing multi-char instance', async () => {
@@ -99,6 +95,6 @@ describe('replaceStream', () => {
         Buffer.from('ocious bar'),
       ]),
       createReplaceStream('supercalifragilisticexpialidocious', '*'),
-    ])).to.be('foo supercalifragili sticexpialidocious bar');
+    ])).toBe('foo supercalifragili sticexpialidocious bar');
   });
 });

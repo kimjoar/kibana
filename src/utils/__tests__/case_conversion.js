@@ -1,4 +1,3 @@
-import expect from 'expect.js';
 import _ from 'lodash';
 import { keysToSnakeCaseShallow, keysToCamelCaseShallow } from '../case_conversion';
 
@@ -12,7 +11,7 @@ describe('keysToSnakeCaseShallow', function () {
     });
 
     _.forEach(result, function (value, key) {
-      expect(key).to.be(value);
+      expect(key).toBe(value);
     });
   });
 
@@ -28,7 +27,7 @@ describe('keysToCamelCaseShallow', function () {
     });
 
     _.forEach(result, function (value, key) {
-      expect(key).to.be(value);
+      expect(key).toBe(value);
     });
   });
 

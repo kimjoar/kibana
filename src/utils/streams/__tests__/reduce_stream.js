@@ -1,5 +1,4 @@
 import sinon from 'sinon';
-import expect from 'expect.js';
 
 import {
   createReduceStream,
@@ -18,9 +17,9 @@ describe('reduceStream', () => {
       createReduceStream(stub.returnsArg(1), 0)
     ]);
     sinon.assert.calledThrice(stub);
-    expect(stub.firstCall.args).to.eql([0, 1, 'utf8']);
-    expect(stub.secondCall.args).to.eql([1, 2, 'utf8']);
-    expect(stub.thirdCall.args).to.eql([2, 3, 'utf8']);
+    expect(stub.firstCall.args).toEqual([0, 1, 'utf8']);
+    expect(stub.secondCall.args).toEqual([1, 2, 'utf8']);
+    expect(stub.thirdCall.args).toEqual([2, 3, 'utf8']);
   });
 
   it('provides the return value of the last iteration of the reducer', async () => {
@@ -28,7 +27,7 @@ describe('reduceStream', () => {
       createListStream('abcdefg'.split('')),
       createReduceStream((acc) => acc + 1, 0)
     ]);
-    expect(result).to.be(7);
+    expect(result).toBe(7);
   });
 
   it('emits an error if an iteration fails', async () => {

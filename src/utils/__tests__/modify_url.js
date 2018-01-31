@@ -1,35 +1,33 @@
-import expect from 'expect.js';
-
 import { modifyUrl } from '../modify_url';
 
 describe('modifyUrl()', () => {
   it('throws an error with invalid input', () => {
-    expect(() => modifyUrl(1, () => {})).to.throwError();
-    expect(() => modifyUrl(undefined, () => {})).to.throwError();
-    expect(() => modifyUrl('http://localhost')).to.throwError(); // no block
+    expect(() => modifyUrl(1, () => {})).toThrow();
+    expect(() => modifyUrl(undefined, () => {})).toThrow();
+    expect(() => modifyUrl('http://localhost')).toThrow();
   });
 
   it('supports returning a new url spec', () => {
-    expect(modifyUrl('http://localhost', () => ({}))).to.eql('');
+    expect(modifyUrl('http://localhost', () => ({}))).toEqual('');
   });
 
   it('supports modifying the passed object', () => {
     expect(modifyUrl('http://localhost', parsed => {
       parsed.port = 9999;
       parsed.auth = 'foo:bar';
-    })).to.eql('http://foo:bar@localhost:9999/');
+    })).toEqual('http://foo:bar@localhost:9999/');
   });
 
   it('supports changing pathname', () => {
     expect(modifyUrl('http://localhost/some/path', parsed => {
       parsed.pathname += '/subpath';
-    })).to.eql('http://localhost/some/path/subpath');
+    })).toEqual('http://localhost/some/path/subpath');
   });
 
   it('supports changing port', () => {
     expect(modifyUrl('http://localhost:5601', parsed => {
       parsed.port = (parsed.port * 1) + 1;
-    })).to.eql('http://localhost:5602/');
+    })).toEqual('http://localhost:5602/');
   });
 
   it('supports changing protocol', () => {
@@ -37,6 +35,6 @@ describe('modifyUrl()', () => {
       parsed.protocol = 'mail';
       parsed.slashes = false;
       parsed.pathname = null;
-    })).to.eql('mail:localhost');
+    })).toEqual('mail:localhost');
   });
 });

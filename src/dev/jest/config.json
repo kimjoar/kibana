@@ -8,6 +8,7 @@
     "<rootDir>/src/cli_keystore",
     "<rootDir>/src/cli_plugin",
     "<rootDir>/src/plugin_discovery",
+    "<rootDir>/src/utils",
     "<rootDir>/ui_framework/",
     "<rootDir>/packages"
   ],
@@ -46,6 +47,7 @@
     "**/src/cli_keystore/**/__tests__/**/*.js",
     "**/src/cli_plugin/**/__tests__/**/*.js",
     "**/src/plugin_discovery/**/__tests__/**/*.js",
+    "**/src/utils/**/__tests__/**/*.js",
     "**/src/server/**/__tests__/**/*.js"
   ],
   "modulePathIgnorePatterns": [

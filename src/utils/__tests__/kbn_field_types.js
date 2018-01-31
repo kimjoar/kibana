@@ -1,4 +1,3 @@
-import expect from 'expect.js';
 import Chance from 'chance';
 
 const chance = new Chance();
@@ -13,10 +12,12 @@ describe('utils/kbn_field_types', () => {
   describe('KbnFieldType', () => {
     it('defaults', () => {
       expect(new KbnFieldType())
-        .to.have.property('name', undefined)
-        .and.have.property('sortable', false)
-        .and.have.property('filterable', false)
-        .and.have.property('esTypes').eql([]);
+        .toEqual(expect.objectContaining({
+          name: undefined,
+          sortable: false,
+          filterable: false,
+          esTypes: []
+        }));
     });
 
     it('assigns name, sortable, filterable, and esTypes options to itself', () => {
@@ -26,52 +27,54 @@ describe('utils/kbn_field_types', () => {
       const esTypes = chance.n(chance.word, 3);
 
       expect(new KbnFieldType({ name, sortable, filterable, esTypes }))
-        .to.have.property('name', name)
-        .and.have.property('sortable', sortable)
-        .and.have.property('filterable', filterable)
-        .and.have.property('esTypes').eql(esTypes);
+        .toEqual(expect.objectContaining({
+          name,
+          sortable,
+          filterable,
+          esTypes
+        }));
     });
 
     it('prevents modification', () => {
       const type = new KbnFieldType();
-      expect(() => type.name = null).to.throwError();
-      expect(() => type.sortable = null).to.throwError();
-      expect(() => type.filterable = null).to.throwError();
-      expect(() => type.esTypes = null).to.throwError();
-      expect(() => type.esTypes.push(null)).to.throwError();
+      expect(() => type.name = null).toThrow();
+      expect(() => type.sortable = null).toThrow();
+      expect(() => type.filterable = null).toThrow();
+      expect(() => type.esTypes = null).toThrow();
+      expect(() => type.esTypes.push(null)).toThrow();
     });
 
     it('allows extension', () => {
       const type = new KbnFieldType();
       type.$hashKey = '123';
-      expect(type).to.have.property('$hashKey', '123');
+      expect(type).toHaveProperty('$hashKey', '123');
     });
   });
 
   describe('getKbnFieldType()', () => {
     it('returns a KbnFieldType instance by name', () => {
-      expect(getKbnFieldType('string')).to.be.a(KbnFieldType);
+      expect(getKbnFieldType('string')).toBeInstanceOf(KbnFieldType);
     });
 
     it('returns undefined for invalid name', () => {
-      expect(getKbnFieldType(chance.sentence())).to.be(undefined);
+      expect(getKbnFieldType(chance.sentence())).toBe(undefined);
     });
   });
 
   describe('castEsToKbnFieldTypeName()', () => {
     it('returns the kbnFieldType name that matches the esType', () => {
-      expect(castEsToKbnFieldTypeName('keyword')).to.be('string');
-      expect(castEsToKbnFieldTypeName('float')).to.be('number');
+      expect(castEsToKbnFieldTypeName('keyword')).toBe('string');
+      expect(castEsToKbnFieldTypeName('float')).toBe('number');
     });
 
     it('returns unknown for unknown es types', () => {
-      expect(castEsToKbnFieldTypeName(chance.sentence())).to.be('unknown');
+      expect(castEsToKbnFieldTypeName(chance.sentence())).toBe('unknown');
     });
   });
 
   describe('getKbnTypeNames()', () => {
     it('returns a list of all kbnFieldType names', () => {
-      expect(getKbnTypeNames().sort()).to.eql([
+      expect(getKbnTypeNames().sort()).toEqual([
         '_source',
         'attachment',
         'boolean',

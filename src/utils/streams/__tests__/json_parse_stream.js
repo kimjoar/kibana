@@ -1,5 +1,3 @@
-import expect from 'expect.js';
-
 import {
   createPromiseFromStreams,
   createListStream,
@@ -17,7 +15,7 @@ describe('jsonParseStream', () => {
       });
       str.write('{ "foo": "bar" }');
 
-      expect(await dataPromise).to.eql({
+      expect(await dataPromise).toEqual({
         foo: 'bar'
       });
     });
@@ -30,8 +28,7 @@ describe('jsonParseStream', () => {
         ]),
         createJsonParseStream(),
         createConcatStream([])
-      ]))
-        .to.eql(['foo', 1]);
+      ])).toEqual(['foo', 1]);
     });
   });
 
@@ -41,8 +38,8 @@ describe('jsonParseStream', () => {
       const errorPromise = new Promise(resolve => str.once('error', resolve));
       str.write('{"partial');
       const err = await errorPromise;
-      expect(err).to.be.an(Error);
-      expect(err).to.have.property('name', 'SyntaxError');
+      expect(err).toBeInstanceOf(Error);
+      expect(err.name).toBe('SyntaxError');
     });
 
     it('continues parsing after an error', async () => {
@@ -55,8 +52,8 @@ describe('jsonParseStream', () => {
 
       str.write('{"partial');
       const firstEmit = await firstEmitPromise;
-      expect(firstEmit).to.have.property('name', 'error');
-      expect(firstEmit.value).to.be.an(Error);
+      expect(firstEmit).toHaveProperty('name', 'error');
+      expect(firstEmit.value).toBeInstanceOf(Error);
 
       const secondEmitPromise = new Promise(resolve => {
         str.once('error', v => resolve({ name: 'error', value: v }));
@@ -65,8 +62,8 @@ describe('jsonParseStream', () => {
 
       str.write('42');
       const secondEmit = await secondEmitPromise;
-      expect(secondEmit).to.have.property('name', 'data');
-      expect(secondEmit).to.have.property('value', 42);
+      expect(secondEmit).toHaveProperty('name', 'data');
+      expect(secondEmit).toHaveProperty('value', 42);
     });
   });
 });

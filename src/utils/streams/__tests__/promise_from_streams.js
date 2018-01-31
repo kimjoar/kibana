@@ -1,7 +1,5 @@
 import { Writable, Duplex } from 'stream';
 
-import expect from 'expect.js';
-
 import {
   createListStream,
   createPromiseFromStreams,
@@ -15,7 +13,7 @@ describe('promiseFromStreams', () => {
     const sumPromise = new Promise(resolve => str2.once('data', resolve));
     createPromiseFromStreams([str1, str2]);
     await new Promise(resolve => str2.once('end', resolve));
-    expect(await sumPromise).to.be(6);
+    expect(await sumPromise).toBe(6);
   });
 
   describe('last stream is writable', () => {
@@ -34,7 +32,7 @@ describe('promiseFromStreams', () => {
         })
       ]);
 
-      expect(written).to.be('a');
+      expect(written).toBe('a');
     });
 
     it('resolves to undefined', async () => {
@@ -47,7 +45,7 @@ describe('promiseFromStreams', () => {
         })
       ]);
 
-      expect(result).to.be(undefined);
+      expect(result).toBe(undefined);
     });
   });
 
@@ -57,7 +55,7 @@ describe('promiseFromStreams', () => {
         createListStream(['a', 'b', 'c'])
       ]);
 
-      expect(result).to.be('c');
+      expect(result).toBe('c');
     });
   });
 
@@ -82,8 +80,8 @@ describe('promiseFromStreams', () => {
         }).setEncoding('utf8')
       ]);
 
-      expect(written).to.eql('abc');
-      expect(result).to.be('bar');
+      expect(written).toEqual('abc');
+      expect(result).toBe('bar');
     });
   });
 });
