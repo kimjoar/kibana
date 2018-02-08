@@ -1,6 +1,7 @@
 import { resolve, join } from 'path';
 
 import { Project } from './project';
+import { absolutePathSnaphotSerializer } from '../test_helpers';
 
 const rootPath = resolve(`${__dirname}/__fixtures__/kibana`);
 
@@ -14,11 +15,12 @@ const createProjectWith = (fields, path = '') =>
     join(rootPath, path)
   );
 
+expect.addSnapshotSerializer(absolutePathSnaphotSerializer);
+
 describe('fromPath', () => {
   test('reads project.json at path and constructs Project', async () => {
     const kibana = await Project.fromPath(rootPath);
-
-    expect(kibana.name).toBe('kibana');
+    expect(kibana).toMatchSnapshot();
   });
 });
 

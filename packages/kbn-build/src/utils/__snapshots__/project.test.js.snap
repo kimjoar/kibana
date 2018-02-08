@@ -5,3 +5,23 @@ exports[`#ensureValidProjectDependency using link:, but with wrong path 1`] = `"
 exports[`#ensureValidProjectDependency using version instead of link: 1`] = `"[kibana] depends on [foo], but it's not using the local package. Update its package.json to the expected value below."`;
 
 exports[`#getExecutables() throws CliError when bin is something strange 1`] = `"[kibana] has an invalid \\"bin\\" field in its package.json, expected an object or a string"`;
+
+exports[`fromPath reads project.json at path and constructs Project 1`] = `
+Project {
+  "allDependencies": Object {
+    "foo": "link:packages/foo",
+  },
+  "json": Object {
+    "dependencies": Object {
+      "foo": "link:packages/foo",
+    },
+    "name": "kibana",
+    "version": "1.0.0",
+  },
+  "nodeModulesLocation": "<repoRoot>/packages/kbn-build/src/utils/__fixtures__/kibana/node_modules",
+  "packageJsonLocation": "<repoRoot>/packages/kbn-build/src/utils/__fixtures__/kibana/package.json",
+  "path": "<repoRoot>/packages/kbn-build/src/utils/__fixtures__/kibana",
+  "scripts": Object {},
+  "targetLocation": "<repoRoot>/packages/kbn-build/src/utils/__fixtures__/kibana/target",
+}
+`;
